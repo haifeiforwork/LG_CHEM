@@ -1,0 +1,478 @@
+<%/******************************************************************************/
+/*                                                                              */
+/*   System Name  : e-HR                                                        */
+/*   1Depth Name  : HR 결재                                                     */
+/*   2Depth Name  : 결재 진행중 문서                                            */
+/*   Program Name : 의료비 결재 진행중/취소                                     */
+/*   Program ID   : G007ApprovalIngHospital.jsp                                 */
+/*   Description  : 의료비 결재 진행중취소                                      */
+/*   Note         : 없음                                                        */
+/*   Creation     : 2003-03-26  이승희                                          */
+/*   Update       : 2003-03-26  이승희                                          */
+/*                  2005-12-28  LSA  @v1.1 C2005121301000001097 결재수단,연말정산반영여부추가 */
+/*                  2006-01-17  LSA  @v1.2 연말정산반영액추가                   */
+/*                  2013-11-06  LSA  C20131106_31674                             */
+/*                                                                              */
+/********************************************************************************/%>
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ page errorPage="/web/err/error.jsp"%>
+<%@ include file="/web/common/commonProcess.jsp" %>
+
+<%@ page import="java.util.Vector" %>
+<%@ page import="hris.E.E17Hospital.*" %>
+<%@ page import="hris.E.E17Hospital.rfc.*" %>
+<%@ page import="hris.common.util.*" %>
+<%@ page import="hris.common.*" %>
+<%@ page import="com.sns.jdf.util.*" %>
+<%
+    WebUserData user = WebUtil.getSessionUser(request);
+
+    E17SickData e17SickData        = (E17SickData)request.getAttribute("e17SickData");
+    Vector      E17HospitalData_vt = (Vector)request.getAttribute("vcE17HospitalData");
+
+    Vector      vcAppLineData     = (Vector)request.getAttribute("vcAppLineData");
+
+    String      SCOMP_SUM           = (String)request.getAttribute("SCOMP_SUM");
+    String      WCOMP_SUM           = (String)request.getAttribute("WCOMP_SUM");
+    String      RequestPageName     = (String)request.getAttribute("RequestPageName");
+    String      P_Flag              = (String)request.getAttribute("P_Flag");
+
+    int medi_count = E17HospitalData_vt.size();
+
+//  통화키에 따른 소수자리수를 가져온다
+    double currencyDecimalSize = 2;
+    int    currencyValue = 0;
+    Vector currency_vt = (new hris.common.rfc.CurrencyDecimalRFC()).getCurrencyDecimal();
+    for( int j = 0 ; j < currency_vt.size() ; j++ ) {
+        CodeEntity codeEnt = (CodeEntity)currency_vt.get(j);
+        if( e17SickData.WAERS.equals(codeEnt.code) ){
+            currencyDecimalSize = Double.parseDouble(codeEnt.value);
+        } // end if
+    } // end for
+    currencyValue = (int)currencyDecimalSize; //???  KRW -> 0, USDN -> 5
+    //  통화키에 따른 소수자리수를 가져온다
+
+    boolean isCanGoList ;
+    if (RequestPageName == null || RequestPageName.equals("")) {
+        isCanGoList = false;
+    } else {
+        isCanGoList = true;
+    } // end if
+
+    // 현재 결재자 구분
+    DocumentInfo docinfo = new DocumentInfo(e17SickData.AINF_SEQN ,user.empNo);
+    int approvalStep = docinfo.getApprovalStep();
+%>
+<html>
+<head>
+<title>ESS</title>
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr.css" type="text/css">
+
+<script language="javascript" src="<%= WebUtil.ImageURL %>js/snsscript.js"></script>
+
+<script language="JavaScript">
+<!--
+    function cancel()
+    {
+        if(!confirm("취소 하시겠습니까.")) {
+            return;
+        } // end if
+        var frm = document.form1;
+        frm.APPR_STAT.value = "";
+        frm.submit();
+    }
+
+    function goToList()
+    {
+        var frm = document.form1;
+        frm.jobid.value ="";
+    <% if (RequestPageName != null ) { %>
+        frm.action = "<%=RequestPageName.replace('|' ,'&')%>";
+    <% } // end if %>
+
+        frm.submit();
+    }
+
+function go_print(){
+    window.open('', 'essPrintWindow', "toolbar=0,location=0,directories=0,status=0,menubar=0,resizable=0,width=740,height=650,left=100,top=60");
+    document.form1.jobid.value = "print_hospital";
+    document.form1.AINF_SEQN.value = "<%= e17SickData.AINF_SEQN %>";
+    document.form1.target = "essPrintWindow";
+    document.form1.action = '<%= WebUtil.ServletURL %>hris.E.E17Hospital.E17HospitalDetailSV';
+    document.form1.method = "post";
+    document.form1.submit();
+}
+//-->
+</script>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onLoad="MM_preloadImages('<%= WebUtil.ImageURL %>btn_help_on.gif');">
+<form name="form1" method="post" action="">
+<input type="hidden" name="jobid" value="save">
+<input type="hidden" name="APPU_TYPE" value="<%=docinfo.getAPPU_TYPE()%>">
+<input type="hidden" name="APPR_SEQN" value="<%=docinfo.getAPPR_SEQN()%>">
+<input type="hidden" name="BUKRS"     value="<%=user.companyCode%>">
+
+<INPUT TYPE="HIDDEN" NAME="PERNR"        VALUE="<%=e17SickData.PERNR%>">
+<INPUT TYPE="HIDDEN" NAME="BEGDA"        VALUE="<%=e17SickData.BEGDA%>">
+<INPUT TYPE="HIDDEN" NAME="AINF_SEQN"    VALUE="<%=e17SickData.AINF_SEQN%>">
+<INPUT TYPE="HIDDEN" NAME="CTRL_NUMB"    VALUE="<%=e17SickData.CTRL_NUMB%>">
+<INPUT TYPE="HIDDEN" NAME="SICK_NAME"    VALUE="<%=e17SickData.SICK_NAME%>">
+<INPUT TYPE="HIDDEN" NAME="SICK_DESC1"   VALUE="<%=e17SickData.SICK_DESC1%>">
+<INPUT TYPE="HIDDEN" NAME="SICK_DESC2"   VALUE="<%=e17SickData.SICK_DESC2%>">
+<INPUT TYPE="HIDDEN" NAME="SICK_DESC3"   VALUE="<%=e17SickData.SICK_DESC3%>">
+<INPUT TYPE="HIDDEN" NAME="SICK_DESC4"   VALUE="<%=e17SickData.SICK_DESC4%>">
+<INPUT TYPE="HIDDEN" NAME="WAERS"        VALUE="<%=e17SickData.WAERS%>">
+<INPUT TYPE="HIDDEN" NAME="BIGO_TEXT1"   VALUE="<%=e17SickData.BIGO_TEXT1%>">
+<INPUT TYPE="HIDDEN" NAME="BIGO_TEXT2"   VALUE="<%=e17SickData.BIGO_TEXT2%>">
+<INPUT TYPE="HIDDEN" NAME="BIGO_TEXT3"   VALUE="<%=e17SickData.BIGO_TEXT3%>">
+<INPUT TYPE="HIDDEN" NAME="BIGO_TEXT4"   VALUE="<%=e17SickData.BIGO_TEXT4%>">
+<INPUT TYPE="HIDDEN" NAME="GUEN_CODE"    VALUE="<%=e17SickData.GUEN_CODE%>">
+<INPUT TYPE="HIDDEN" NAME="PROOF"        VALUE="<%=e17SickData.PROOF%>">
+<INPUT TYPE="HIDDEN" NAME="ENAME"        VALUE="<%=e17SickData.ENAME%>">
+<INPUT TYPE="HIDDEN" NAME="RFUN_DATE"    VALUE="<%=e17SickData.RFUN_DATE%>">
+<INPUT TYPE="HIDDEN" NAME="RFUN_RESN"    VALUE="<%=e17SickData.RFUN_RESN%>">
+<INPUT TYPE="HIDDEN" NAME="RFUN_AMNT"    VALUE="<%=e17SickData.RFUN_AMNT%>">
+<INPUT TYPE="HIDDEN" NAME="BELNR1"       VALUE="<%=e17SickData.BELNR1%>">
+<INPUT TYPE="HIDDEN" NAME="OBJPS_21"     VALUE="<%=e17SickData.OBJPS_21%>">
+<INPUT TYPE="HIDDEN" NAME="REGNO"        VALUE="<%=e17SickData.REGNO%>">
+<INPUT TYPE="HIDDEN" NAME="DATUM_21"     VALUE="<%=e17SickData.DATUM_21%>">
+<INPUT TYPE="HIDDEN" NAME="POST_DATE"    VALUE="<%=e17SickData.POST_DATE%>">
+<INPUT TYPE="HIDDEN" NAME="BELNR"        VALUE="<%=e17SickData.BELNR%>">
+<INPUT TYPE="HIDDEN" NAME="ZPERNR"       VALUE="<%=e17SickData.ZPERNR%>">
+<INPUT TYPE="HIDDEN" NAME="ZUNAME"       VALUE="<%=e17SickData.ZUNAME%>">
+<input type="hidden" name="YTAX_WONX"    value="<%=e17SickData.YTAX_WONX%>">
+<input type="hidden" name="COMP_WONX"    value="<%=e17SickData.COMP_WONX%>">
+<INPUT TYPE="HIDDEN" NAME="BIGO_TEXT">
+
+<INPUT TYPE="HIDDEN" NAME="TREA_CODE"    VALUE="<%=e17SickData.TREA_CODE%>">
+<INPUT TYPE="HIDDEN" NAME="TREA_TEXT"    VALUE="<%=e17SickData.TREA_TEXT%>">
+
+<input type="hidden" name="HospitalRowCount" value="<%= E17HospitalData_vt.size() %>">
+<input type="hidden" name="APPR_STAT">
+<input type="hidden" name="RequestPageName"   value="<%=RequestPageName%>">
+<input type="hidden" name="approvalStep" value="<%=approvalStep%>">
+  <table width="796" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="16">&nbsp;</td>
+      <td><table width="780" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td><table width="780" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td height="5" colspan="2"></td>
+                </tr>
+                <tr>
+                  <td width="624" class="title02"><img src="<%= WebUtil.ImageURL %>ehr/title01.gif">의료비
+                    결재진행 중 문서 </td>
+                   <td align="right" style="padding-bottom:4px">&nbsp;</td>
+                </tr>
+              </table></td>
+          </tr>
+          <tr>
+            <td height="10">
+                 <!-- 신청자 기본 정보 시작 -->
+                 <%@ include file="/web/common/ApprovalIncludePersInfo.jsp" %>
+                 <!--  신청자 기본 정보 끝-->
+            </td>
+          </tr>
+          <tr>
+            <td height="10">&nbsp;</td>
+          </tr>
+          <tr>
+            <td>
+              <!-- 상단 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="5" class="table02">
+                <tr>
+                  <td class="tr01"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td><table border="0" cellspacing="1" cellpadding="0">
+                            <tr>
+                              <td width="100" class="td01">신청일자</td>
+                              <td width="261" class="td09"><%= e17SickData.BEGDA.equals("0000-00-00")||e17SickData.BEGDA.equals("") ? "" : WebUtil.printDate(e17SickData.BEGDA)%></td>
+                              <td class="td01" width="100">관리번호</td>
+                              <td width="317" class="td09"><%= e17SickData.CTRL_NUMB %> 
+                      <%     if ( user.empNo.equals(e17SickData.PERNR) ) {   %>
+                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			       <a href="javascript:go_print();"><!--C20131106_31674-->
+                                <img src="<%= WebUtil.ImageURL %>btn_print_e17_b.gif" align="absmiddle" border="0" ></a>
+                      <%     }		%>
+                              </td>                              
+                            </tr>
+                            <tr>
+                              <td class="td01">구분</td>
+                              <td class="td09"><%= WebUtil.printOptionText((new E17GuenCodeRFC()).getGuenCode(e17SickData.PERNR), e17SickData.GUEN_CODE) %>&nbsp;&nbsp;&nbsp;
+                              <%  if( e17SickData.GUEN_CODE.equals("0002") ) { %>
+                                    <input type="checkbox" name="PROOF" value="X" size="20" class="input04" <%= e17SickData.PROOF.equals("X") ? "checked" : "" %> disabled>&nbsp;
+                                     배우자 연말정산반영 여부
+                              <%  } // end if %>
+                              <%  if( e17SickData.GUEN_CODE.equals("0003") ) { %>
+                                    <input type="checkbox" name="PROOF" value="X" size="20" class="input04" <%= e17SickData.PROOF.equals("X") ? "checked" : "" %> disabled>&nbsp;
+                                     자녀 연말정산반영 여부
+                              <%  } // end if %>
+                              <%  if( e17SickData.GUEN_CODE.equals("0001") ) { %>
+                                    <input type="checkbox" name="PROOF" value="X" size="20" class="input04" <%= e17SickData.PROOF.equals("X") ? "checked" : "checked" %> disabled>&nbsp;
+                                     본인 연말정산반영 여부
+                              <%  } // end if %>                             
+                              </td>
+                              <td colspan="2" class="td09">&nbsp;</td>
+                            </tr>
+<%
+//  자녀일때 자녀를 선택할 수 있도록 한다.
+    if( e17SickData.GUEN_CODE.equals("0003") ) {
+        String REGNO_dis = e17SickData.REGNO.substring(0, 6) + "-*******";
+        String Message   = "";
+        int    dif       = 0;
+        
+        dif = DataUtil.getBetween(DataUtil.removeStructur(e17SickData.BEGDA,"-"), DataUtil.removeStructur(e17SickData.DATUM_21,"-"));
+
+        if( dif < 0 ) {
+            Message = e17SickData.ENAME + "는 " + e17SickData.DATUM_21.substring(0,4) + "년 " + e17SickData.DATUM_21.substring(5,7) + "월 부터 자녀의료비지원 대상에서 제외되며, " + e17SickData.DATUM_21.substring(5,7) + "월 전월 의료비까지 지원 가능합니다.";
+        }
+%>
+                            <tr>
+                              <td class="td01" rowspan="2">자녀이름</td>
+                              <td class="td09"><%= e17SickData.ENAME %></td>
+                              <td class="td01">자녀주민번호</td>
+                              <td class="td09"><%= REGNO_dis %></td>
+                            </tr>
+                            <tr>
+                              <td class="td09" colspan="3"></td>
+                            </tr>
+<%
+    }
+%>
+                            <!--@v1.3-->
+                            <tr>
+                              <td class="td01">진료과&nbsp;</td>
+                              <td class="td09"><%= WebUtil.printOptionText((new E17MedicTreaRFC()).getMedicTrea(), e17SickData.TREA_CODE) %>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="td01">상병명</td>
+                              <td class="td09"> <%= e17SickData.SICK_NAME %>
+                              </td>
+                              <td colspan="2" class="td09">&nbsp;</td>
+                            </tr>
+                            <tr>
+                              <td class="td01">구체적증상</td>
+                              <td colspan="3" class="td09">
+                                <%= e17SickData.SICK_DESC1%><br>
+                                <%=e17SickData.SICK_DESC2%><br>
+                                <%=e17SickData.SICK_DESC3%><br>
+                                <%=e17SickData.SICK_DESC4%>
+                            </td>
+                            </tr>
+                            <tr>
+                              <td class="td01">비고</td>
+                              <td colspan="3" class="td09"><%=e17SickData.BIGO_TEXT1%><br><%=e17SickData.BIGO_TEXT2%>
+                              </td>
+                            </tr>
+                          </table></td>
+                      </tr>
+                      <tr>
+                        <td>&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td>
+                            <table width="100%" border="0" cellspacing="1" cellpadding="0" class="table02">
+                                <tr>
+                                  <td class="td03">의료기관</td>
+                                  <td class="td03" width="85">사업자<br>등록번호</td>
+                                  <td class="td03" width="80" >전화번호</td>
+                                  <td class="td03" width="65" >진료일</td>
+                                  <td class="td03" width="60" >입원/외래</td>
+                                  <td class="td03" width="90">영수증 구분</td>
+                                  <td class="td03" width="30" >No.</td>
+                                  <td class="td03" width="60" >결재수단</td>
+                                  <td class="td03" width="90" >본인실납부액</td>
+                                  <td class="td03" width="60" >연말정산<br>반영액</td>
+                                </tr>
+                            <%
+                               double totEMPL_WONX = 0;
+                            %>
+                            <%  String MEDI_MTHD_TEXT = ""; //@v1.1    
+                                for( int i = 0 ; i < E17HospitalData_vt.size() ; i++ ){ %>
+                                <% E17HospitalData e17HospitalData = (E17HospitalData)E17HospitalData_vt.get(i); 
+				   //@v1.1
+				   if (e17HospitalData.MEDI_MTHD.equals("1")) 
+                                       MEDI_MTHD_TEXT = "현금";
+                                   else if (e17HospitalData.MEDI_MTHD.equals("2"))
+                                       MEDI_MTHD_TEXT = "신용카드";
+                                   else if (e17HospitalData.MEDI_MTHD.equals("3"))
+                                       MEDI_MTHD_TEXT = "현금영수증";
+                                   else  MEDI_MTHD_TEXT = "";     
+                                %>
+                                 <input type="hidden" name="BEGDA<%=i%>"        value="<%=e17HospitalData.BEGDA%>">
+                                <input type="hidden" name="PERNR<%=i%>"        value="<%=e17HospitalData.PERNR%>">
+                                <input type="hidden" name="CTRL_NUMB<%=i%>"    value="<%=e17HospitalData.CTRL_NUMB%>">
+                                <input type="hidden" name="AINF_SEQN<%=i%>"    value="<%=e17HospitalData.AINF_SEQN%>">
+                                <input type="hidden" name="MEDI_NAME<%=i%>"    value="<%=e17HospitalData.MEDI_NAME%>">
+                                <input type="hidden" name="MEDI_NUMB<%=i%>"    value="<%=e17HospitalData.MEDI_NUMB%>">
+                                <input type="hidden" name="TELX_NUMB<%=i%>"    value="<%=e17HospitalData.TELX_NUMB%>">
+                                <input type="hidden" name="EXAM_DATE<%=i%>"    value="<%=e17HospitalData.EXAM_DATE%>">
+                                <input type="hidden" name="MEDI_CODE<%=i%>"    value="<%=e17HospitalData.MEDI_CODE%>">
+                                <input type="hidden" name="RCPT_CODE<%=i%>"    value="<%=e17HospitalData.RCPT_CODE%>">
+                                <input type="hidden" name="RCPT_NUMB<%=i%>"    value="<%=e17HospitalData.RCPT_NUMB%>">
+                                <input type="hidden" name="EMPL_WONX<%=i%>"    value="<%=e17HospitalData.EMPL_WONX%>">
+                                <input type="hidden" name="WAERS<%=i%>"        value="<%=e17HospitalData.WAERS%>">
+                                <input type="hidden" name="COMP_WONX<%=i%>"    value="<%=e17HospitalData.COMP_WONX%>">
+                                <tr>
+                                    <td class="td04"><%= e17HospitalData.MEDI_NAME.trim() %></td>
+                                    <td class="td04"><%= e17HospitalData.MEDI_NUMB.equals("") ? "" : DataUtil.addSeparate2(e17HospitalData.MEDI_NUMB) %></td>
+                                    <td class="td04"><%= e17HospitalData.TELX_NUMB %></td>
+                                    <td class="td04"><%=  e17HospitalData.EXAM_DATE.equals("0000-00-00")||e17HospitalData.EXAM_DATE.equals("") ? "" : WebUtil.printDate(e17HospitalData.EXAM_DATE) %></td>
+                                    <td class="td04"><%= e17HospitalData.MEDI_TEXT.trim() %></td>
+                                    <td class="td04"><%= e17HospitalData.RCPT_TEXT.trim() %></td>
+                                    <td class="td04"><%= e17HospitalData.RCPT_NUMB %></td>
+                                    <td class="td04"><!--@v1.1-->
+                                        <%=  MEDI_MTHD_TEXT %>
+                                    </td>
+                                    <td class="td04"><%= WebUtil.printNumFormat(e17HospitalData.EMPL_WONX,currencyValue) %></td>
+                                    <td class="td04"><!--@v1.7-->  
+                                      <%=  e17HospitalData.YTAX_WONX.equals("") ? "" : WebUtil.printNumFormat(e17HospitalData.YTAX_WONX,currencyValue) %>
+                                    </td>                                    
+                                </tr>
+                                <%   totEMPL_WONX += Double.parseDouble(e17HospitalData.EMPL_WONX); %>
+                            <% } // end for %>
+                            </table>
+                          </td>
+                      </tr>
+                      <tr>
+                        <td>&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td>
+                            <table width="760" border="0" cellspacing="0" cellpadding="2">
+                                <tr>
+                                  <td width="180"> &nbsp; </td>
+                                  <td width="570">
+                                    <table width="570" border="0" cellspacing="0" cellpadding="0">
+                                      <tr>
+                                        <td width="120" class="td04">&nbsp;</td>
+                                        <td width="140" class="td04">&nbsp;</td>
+                                        <td width="30"  class="td04">&nbsp;</td>
+                                        <td width="120" class="td03">계</td>
+                                        <td width="140" class="td04">
+                                            <%=WebUtil.printNumFormat(totEMPL_WONX,currencyValue)%> <%= e17SickData.WAERS %>
+                                            <input type="hidden" name="totEMPL_WONX" value="<%=totEMPL_WONX%>">
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                            <%  if (approvalStep == DocumentInfo.DUTY_CHARGER || approvalStep == DocumentInfo.DUTY_MANGER) { %>
+                                <tr>
+                                  <td width="180">&nbsp;</td>
+                                  <td width="570">
+                                    <table width="570" border="0" cellspacing="0" cellpadding="0">
+                                      <tr>
+                                        <td width="120" class="td03">연말정산반영액</td>
+                                        <td width="140" class="td04">
+                                            <%= WebUtil.printNumFormat(e17SickData.YTAX_WONX ,currencyValue) %> <%= e17SickData.WAERS %>
+                                        </td>
+                                        <td width="30"  class="td04">&nbsp;</td>
+                                        <td width="120" class="td03">회사지원액</td>
+                                        <td width="140" class="td04">
+                                            <%= WebUtil.printNumFormat(e17SickData.COMP_WONX ,currencyValue) %> <%= e17SickData.WAERS %>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                            <%  } // end if %>
+                            </table>
+                          </td>
+                      </tr>
+                    </table></td>
+                </tr>
+              </table>
+              <!-- 상단 테이블 끝-->
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+       <%
+            boolean visible = false;
+            for (int i = 0; i < vcAppLineData.size(); i++) {
+                AppLineData ald = (AppLineData) vcAppLineData.get(i);
+                if (ald.APPL_BIGO_TEXT != null && !ald.APPL_BIGO_TEXT.equals("")) {
+                    visible = true;
+                    break;
+                } // end if
+            } // end for
+       %>
+       <%   if (visible) { %>
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> 적요</td>
+          </tr>
+          <tr>
+            <td>
+                <table width="780" border="0" cellpadding="0" cellspacing="1" class="table03">
+                <% for (int i = 0; i < vcAppLineData.size(); i++) { %>
+                    <% AppLineData ald = (AppLineData) vcAppLineData.get(i); %>
+                       <% if (ald.APPL_BIGO_TEXT != null && !ald.APPL_BIGO_TEXT.equals("")) { %>
+                    <tr>
+                       <td width="80" class="td03"><%=ald.APPL_ENAME%></td>
+                       <td class="td09"><%=ald.APPL_BIGO_TEXT%></td>
+                    </tr>
+                    <% } // end if %>
+                <% } // end for %>
+                </table>
+            </td>
+          </tr>
+        <% } // end if %>
+          <tr>
+            <td> <table width="780" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td>&nbsp;</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td>
+                </tr>
+                <tr>
+                  <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif">
+                    결재정보</td>
+                </tr>
+                <tr>
+                  <td><table width="780" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td>
+                          <!--결재정보 테이블 시작-->
+                          <%= AppUtil.getAppDetail(vcAppLineData) %>
+                          <!--결재정보 테이블 끝-->
+                        </td>
+                      </tr>
+                    </table></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td>
+                </tr>
+                <tr>
+                  <td align="center">
+                  <!--버튼 들어가는 테이블 시작 -->
+                      <table width="780" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td class="td04">
+                          <% if (isCanGoList) {  %>
+                            <a href="javascript:goToList()"><img src="<%= WebUtil.ImageURL %>btn_list.gif" border="0"></a>&nbsp;&nbsp;&nbsp;
+                          <% } // end if %>
+                          <% if (docinfo.isHasCancel()) {  %>
+                            <a href="javascript:cancel()"><img src="<%= WebUtil.ImageURL %>btn_cancel01.gif" border="0" /></a>&nbsp;&nbsp;&nbsp;
+                          <% } // end if %>
+                          </td>
+                        </tr>
+                      </table>
+                  <!--버튼 들어가는 테이블 끝 -->
+                  </td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td>
+                </tr>
+              </table></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+<!-- hidden field : common -->
+</form>
+<%@ include file="/web/common/commonEnd.jsp" %>

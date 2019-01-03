@@ -1,0 +1,38 @@
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ include file="/web/common/commonProcess.jsp" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="f" uri="http://www.lgchemhr.com/taglibs/functions" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="org.apache.commons.lang.math.NumberUtils"%>
+
+<%@ page import="hris.D.D03Vocation.*" %>
+<%@ page import="hris.D.D03Vocation.rfc.*" %>
+
+<%
+    // 잔여휴가일수, 장치교대근무조 체크
+    D03RemainVocationRFC  rfcRemain  = null;
+    D03RemainVocationData dataRemain = new D03RemainVocationData();
+    String PERNR  = request.getParameter("PERNR");                    
+    String APPL_FROM  = request.getParameter("APPL_FROM");
+    
+    rfcRemain  = new D03RemainVocationRFC();
+    dataRemain = (D03RemainVocationData)rfcRemain.getRemainVocation(PERNR, APPL_FROM);
+
+	String remainDays = dataRemain.OCCUR.equals("0")?"0":Double.toString(NumberUtils.toDouble(dataRemain.ABWTG)  / NumberUtils.toDouble(dataRemain.OCCUR) * 100.0);
+%>
+<c:set var="dataRemain" value="<%=dataRemain%>"/>
+<c:set var="remainDays" value="<%=remainDays%>"/>
+
+<SCRIPT>
+
+<%-- parent.document.form1.E_REMAIN.value    = "<%= (dataRemain.E_REMAIN.equals("0") ||  dataRemain.E_REMAIN.equals("")) ? "0" : WebUtil.printNumFormat(dataRemain.E_REMAIN, 1) %>";      --%>
+<%-- parent.document.form1.REMAIN_DATE.value = "<%= dataRemain.E_REMAIN %>";  --%>
+
+	parent.document.form1.E_REMAIN.value    = "${f:printNumFormat(dataRemain.e_REMAIN,2)}"; //"<%= (dataRemain.ZKVRB.equals("0") ||  dataRemain.ZKVRB.equals("")) ? "0" : WebUtil.printNumFormat(dataRemain.ZKVRB, 2) %>";     
+	parent.document.form1.OCCUR.value    = "<%= (dataRemain.OCCUR.equals("0") ||  dataRemain.OCCUR.equals("")) ? "0" : WebUtil.printNumFormat(dataRemain.OCCUR, 2) %>";     
+	parent.document.form1.ABWTG.value    = "<%= (dataRemain.ABWTG.equals("0") ||  dataRemain.ABWTG.equals("")) ? "0" : WebUtil.printNumFormat(dataRemain.ABWTG, 2) %>";     
+	parent.document.form1.REMAIN_DATE.value = "<%= dataRemain.E_REMAIN %>"; 
+	parent.document.form1.REMAINDAYS.value = "${f:printNumFormat(remainDays,2)}" ;//parent.document.form1.E_REMAIN.value ;
+
+</SCRIPT>

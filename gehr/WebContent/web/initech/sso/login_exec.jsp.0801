@@ -1,0 +1,93 @@
+<%-- --------------------------------------------------------------------------
+ - Display     : none
+ - File Name   : login_exec.jsp
+ - Description : SSO 인증토큰 유효성 검증 및 업무시스템의 세션 생성
+ - Include     : config.jsp
+ - Submit      : none
+ - Transaction : none
+ - DB          : none
+ - Author      : 가원호
+ - Last Update : 2005/07/07
+-------------------------------------------------------------------------- --%>
+<%@ page contentType="text/html; charset=euc-kr" %> 
+<%@ page import="java.io.*" %>
+
+<%@ include file="config.jsp" %>
+
+<%	
+	String sso_id = null;
+	String uurl = null;
+	String[] sso_data = null;
+	String system_id = null;
+	String system_pw = null;
+
+	// 1. SSO ID 수신
+	sso_id = getSsoId(request);
+	
+	// 2. UURL 수신
+	uurl = request.getParameter("UURL");
+
+System.out.println("[SSO:login_exec.jsp] --------------------------------------------------------------------");
+System.out.println("[UURL:"+uurl+"]");
+System.out.println("[SSO:login_exec.jsp] 0.Start SSOID=["+sso_id+"],uurl=["+uurl+"]");
+
+
+	if (sso_id == null) {
+System.out.println("[SSO:login_exec.jsp] 1.Before Login, Go Nexess Login Page!");			
+										
+		if (uurl == null)	uurl = ASCP_URL;
+		
+		//3. SSO ID 가 없다면 로그인 페이지로 이동
+		System.out.println("[SSO:login_exec.jsp] 3.uurl=["+uurl+"], Go Login Page Start!");
+		goLoginPage(response, uurl);
+		return;
+	} else {
+		System.out.println("[SSO:login_exec.jsp] 1.After Login, Get System Account Process!");	
+
+		String retCode = getEamSessionCheck(request,response);
+System.out.println("[SSO:login_exec.jsp] 5.Cookie Validation Check:retCode=["+retCode+"]");		    	
+		
+		//4. 인증토큰이 유효여부에 따른 처리
+		if(!retCode.equals("0")){								
+			CookieManager.removeNexessCookie(NLS_DOMAIN, response);
+			goErrorPage(response, 10000);	
+			return;
+		}else{			
+			sso_data = getSystemAccount(sso_id);
+System.out.println("[SSO:login_exec.jsp] 4.SYSTEM ACCOUNT:sso_data:"+sso_data);
+			if (sso_data == null) {
+				goErrorPage(response, 2400);
+				return;
+			}else{
+				//4.1. 외부계정 정보가 있는 경우 처리
+				system_id = sso_data[0];
+				system_pw = sso_data[1];
+				System.out.println("[SSO:login_exec.jsp] 6.SSOID:"+sso_id+",system id:"+system_id);
+			
+
+				//[시스템 담당자 확인]
+				/*-----------------------------------------------------------------'
+				'시스템에 제공할 세션 생성 
+				'기본적으로 통합인증 아이디(Email ID), 시스템 아이디(Email ID 또는 사번),
+				'시스템 패스워드를 세션으로 생성한다.
+				'시스템에서 필요하지 않은 세션에 대해서는 주석처리 한다.
+				'-----------------------------------------------------------------*/
+				session.setAttribute("SSO_ID", sso_id);
+				session.setAttribute("SYSTEM_ID", system_id);
+				//session.setAttribute("SYSTEM_PW", system_pw);
+				
+				//4.2 uurl 설정
+				if (checkUurl(uurl) == null)	uurl = ASCP_URL;			
+				System.out.println("[SSO:login_exec.jsp] uurl:"+uurl);				
+				
+				if(!uurl.equals(ASCP_URL)&&uurl!=null){
+					response.sendRedirect(uurl);				
+				}else{						
+					response.sendRedirect("../index.jsp");	
+				}
+			}
+		}
+	}	
+	
+System.out.println("[SSO:login_exec.jsp] --------------------------------------------------------------------");		
+%>

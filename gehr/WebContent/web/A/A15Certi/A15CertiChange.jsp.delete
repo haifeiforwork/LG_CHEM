@@ -1,0 +1,365 @@
+<%/******************************************************************************/
+/*                                                                              */
+/*   System Name  : MSS                                                         */
+/*   1Depth Name  : MY HR 정보                                                  */
+/*   2Depth Name  : 재직증명서 신청                                             */
+/*   Program Name : 재직증명서 신청 수정                                        */
+/*   Program ID   : A15CertiChange.jsp                                          */
+/*   Description  : 재직증명서 신청을 수정할 수 있도록 하는 화면                */
+/*   Note         :                                                             */
+/*   Creation     : 2002-01-03  박영락                                          */
+/*   Update       : 2005-03-04  윤정현                                          */
+/*                  2008-05-08  lsa  [CSR ID:1263333] 제증명서 발급 Process 개선*/
+/*                  2015-08-07  이지은  [CSR ID:2844968] 제증명 부수 선택 오류*/
+/*                                                                              */
+/********************************************************************************/%>
+
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ include file="/web/common/commonProcess.jsp" %>
+
+<%@ page import="java.util.Vector" %>
+<%@ page import="hris.A.A15Certi.*" %>
+<%@ page import="com.sns.jdf.util.*" %>
+<%
+    WebUserData user = WebUtil.getSessionUser(request);
+
+    String company = user.companyCode;
+    Vector A15CertiData_vt = (Vector)request.getAttribute("A15CertiData_vt");
+    A15CertiData data = ( A15CertiData )A15CertiData_vt.get(0);
+
+    String RequestPageName = (String)request.getAttribute("RequestPageName");
+%>
+<html>
+<head>
+<title>ESS</title>
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr.css" type="text/css">
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr_style.css" type="text/css">
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr_wsg.css" type="text/css">
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ui_library_approval.css" type="text/css">
+
+<script language="JavaScript" src="<%= WebUtil.ImageURL %>js/snsscript.js"></script>
+<script language="JavaScript">
+<!--
+function doSubmit() {
+    if( check_data() ) {
+  if( document.form1.PRINT_CHK[0].checked == true ) {
+    document.form1.PRINT_NUM.value=1;
+    document.form1.PRINT_NUM.disabled=0;
+  }
+// 서울사업장(01)만 해당. 2005.9.2. mkbae
+<% if (user.e_grup_numb.equals("01")) { %>
+        <%  String currentDate = DataUtil.getCurrentTime(); %>
+        var currentDate = <%=currentDate%>;
+        if(currentDate < 140000) {
+          alert("2시 이전의 신청건으로 오늘 오후 3시에 발급됩니다.");
+        } else {
+          alert("2시 이후의 신청건으로 내일 오전 10시에 발급됩니다.");
+        }
+<% } %>
+        document.form1.jobid.value = "change";
+        document.form1.action = "<%= WebUtil.ServletURL %>hris.A.A15Certi.A15CertiChangeSV";
+        document.form1.method = "post";
+        document.form1.submit();
+    }
+}
+
+function check_data(){
+    var address1   = document.form1.ADDRESS1.value;//주소
+    var address2   = document.form1.ADDRESS2.value;
+    var use_place  = document.form1.USE_PLACE.value;
+    var spec_entry = document.form1.SPEC_ENTRY.value;
+
+    if( address1 == ""){
+        alert("현주소를 입력하여 주십시요");
+        document.form1.ADDRESS1.focus();
+        return false;
+    } else {
+        if( document.form1.LANG_TYPE[ document.form1.LANG_TYPE.selectedIndex].value == 2 ){
+          if( !checkEnglish( document.form1.ADDRESS1.value ) ){
+            alert("영문 주소 입력만 가능합니다.");
+            document.form1.ADDRESS1.focus();
+            document.form1.ADDRESS1.select();
+            return false;
+          }
+          if( document.form1.ADDRESS2.value != "" ){
+            if( !checkEnglish( document.form1.ADDRESS2.value ) ){
+              alert("영문 주소 입력만 가능합니다.");
+              document.form1.ADDRESS2.focus();
+              document.form1.ADDRESS2.select();
+              return false;
+            }
+          }
+        }
+    }
+
+    var submit_plac = document.form1.SUBMIT_PLACE.value;//제출처
+    if( submit_plac == "" ){
+        alert("제출처를 입력하여 주십시요");
+        document.form1.SUBMIT_PLACE.focus();
+        return false;
+    }
+
+    if( use_place == "" ){
+        alert("용도를 입력하여 주십시요");
+        document.form1.USE_PLACE.focus();
+        return false;
+    }
+
+    if ( check_empNo() ){
+        return false;
+    }
+
+    if ( spec_entry != "" ) {
+        textArea_to_TextFild( spec_entry );
+    }
+    begdate = removePoint(document.form1.BEGDA.value);
+    document.form1.BEGDA.value = begdate;
+
+    return true;
+}
+
+// 글자수입력제한
+function check_length(obj) {
+
+    val = obj.value;
+    nam = obj.name;
+    len = checkLength(obj.value);
+
+    if (event.keyCode ==13 )  {
+            if(nam=="ADDRESS1"){
+            document.form1.ADDRESS2.focus();
+        }else if(nam=="ADDRESS2"){
+            obj.blur();
+        }
+    }
+
+    if( len > 79 ) {
+        vala = limitKoText(val,79);
+        obj.blur();
+        obj.value = vala;
+        obj.focus();
+    }
+}
+
+function textArea_to_TextFild(text) {
+    var tmpText="";
+    var tmplength = 0;
+    var count = 1;
+    var flag = true;
+    for ( var i = 0; i < text.length; i++ ){
+        tmplength = checkLength(tmpText);
+        if( text.charCodeAt(i) != 13 && Number( tmplength ) < 60 ){
+            tmpText = tmpText+text.charAt(i);
+            flag = true;
+        } else {
+            flag = false;
+            tmpText.trim;
+            eval("document.form1.SPEC_ENTRY"+count+".value="+"tmpText");
+            //alert(tmpText+"*****"+count+"*****"+i);
+            tmpText=text.charAt(i);
+            count++;
+            if( count > 5 ){
+              break;
+            }
+
+        }
+   }
+   if( flag ) {
+      eval("document.form1.SPEC_ENTRY"+count+".value="+"tmpText");
+   }
+   //debug();
+}
+function setPRINT_NUM(gubun){
+  if( gubun == "1" ) {
+    document.form1.PRINT_NUM.disabled=1;
+    document.form1.PRINT_NUM.value=1;
+
+    //document.form1.USE_PLACE.value="";
+    //document.form1.USE_PLACE.disabled=0;
+  } else {
+    document.form1.PRINT_NUM.disabled=0;
+
+    //document.form1.USE_PLACE.value="보증용";
+    //document.form1.USE_PLACE.disabled=1;
+  }
+}
+function f_LangChang(){
+
+    if( document.form1.LANG_TYPE.value =="2" && document.form1.PRINT_CHK[0].checked ==true  ){
+       alert("영문은 본인발행을 선택할 수 없습니다.");
+       document.form1.PRINT_CHK[1].checked =true ;
+       setPRINT_NUM(2);  //[CSR ID:2844968] 제증명 부수 선택 오류
+       return;
+    }
+}
+//-->
+</script>
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" >
+<form name="form1" method="post">
+  <table width="796" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="16">&nbsp;</td>
+      <td>
+        <table width="780" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+			<td class="title"><h1>재직증명서 신청 수정</h1></td>
+          </tr>
+
+          <tr>
+            <td height="10">&nbsp;</td>
+          </tr>
+<%
+    if ("Y".equals(user.e_representative) ) {
+%>
+          <!--   사원검색 보여주는 부분 시작   -->
+          <%@ include file="/web/common/PersonInfo.jsp" %>
+          <!--   사원검색 보여주는 부분  끝    -->
+          <tr>
+            <td height="10">&nbsp;</td>
+          </tr>
+<%
+    }
+%>
+          <tr>
+          	<td>
+	          	<div class="buttonArea">
+	          		<ul class="btn_crud">
+	          			<li><a class="darken" href="javascript:doSubmit();"><span>저장</span></a></li>
+	          			<li><a href="javascript:history.back();"><span>취소</span></a></li>
+	          		</ul>
+	          	</div>
+          	</td>
+          </tr>
+          <tr>
+            <td>
+              <!-- 상단 입력 테이블 시작-->
+
+                  <div class="tableArea">
+                  	<div class="table">
+		                  <table class="tableGeneral tableApproval">
+		                      <tr>
+		                        <th>신청일자</th>
+		                        <td><input type="text" name="BEGDA" size="20" value="<%= WebUtil.printDate(data.BEGDA,".") %>" readonly></td>
+		                	</tr>
+			                <tr>
+			                  <th><span class="textPink">*</span>구분</th>
+			                  <td>
+			                    <select name="LANG_TYPE" class="input03" onChange="javascript:f_LangChang();">
+			                      <option value="1" <%= data.LANG_TYPE.equals("1") ? "selected" : "" %>>한글</option>
+			                      <option value="2" <%= data.LANG_TYPE.equals("2") ? "selected" : "" %>>영문</option>
+			                    </select><font color="#006699">&nbsp;&nbsp;※ 본인발행시에는 1회/1부만 가능합니다.</font>
+			                  </td>
+			                </tr>
+			                <tr>
+			                  <th><span class="textPink">*</span>발행부수</td>
+			                  <td>
+			                    <select name="PRINT_NUM" <%= data.PRINT_CHK.equals("1") ? "disabled" : "" %>>
+			                      <option value="1" <%= data.PRINT_NUM.equals("001") ? "selected" : "" %> >1</option>
+			                      <option value="2" <%= data.PRINT_NUM.equals("002") ? "selected" : "" %> >2</option>
+			                      <option value="3" <%= data.PRINT_NUM.equals("003") ? "selected" : "" %> >3</option>
+			                      <option value="4" <%= data.PRINT_NUM.equals("004") ? "selected" : "" %> >4</option>
+			                      <option value="5" <%= data.PRINT_NUM.equals("005") ? "selected" : "" %> >5</option>
+			                      <option value="6" <%= data.PRINT_NUM.equals("006") ? "selected" : "" %> >6</option>
+			                      <option value="7" <%= data.PRINT_NUM.equals("007") ? "selected" : "" %> >7</option>
+			                      <option value="8" <%= data.PRINT_NUM.equals("008") ? "selected" : "" %> >8</option>
+			                      <option value="9" <%= data.PRINT_NUM.equals("009") ? "selected" : "" %> >9</option>
+			                      <option value="10" <%= data.PRINT_NUM.equals("010") ? "selected" : "" %> >10</option>
+			                    </select><span class="inlineComment">※ 2부 이상 필요시에는 담당부서 발행으로 신청하시어 수령바랍니다.</span>
+			                  </td>
+			                </tr>
+			                <tr>
+			                  <th><span class="textPink">*</span>발행방법</th>
+			                  <td>
+			                    <input type="radio" name="PRINT_CHK" value="1" onClick="javascript:setPRINT_NUM('1');f_LangChang();" <%= data.PRINT_CHK.equals("1") ? "checked" : "" %>>본인발행
+			                    <input type="radio" name="PRINT_CHK" value="2" onClick="javascript:setPRINT_NUM('2');" <%= data.PRINT_CHK.equals("2") ? "checked" : "" %>>담당부서 요청발행
+			                  </td>
+			                </tr>
+			                <tr>
+			                  <th><span class="textPink">*</span>현주소</th>
+			                  <td>
+			                   <input type="text" name="ADDRESS1" size="60" Maxlength="80" value='<%= data.ADDRESS1 %>' onKeyUp="check_length(this)" onfocus=> <br />
+			                   <input type="text" name="ADDRESS2" size="60" Maxlength="80" value='<%= data.ADDRESS2 %>' onKeyUp="check_length(this)" ><br />
+			                   <span class="inlineComment">※ 영문증명서를 신청하실 경우 현주소에 영문으로 입력해주세요.</span>
+			                  </td>
+			                </tr>
+			                <tr>
+			                  <th><span class="textPink">*</span>제출처</th>
+			                  <td><input type="text" name="SUBMIT_PLACE" size="60" value="<%= data.SUBMIT_PLACE %>"></td>
+			                </tr>
+			                <tr>
+			                  <th><span class="textPink">*</span>용도</th>
+			                  <td><input type="text" name="USE_PLACE" size="60" value="<%= data.USE_PLACE   %>"></td>
+			                </tr>
+			                <tr>
+			                  <th>특기사항</th>
+			                  <td>
+			                    <textarea name="SPEC_ENTRY" wrap="VIRTUAL" cols="60" rows="5"><%= data.SPEC_ENTRY1 +"\n"+ data.SPEC_ENTRY2 +"\n"+ data.SPEC_ENTRY3 +"\n"+ data.SPEC_ENTRY4 +"\n"+ data.SPEC_ENTRY5 %></textarea>
+			                  </td>
+			                </tr>
+		              </table>
+		              <div class="commentsMoreThan2">
+		              	<div>비자발급용은 국문으로 신청하셔도 가능합니다.</div>
+		              	<div><span class="textPink">*</span> 는 필수 입력사항입니다.</div>
+		              </div>
+					</div>
+				</div>
+              <!-- 상단 입력 테이블 끝-->
+
+      </td>
+    </tr>
+    <tr>
+      <td>
+      	<h2 class="subtitle">결재정보</h2>
+	  </td>
+    </tr>
+    <tr>
+      <td>
+        <!-- 결재자 입력 테이블 시작-->
+        <%= hris.common.util.AppUtil.getAppChange(data.AINF_SEQN) %>
+        <!-- 결재자 입력 테이블 시작-->
+      </td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>
+          	<div class="buttonArea">
+          		<ul class="btn_crud">
+          			<li><a class="darken" href="javascript:doSubmit();"><span>저장</span></a></li>
+          			<li><a href="javascript:history.back();"><span>취소</span></a></li>
+          		</ul>
+          	</div>
+      </td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+<!------------ hidden field ------------>
+<input type="hidden" name="jobid" >
+<input type="hidden" name="MANDT"       value="<%= data.MANDT       %>">
+<input type="hidden" name="PERNR"       value="<%= data.PERNR       %>">
+<input type="hidden" name="AINF_SEQN"   value="<%= data.AINF_SEQN   %>">
+<input type="hidden" name="SPEC_ENTRY1" value="">
+<input type="hidden" name="SPEC_ENTRY2" value="">
+<input type="hidden" name="SPEC_ENTRY3" value="">
+<input type="hidden" name="SPEC_ENTRY4" value="">
+<input type="hidden" name="SPEC_ENTRY5" value="">
+<input type="hidden" name="ENTR_DATE"   value="<%= data.ENTR_DATE   %>">
+<input type="hidden" name="TITEL"       value="<%= data.TITEL       %>">
+<input type="hidden" name="STELL"       value="<%= data.STELL       %>">
+<input type="hidden" name="ORGEH"       value="<%= data.ORGEH       %>">
+<input type="hidden" name="PUBLIC_NUM"  value="<%= data.PUBLIC_NUM  %>">
+<input type="hidden" name="PUBLIC_DTE"  value="<%= data.PUBLIC_DTE  %>">
+<input type="hidden" name="PUBLIC_MAN"  value="<%= data.PUBLIC_MAN  %>">
+<input type="hidden" name="ZUNAME"      value="<%= data.ZUNAME      %>">
+<input type="hidden" name="AEDTM"       value="<%= data.AEDTM       %>">
+<input type="hidden" name="UNAME"       value="<%= data.UNAME       %>">
+<input type="hidden" name="RequestPageName" value="<%=RequestPageName%>">
+<!------------ hidden field ------------>
+</form>
+</body>
+</html>

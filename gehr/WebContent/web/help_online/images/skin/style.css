@@ -1,0 +1,23 @@
+	a:link    {font-size:9pt ±¼¸²;text-decoration:none;color:#000000}
+	a:visited {font-size:9pt ±¼¸²;text-decoration:none;color:#000099}
+	a:active  {font-size:9pt ±¼¸²;text-decoration:none;color:#000000}
+  a:hover   {font-size:9pt ±¼¸²;text-decoration:underline;color:#000099}
+
+	body {font:9pt ±¼¸²;line-height:140%;color:#000000}
+	td {font:9pt ±¼¸²;line-height:140%;color:#000000}
+	
+	inkform {font: 9pt ±¼¸²; BACKGROUND-COLOR:#FFFFFF; COLOR:#004cb3; BORDER:1x solid #778899}
+  text {font:9pt ±¼¸²; color:#4e4e4e; background-color:#ffffff; border-width:1; border-color:#A5A5A5; solid:no}
+	search {font: 9pt ; color:#4e4e4e; background-color:#ffffff; border-width:1; border-color:#A5A5A5}
+	input {font:9pt ±¼¸²; color:#4e4e4e;  border-width:1; border-color:#A5A5A5}
+	button {height:20px; border-width:1; border-style:ridge; border-color:#d0d0d0; background-color:#CCFFCC;}
+  intext {font: 9pt ±¼¸²;  COLOR:black;}
+
+  .title00 {  font-family: "±¼¸²", "±¼¸²Ã¼"; font-size: 14pt; font-weight: bolder; color: #000080; padding-left: 10px; padding-top: 5px; padding-bottom: 5px}
+  .title01 {  font-family: "±¼¸²", "±¼¸²Ã¼"; font-size: 11pt; font-weight: bolder; color: #000000; padding-top: 5px; padding-bottom: 5px}
+  .title02 {  font-family: "±¼¸²", "±¼¸²Ã¼"; font-size: 10pt; font-weight: bolder; color: #000000; padding-left: 15px; padding-top: 3px; padding-bottom: 3px}
+  .text01  {  font-family: "±¼¸²", "±¼¸²Ã¼"; font-size:  9pt; font-weight: normal; color: #000000; padding-left: 33px}
+  .text02  {  font-family: "±¼¸²", "±¼¸²Ã¼"; font-size:  9pt; font-weight: normal; color: #000000; padding-left: 48px}
+  .select01 {  font-family: "±¼¸²", "±¼¸²Ã¼"; font-size: 9pt; font-weight: normal; color: #000000; border: 1 solid}
+  .td01 {  font-family: "±¼¸²", "±¼¸²Ã¼"; font-size: 9pt; font-weight: normal; color: #000000; padding-top: 5px; padding-bottom: 5px}
+  .td02 {  font-family: "±¼¸²", "±¼¸²Ã¼"; font-size: 9pt; font-weight: normal; color: #000000; background-color: #87CEFA; text-align: center}

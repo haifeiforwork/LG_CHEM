@@ -1,0 +1,43 @@
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ page import="com.sns.jdf.util.*" %>
+<%@ page import="com.sns.jdf.servlet.*" %>
+<%@ page import="java.util.*" %>
+<%@ page import="hris.common.*" %>
+<%@ page import="hris.common.*" %>
+<%@ page import="hris.N.*"%>
+<%@ page import="hris.N.AES.AESgenerUtil"%>
+<%
+
+	String pernr = WebUtil.nvl(request.getParameter("pernr"));
+	String sAESKEY = (String)session.getAttribute("AESKEY");
+	WebUserData suser  = (WebUserData)session.getAttribute("user");
+	String prsn                =  AESgenerUtil.decryptAES(pernr, request);
+	System.out.println("prsn >>>>>>>>>>>>>>>>>>>>>>>>>>" + prsn);
+	//2. 웹보안진단 marco257
+	Box box = new Box("vieworg");
+	box.put("I_DEPT", suser.empNo); //로그인 사번 
+	box.put("I_PERNR", prsn);   // 조회사번 
+	box.put("I_RETIR", ""); //재직자만 조회됨 - 기존 로직
+	String functionName = "ZHRA_RFC_CHECK_BELONG2";
+	EHRComCRUDInterfaceRFC comRFC = new EHRComCRUDInterfaceRFC();
+	String reCode = comRFC.setImportInsert(box, functionName, "RETURN");
+
+%>
+<html >
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>LG화학 e-HR 시스템</title>
+	<meta name="description" content="LG화학 e-HR 시스템" />
+	<link rel="stylesheet" type="text/css" href="<%= WebUtil.ImageURL %>css/ehr_style.css" />
+	<script type="text/javascript"> 
+			  
+	parent.popupView('<%=reCode%>','<%=pernr%>');
+		
+
+	</script>
+</head>
+
+<body id="subBody" >  
+</body>
+</html>

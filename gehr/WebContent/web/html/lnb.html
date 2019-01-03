@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+</head>
+<style>
+body {margin:0; font-family:dotum, arial, simhei; font-size:12px; line-height:1; color:#222;}
+ul, li {list-style: none; margin:0; padding:0;}
+a, a:visited {color:#222; text-decoration: none;}
+img {border:0;}
+.wrapper {width:215px;}
+.lnb_bg {margin:5px;  background:#666; border-radius:2px;}
+.lnb_top {height:16px; background:url(images/leftMenu/new/bg_lnb_top.gif) no-repeat;}
+.lnb_title {height:44px; background:url(images/leftMenu/new/img_lnb_title.gif) no-repeat; margin-top:6px;}
+.lnb_bottom {height:3px; background:url(images/leftMenu/new/bg_lnb_bottom.gif) no-repeat;}
+.lnb {margin:6px; background:#f0f0f0; border-radius:2px; box-shadow:0 1px 3px rgba(0,0,0,25);}
+.lnb > ul li {display:block;}
+
+.lnb > ul li.lnb_1depth { background:url(images/leftMenu/new/bg_lnb_1depth.gif) repeat-x;}
+.lnb > ul li a {display:block; position:relative; padding:9px 0; margin:0 10px 0 12px;}
+.lnb .lnb_2depth {background:#e5e5e5; border-bottom:1px solid #bbb;}
+.lnb .lnb_2depth:first-child {background:url(images/leftMenu/new/bg_lnb_2dpeth.gif) repeat-x;}
+.lnb .lnb_3depth {background:#d2d2d2; border-bottom:1px solid #b0b0b0;}
+.lnb .lnb_3depth:first-child {background:url(images/leftMenu/new/bg_lnb_3dpeth.gif) repeat-x;}
+.lnb .lnb_4depth {background:#c2c2c2; border-bottom:1px solid #a0a0a0;}
+.lnb .lnb_4depth:first-child {background:url(images/leftMenu/new/bg_lnb_4dpeth.gif) repeat-x;}
+.lnb .lnb_4depth:last-child {border-bottom:none;}
+
+.lnb .lnb_1depth a {font-weight:bold;}
+.lnb .lnb_2depth a {margin:0 5px 0 17px; font-weight:normal;}
+.lnb .lnb_3depth a {margin-left:22px;}
+.lnb .lnb_4depth a {margin-left:27px;}
+
+.lnb .lnb_1depth > a {position:relative; background:url(images/leftMenu/new/img_lnb_open.gif) no-repeat center right;}
+.lnb .lnb_1depth > a:hover {position:relative; background-image:url(images/leftMenu/new/img_lnb_open_h.gif);}
+.lnb > ul > .current > a, .lnb > ul > .current > a:hover {background:url(images/leftMenu/new/img_lnb_close_a.gif) no-repeat center right;}
+.lnb > ul > .open > a {background:url(images/leftMenu/new/img_lnb_close.gif) no-repeat center right;}
+.lnb > ul > .open > a:hover {background:url(images/leftMenu/new/img_lnb_close_a.gif) no-repeat center right;}
+
+.lnb a:hover, .lnb .current > a {color:#c8294b; font-weight:bold; cursor:pointer;}
+.current {border-bottom:none !important;}
+.lnb .lnb_3depth .current {background:#c8294b;}
+.lnb .lnb_3depth .current > a {color:#fff;}
+.hide {display:none;}
+
+a.btn_link {display:block; margin:6px; color:#666; font-weight:bold; text-align:center; vertical-align:middle; width:205px; padding:12px 0; background:url(images/leftMenu/new/btn_link.gif) no-repeat;}
+a.btn_link:hover {color:#c8294b;}
+a.btn_link img {width:16px; height:16px; margin:-2px 5px 0 0; vertical-align: middle;;}
+</style>
+<body>
+	<div class="wrapper">
+		<div class="lnb_bg">
+			<div class="lnb_top"></div>
+			<div class="lnb_title"></div>
+			<div class="lnb">
+				<ul>
+					<li class="lnb_1depth current">
+						<a href="">개인인사정보</a>
+						<ul>
+							<li class="lnb_2depth current">
+								<a href="">인사정보</a>
+								<ul>
+									<li class="lnb_3depth current">
+										<a href="">개인사항</a>
+										<ul>
+											<li class="lnb_4depth"><a href="">개인인적사항</a></li>
+											<li class="lnb_4depth current"><a href="">연봉계약서</a></li>
+											<li class="lnb_4depth"><a href="">진급자격요건 시뮬레이션</a></li>
+										</ul>
+									</li>
+									<li class="lnb_3depth">
+										<a hrer="">급여</a>
+										<ul>
+											<li class="lnb_4depth"><a href="">월급여</a></li>
+											<li class="lnb_4depth"><a href="">연급여</a></li>
+											<li class="lnb_4depth"><a href="">채권가압류</a></li>
+											<li class="lnb_4depth"><a href="">연말정산</a></li>
+											<li class="lnb_4depth"><a href="">퇴직금 시뮬레이션</a></li>
+										</ul>
+									</li>
+									<li class="lnb_3depth">
+										<a hrer="">개인근태</a>
+										<ul>
+											<li class="lnb_4depth"><a href="">근태실적정보</a></li>
+											<li class="lnb_4depth"><a href="">휴가실적정보</a></li>
+										</ul>
+									</li>
+									<li class="lnb_3depth">
+										<a hrer="">교육</a>
+										<ul>
+											<li class="lnb_4depth"><a href="">교육이수정보</a></li>
+										</ul>
+									</li>
+									<li class="lnb_3depth">
+										<a hrer="">복리후생지원현황</a>
+										<ul>
+											<li class="lnb_4depth"><a href="">주택자금</a></li>
+											<li class="lnb_4depth"><a href="">의료비</a></li>
+											<li class="lnb_4depth"><a href="">경조금</a></li>
+											<li class="lnb_4depth"><a href="">장학자금</a></li>
+											<li class="lnb_4depth"><a href="">건강보험</a></li>
+											<li class="lnb_4depth"><a href="">국민연금</a></li>
+											<li class="lnb_4depth"><a href="">종합검진</a></li>
+											<li class="lnb_4depth"><a href="">건강검진내역조회</a></li>
+											<li class="lnb_4depth"><a href="">동호회가입현황</a></li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+							<li class="lnb_2depth">
+								<a href="">신청</a>
+								<ul>
+									<li class="lnb_3depth">
+										<a hrer="">개인사항</a>
+										<ul>
+											<li class="lnb_4depth"><a href="">가족사항추가입력</a></li>
+											<li class="lnb_4depth"><a href="">자격면허등록</a></li>
+										</ul>
+									</li>
+									<li class="lnb_3depth">
+										<a hrer="">급여계좌</a>
+										<ul>
+											<li class="lnb_4depth"><a href="">급여계좌정보</a></li>
+										</ul>
+									</li>
+									<li class="lnb_3depth">
+										<a hrer="">근태</a>
+										<ul>
+											<li class="lnb_4depth"><a href="">초과근무</a></li>
+											<li class="lnb_4depth"><a href="">휴가</a></li>
+										</ul>
+									</li>
+									<li class="lnb_3depth">
+										<a hrer="">복리후생</a>
+										<ul>
+											<li class="lnb_4depth"><a href="">건강보험피부양자신청</a></li>
+											<li class="lnb_4depth"><a href="">건강보험 재발급</a></li>
+											<li class="lnb_4depth"><a href="">주택자금 신규신청</a></li>
+											<li class="lnb_4depth"><a href="">의료비</a></li>
+											<li class="lnb_4depth"><a href="">경조금</a></li>
+											<li class="lnb_4depth"><a href="">재해신청</a></li>
+											<li class="lnb_4depth"><a href="">장학자금</a></li>
+											<li class="lnb_4depth"><a href="">종합검진</a></li>
+											<li class="lnb_4depth"><a href="">동호회 가입</a></li>
+										</ul>
+									</li>
+									<li class="lnb_3depth">
+										<a hrer="">제증명신청</a>
+										<ul>
+											<li class="lnb_4depth"><a href="">재직증명서 신청</a></li>
+											<li class="lnb_4depth"><a href="">경력증명서 신청</a></li>
+											<li class="lnb_4depth"><a href="">원천징수영수증 신청</a></li>
+										</ul>
+									</li>
+									<li class="lnb_3depth"><a hrer="">퇴직정리신청</a></li>
+								</ul>
+							</li>
+							<li class="lnb_2depth">
+								<a href="">Job Description 관리</a>
+								<ul>
+									<li class="lnb_3depth"><a hrer="">복리후생</a></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li class="lnb_1depth">
+						<a href="">부서인사정보</a>
+						<ul>
+							<li class="lnb_2depth">
+								<a href="">사원정보</a>
+								<ul>
+									<li class="lnb_3depth">
+										<a hrer="">개인사항</a>
+										<ul>
+											<li class="lnb_4depth"><a href="">개인인적사항</a></li>
+											<li class="lnb_4depth"><a href="">인사조직도</a></li>
+											<li class="lnb_4depth"><a href="">진급자격요건 시뮬레이션</a></li>
+										</ul>
+									</li>
+									<li class="lnb_3depth">
+										<a hrer="">급여</a>
+										<ul>
+											<li class="lnb_4depth"><a href="">월급여</a></li>
+											<li class="lnb_4depth"><a href="">연급여</a></li>
+											<li class="lnb_4depth"><a href="">채권가압류</a></li>
+										</ul>
+									</li>
+									<li class="lnb_3depth">
+										<a hrer="">근태</a>
+										<ul>
+											<li class="lnb_4depth"><a href="">근태실적정보</a></li>
+											<li class="lnb_4depth"><a href="">휴가실적정보</a></li>
+										</ul>
+									</li>
+									<li class="lnb_3depth">
+										<a hrer="">교육</a>
+										<ul>
+											<li class="lnb_4depth"><a href="">교육이력</a></li>
+											<li class="lnb_4depth"><a href="">해외경험</a></li>
+										</ul>
+									</li>
+									<li class="lnb_3depth">
+										<a hrer="">복리후생지원현황</a>
+										<ul>
+											<li class="lnb_4depth"><a href="">주택자금</a></li>
+											<li class="lnb_4depth"><a href="">의료비</a></li>
+											<li class="lnb_4depth"><a href="">경조금</a></li>
+											<li class="lnb_4depth"><a href="">장학자금</a></li>
+											<li class="lnb_4depth"><a href="">건강보험</a></li>
+											<li class="lnb_4depth"><a href="">국민연금</a></li>
+											<li class="lnb_4depth"><a href="">종합검진</a></li>
+											<li class="lnb_4depth"><a href="">동호회가입현황</a></li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+							<li class="lnb_2depth">
+								<a href="">인재Pool</a>
+								<ul>
+									<li class="lnb_3depth"><a hrer="">예비사업가</a></li>
+									<li class="lnb_3depth"><a hrer="">석박사</a></li>
+									<li class="lnb_3depth"><a hrer="">해외경험</a></li>
+									<li class="lnb_3depth"><a hrer="">어학우수</a></li>
+									<li class="lnb_3depth"><a hrer="">국내 외국인</a></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li class="lnb_1depth">
+						<a href="">EAP</a>
+						<ul>
+							<li class="lnb_2depth"><a href="">개요</a></li>
+							<li class="lnb_2depth">
+								<a href="">프로그램</a>
+								<ul>
+									<li class="lnb_3depth"><a hrer="">심리상담</a></li>
+									<li class="lnb_3depth"><a hrer="">건강상담</a></li>
+									<li class="lnb_3depth"><a hrer="">재무상담</a></li>
+									<li class="lnb_3depth"><a hrer="">세무상담</a></li>
+									<li class="lnb_3depth"><a hrer="">볍률상담</a></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li class="lnb_1depth">
+						<a href="">HR 결재함</a>
+						<ul>
+							<li class="lnb_2depth"><a href="">결재 진행중 문서</a></li>
+							<li class="lnb_2depth"><a href="">결재 완료 문서</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+			<div class="lnb_bottom"></div>
+		</div>
+		<div>
+			<a class="btn_link" href=""><img src="images/leftMenu/new/icon_sitemap.gif" />사이트맵</a>
+			<a class="btn_link" href=""><img src="images/leftMenu/new/icon_profile.gif" />임원 Profile</a>
+		</div>
+	</div>
+</body>
+</html>

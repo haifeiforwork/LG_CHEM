@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AS7InitXML>
+	<Product>
+		<Logo></Logo>
+		<Help></Help>
+		<Name></Name>
+		<Info></Info>
+	</Product>
+	<UI>
+		<DeleteCommand>file_new, file_open, image</DeleteCommand>
+		<DeleteAccelerator></DeleteAccelerator>
+		<AddAccelerator></AddAccelerator>
+		<CreateMenu></CreateMenu>
+		<AddMenu></AddMenu>
+		<ShowMenu>No</ShowMenu>
+		<AddPopupMenu></AddPopupMenu>
+		<ShowPopupMenu>Yes</ShowPopupMenu>
+		<CreateToolbar></CreateToolbar>
+		<ToolbarImage></ToolbarImage>
+		<ShowToolbar>1,2</ShowToolbar>
+		<ShowToolTip>Yes</ShowToolTip>
+		<CreateStatus></CreateStatus>
+		<ShowStatus>No</ShowStatus>
+		<CreateTab>Source, Preview</CreateTab>
+		<ShowTab>Yes</ShowTab>
+		<OpenDialogPath></OpenDialogPath>
+	</UI>
+	<Edit>
+		<EditMode>Edit</EditMode>
+		<ImeMode></ImeMode>
+		<KeyboardLayout></KeyboardLayout>
+		<PreformattedTextOpen>No</PreformattedTextOpen>
+		<StopTextPaste>No</StopTextPaste>
+		<ReturnKeyActionBR>Yes</ReturnKeyActionBR>
+	</Edit>
+	<View>
+		<Ruler></Ruler>
+	</View>
+	<Document>
+		<NewFile></NewFile>
+		<CharSet>utf-8</CharSet>
+		<BaseURL />
+	</Document>
+	<Paragraph>
+		<LineHeight>110%</LineHeight>
+		<TopMargin>0px</TopMargin>
+		<BottomMargin>0px</BottomMargin>
+	</Paragraph>
+	<MIME>
+		<EncodeRange>All</EncodeRange>
+		<EncodeFileScope>Local</EncodeFileScope>
+		<EncodeFilter>Image,</EncodeFilter>
+		<EncodeType>Base64</EncodeType>
+		<EncodeRandomFileName>Yes</EncodeRandomFileName>
+	</MIME>
+	<Event>
+		<Mouse>Yes</Mouse>
+		<Keyboard>Yes</Keyboard>
+		<Command>No</Command>
+	</Event>
+	<Utility>
+		<UseAutomation>No</UseAutomation>
+		<ActivePhotoURL></ActivePhotoURL>
+		<ActivePhotoVersion>2</ActivePhotoVersion>
+		<ActivePhotoWidth>775</ActivePhotoWidth>
+		<ActivePhotoHeight>680</ActivePhotoHeight>
+		<TrustURL></TrustURL>
+	</Utility>
+	<Extension>
+		<FilterFileOpen></FilterFileOpen>
+		<FilterFileSave></FilterFileSave>
+		<OpenTextFileType></OpenTextFileType>
+		<CleanTempFolder>No</CleanTempFolder>
+		<MatchPTagPair>Yes</MatchPTagPair>
+		<SortHTMLSource>Yes</SortHTMLSource>
+	</Extension>
+</AS7InitXML>

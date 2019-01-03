@@ -1,0 +1,320 @@
+@CHARSET "UTF-8";
+/*Copyright ©2013 LG CNS, All Rights Reserved.*/
+
+/*--------------------------------------------------------------------------------
+* 파일 : ui_library_approval.css
+* 설명 : 전자결재용 css
+* 작성 : 이혜정 과장
+*---------------------------------------------------------------------------------
+* Version Date Author Description
+* ------- ---------- ------ ------------------------------------------------------
+* v0.1 2016.07.22 이혜정 최초 css 작성
+
+
+
+* 내용을 변경할 경우에는 반드시 LG화학 WSG 담당자와 협의 후 진행
+2018-06-09 rdcamel [CSR ID:3704184] 유연근로제 동의 관련 기능 추가 건 - 이혜정K 받아서 수정.
+*------------------------------------------------------------------------------*/ 
+
+
+
+/* Window popup Elements
+ ---------------------------------------------------------*/
+.winPop_appl {
+	position: relative;
+	border: 1px solid #b4b4b4;
+}
+.winPop_appl .header {
+	background: url(/web/images/bg_winPopHeader.gif) repeat-x left bottom #f0f0f0;
+	height: 36px;
+	padding: 15px 0 0 18px;
+}
+.winPop_appl .header span {
+	font-weight: bold;
+	font-size: 14px;
+}
+.winPop_appl .header img {
+	position: absolute;
+	top: 15px;
+	right: 20px;
+}
+
+.winPop_appl .content {
+	padding-bottom: 15px;
+	border-bottom: 1px solid #dbdbdb;
+	/* min-width: 953px;*/
+	margin-bottom: 20px;
+}
+.winPop_appl .body {
+	padding:40px;
+	
+	word-break: keep-all;
+
+}
+.winPop_appl .content .subHeader {
+	position: relative;
+	height: 25px;
+	border-bottom: 2px solid #666666;
+}
+.winPop_appl .content .subHeader span {
+	font-weight: bold;
+	font-size: 14px;
+	color: #c8294b;
+}
+.winPop_appl .content .subContent {
+	position: relative;
+	padding: 15px 0 0;
+}
+.winPop_appl .content .listArea {
+	margin: 0;
+}
+
+
+.winPop_appl .body .close {
+	position: relative;
+	height: 26px;
+	margin-top: 20px;
+}
+.winPop_appl .body .close a {
+	position: absolute;
+	right: 0;
+}
+
+/* 팝업 리스트 테이들paging */
+.winPop_appl .listArea_appl .paging {
+	position: absolute;
+	margin: 0px auto 0px -160px;
+	width: 380px;
+	left: 50%;
+	margin-bottom: 20px;
+}
+
+
+/* 의견팝업추가 */
+.attachFileAreaWinPop_appl {
+	border-top: 2px solid #969696;
+	display:block;
+}
+
+/* 의견팝업 */
+.winPop .contentSize {
+	padding-bottom: 15px;
+    border-bottom: 1px solid #dbdbdb;
+	margin-bottom: 20px;
+}
+.attachFileAreaWinPop {
+	border-top: 2px solid #969696;
+	display:block;
+}
+
+/* 간격 */
+.marBot30{margin-bottom: 30px;}
+.marBot10{margin-bottom: 10px;}
+
+/* center 추가*/
+.t_center {text-align:center !important;}
+.t_left {text-align:center !important;}
+
+/* byte*/
+.t_byte_appl {text-align: right;padding-top:5px;height:8px;font-size:11px;} /*2016.11.21 */
+
+/* input{border: none;font-family:'맑은 고딕','Malgun Gothic';font-weight:bold;text-align:center;} */
+
+/* 텍스트생략추가*/
+/* table {width:100%;table-layout:fixed;border-collapse: collapse;}
+table td{padding-left:5px;padding-right:5px;}
+.ellipsis{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;}
+.ellipsisMulti{padding-top:3px;padding-bottom:4px; 
+ overflow: hidden;text-overflow: ellipsis;display: -webkit-box;
+ -webkit-line-clamp: 2; 라인수
+ -webkit-box-orient: vertical;
+ word-wrap:break-word; 
+ line-height: 1.2em;
+ height: 2.4em; line-height 가 1.2em 이고 3라인을 자르기 때문에 height는 1.2em * 3 = 3.6em;}
+
+ */
+/*붉은색*/
+
+body {
+	font-family:'맑은 고딕','Malgun Gothic',sans-serif;word-break: keep-all;
+	
+	
+	line-height:normal;
+/* 	line-height:1.8em; */
+	letter-spacing:-.5px;
+	color:#444;
+	overflow-x:hidden; 
+	overflow-y:auto;
+	font-size:13px;
+}
+
+
+/* body {
+	font-size: 12px;
+	font-family: '맑은고딕', Malgun Gothic, '돋움', dotum, '나눔고딕', Arial, Helvetica, sans-serif;
+	color: #222;
+	background: #fff;
+	overflow: hidden;
+	-webkit-text-size-adjust: none;
+	-webkit-user-select: none;
+	-webkit-appearance: none;
+} */
+
+
+/*Webfont*/
+@font-face {
+    font-family: 'lgsmart';
+    font-weight: normal;
+    font-style: normal;
+    src: url('/web/images/css/font/lgsmhar.eot');
+    src: url('/web/images/css/font/lgsmhar.eot?#iefix') format('embedded-opentype'),
+         url('/web/images/css/font/lgsmhar.woff') format('woff')
+}
+
+
+@font-face {
+    font-family: 'lgsmart';
+    font-style: normal;
+    font-weight: bold;
+    src: url('/web/images/css/font/lgsmhasb.eot');
+    src: url('/web/images/css/font/lgsmhasb.eot?#iefix') format('embedded-opentype'),
+         url('/web/images/css/font/lgsmhasb.woff') format('woff')
+}
+
+
+
+.tbl_t01{width:100%;border-left:1px solid #838383;border-right:1px solid #838383;}
+.tbl_t01 thead th{height:30px;background:#545454;text-align:center;vertical-align:middle;color:#fff;border-right:1px solid #838383;}
+/*.tbl_t01 thead th:last-child{border-right:0 none;} */
+.tbl_t01 tbody td{height:30px;text-align:center;vertical-align:middle;color:#333;border-bottom:1px solid #d4d4d4;padding:0 12px;border-right:1px solid #838383;}
+/*.tbl_t01 tbody td .borderRight{border-right:1px solid #838383; !important}
+.tbl_t01 tbody td:last-child{border-right:0 none;}*/
+.tbl_t01 tbody td a{display:block;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#333399;}
+.tbl_t01 tbody td a.btn{display:inline-block;vertical-align:middle;}
+.tbl_t01 tbody td a:hover{text-decoration:underline;}
+.tbl_t01 tbody td.t_red{color:#bc2041;}
+.tbl_t01 tbody td img{vertical-align:middle;}
+.tbl_t01 tbody td p{padding-left:20px;}
+
+
+.bgGray{background:#f2f2f2 !important;}
+.bgRed{background:#fff8f8 !important;}
+.bgRedHor{background:#fff8f8;border-top: 2px solid #c8294b;border-bottom: 1px solid #cdcdcd !important;}
+.brLeftNone{border-left: 2px solid #f2f2f2 !important;}
+.brTopNone{border-top: 2px solid #f2f2f2 !important;}
+.brTopDash{border-top: 2px dashed #d4d4d4 !important;}
+.brLeftDash{border-left: 2px dashed #d4d4d4 !important;}
+.brRightDash{border-right: 2px dashed #d4d4d4 !important;}
+.brBottomDash{border-bottom: 2px dashed #d4d4d4 !important;}
+.inline{display:inline-block;}
+.underline {border-bottom:1px solid #666;padding-bottom:15px;}
+
+.t_left {text-align:left !important;}
+.t_center {text-align:center !important;}
+.t_right {text-align:right !important;}
+.floatLeft {float:left !important;}
+.floatRight {float:right !important;}
+
+.t_normal{font-weight:normal !important}
+.t_sp{letter-spacing:-1px !important}
+.t_verTop{vertical-align:top !important;}
+
+
+.t_red{color:#bc2041 !important;}
+.t_redBold{font-weight:bold;color:#bc2041 !important;}
+.t_blue{color:#333399  !important;}
+.t_gray{color:#999;font-size:11px !important;}
+
+.bgRed{background: #00ff00;color:#fff;} 
+
+
+.f11{font-size:11px !important;}
+.f12{font-size:12px !important;}
+.f14{font-size:14px !important;}
+
+.f16{font-size:16px !important;}
+.f19{font-size:19px !important;}
+.f22{font-size:22px !important;}
+
+
+
+.padL45{padding-left:45px !important}
+.padL40{padding-left:40px !important}
+.padL35{padding-left:35px !important}
+.padL30{padding-left:30px !important}
+
+.padL25{padding-left:25px !important}
+.padL20{padding-left:20px !important}
+.padL15{padding-left:15px !important}
+.padL10{padding-left:10px !important}
+.padL5{padding-left:5px !important}
+.padR20{padding-right:20px !important}
+.padB30{padding-bottom:30px !important}
+
+.lgsmart{font-family:'lgsmart';font-weight:400;margin:10px 0;color:#000;}
+/*좌측 블릿*/
+ul.bullet{padding-left:45px;}
+ul.bullet > li{padding-left:12px;/*background:url(/web/images/bu_red.gif) no-repeat 0 11px;*/ font-size:12px;font-weight:400;margin:10px 0;color:#000;}
+
+h2.tit_2nd{display:block;margin:40px 0 25px 0px;padding-top:20px;background:url(/web/images/bg_page_title.gif) no-repeat;font-family:'lgsmart'; font-size:22px;}/*#content */
+h2.tit_2nd span{padding-top:20px;}
+
+
+h4{display:block;font-weight:400;margin:10px 0;color:#000;font-size:13px}
+
+h4.tit_4th_01{margin:10px 0 0px 24px;padding-left:21px;background:url(/web/images/bu_num01.png) no-repeat 0 3px;vertical-align:middle;}/*#content */
+h4.tit_4th_02{margin:10px 0 0px 24px;padding-left:21px;background:url(/web/images/bu_num02.png) no-repeat 0 3px;vertical-align:middle;}/*#content */
+h4.tit_4th_03{margin:10px 0 0px 24px;padding-left:21px;background:url(/web/images/bu_num03.png) no-repeat 0 3px;vertical-align:middle;}/*#content */
+h4.tit_4th_04{margin:10px 0 0px 24px;padding-left:21px;background:url(/web/images/bu_num04.png) no-repeat 0 3px;vertical-align:middle;}/*#content */
+h4.tit_4th_05{margin:10px 0 0px 24px;padding-left:21px;background:url(/web/images/bu_num05.png) no-repeat 0 3px;vertical-align:middle;}/*#content */
+h4.tit_4th_06{margin:10px 0 0px 24px;padding-left:21px;background:url(/web/images/bu_num06.png) no-repeat 0 3px;vertical-align:middle;}/*#content */
+h4.tit_4th_07{margin:10px 0 0px 24px;padding-left:21px;background:url(/web/images/bu_num07.png) no-repeat 0 3px;vertical-align:middle;}/*#content */
+h4.tit_4th_08{margin:10px 0 0px 24px;padding-left:21px;background:url(/web/images/bu_num08.png) no-repeat 0 3px;vertical-align:middle;}/*#content */
+h4.tit_4th_09{margin:10px 0 0px 24px;padding-left:21px;background:url(/web/images/bu_num09.png) no-repeat 0 3px;vertical-align:middle;}/*#content */
+
+ul.tit_5th{padding-left:57px;}
+
+
+.sectionLine { 
+    display: block;border-top:1px solid #ccc;padding-bottom:30px;
+}
+
+p{word-break: keep-all;}
+
+
+/* width 조절*/
+.w100 {
+	width:100%; !important;
+	padding: 0px;
+}
+
+.w85 {
+	width:85%; !important;
+	padding: 0px;
+}
+
+.h100 {
+	height:100%; !important;
+	padding: 0px;
+
+}
+
+/* tableApproval */
+.tableApproval th {
+	width: 159px;
+	height: 29px;
+	text-align: center;
+	padding-right: 0px;
+	border-right: 1px solid #dddddd;
+	border-bottom: 1px solid #dddddd;
+	background: #f5f5f5;
+}
+.tableApproval li {list-style:none;display:table-cell;padding-top:3px;padding-right:3px; vertical-align:middle;}
+.tableApproval li:first-of-type {padding-left:0}
+.tableApproval li:last-of-type {padding-left:0}
+
+
+/* byte*/
+.t_byte {text-align: right;padding-top:5px;height:8px;font-size:11px;} /*2016.11.21 */
+/*팝업 가로 width */
+.popW380{width: 378px;}/*2016.11.21 */

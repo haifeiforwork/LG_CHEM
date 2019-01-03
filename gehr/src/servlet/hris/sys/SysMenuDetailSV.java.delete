@@ -1,0 +1,140 @@
+/*
+ * 작성된 날짜: 2005. 1. 18.
+ *
+ * 
+ */
+package servlet.hris.sys;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Vector;
+
+import hris.sys.MenuCodeData;
+import hris.sys.db.MenuCodeDB;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.sns.jdf.GeneralException;
+import com.sns.jdf.Logger;
+import com.sns.jdf.db.DBUtil;
+import com.sns.jdf.servlet.Box;
+import com.sns.jdf.servlet.EHRBaseServlet;
+import com.sns.jdf.util.WebUtil;
+
+/**
+ * @author 이승희
+ *
+ */
+public class SysMenuDetailSV extends EHRBaseServlet {
+
+    /* (비Javadoc)
+     * @see com.sns.jdf.servlet.EHRBaseServlet#performTask(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
+    protected void performTask(HttpServletRequest req, HttpServletResponse res)
+            throws GeneralException 
+    {
+        
+        String dest  = "";
+        
+        MenuCodeData menuCodeData = null;
+        Vector vcChildMenuCodeData = null; 
+        
+        boolean isCommit = false;
+        Connection conn = null;
+
+        Box box = WebUtil.getBox(req);
+        String jobid = box.get("jobid");
+        int   rowNum  = box.getInt("rowNum");
+        
+        try {
+            conn = DBUtil.getTransaction("HRIS");
+            MenuCodeDB  mcdb = new MenuCodeDB(conn);
+            Logger.debug.println("jobid = " + jobid);
+            
+            if (jobid == null || jobid.equals("") || jobid.equals("view")) {
+                String menuCode = "";
+                menuCode = box.get("menuCode");
+                menuCodeData = mcdb.getMenuDetail(menuCode);
+                if ("01".equals(menuCodeData.menuClsf)) {
+                    vcChildMenuCodeData = mcdb.getChildMenuList(menuCode);
+                } else if ("02".equals(menuCodeData.menuClsf)) {
+                    vcChildMenuCodeData = new Vector();
+                    menuCodeData.pgDetail = mcdb.getProgramDetail(menuCode);
+                } // end if
+                
+                req.setAttribute("MenuCodeData" ,menuCodeData);
+                req.setAttribute("vcChildMenuCodeData" ,vcChildMenuCodeData);
+                
+                dest = WebUtil.JspURL+"sys/sysMenuDetail.jsp";
+                
+                // 신규 저장 
+            } else if (jobid.equals("newCreate")) {
+                dest = WebUtil.JspURL+"sys/sysMenuBuild.jsp";
+            // 신규 저장 
+            } else if (jobid.equals("create")) {
+                menuCodeData = new MenuCodeData();
+                box.copyToEntity(menuCodeData);
+                menuCodeData.pgDetail = new ProgramCodeData();
+                box.copyToEntity(menuCodeData.pgDetail);
+                mcdb.creatMenuCode(menuCodeData);
+                String msg = "msg007";
+                String url = "parent.location.href = '" + WebUtil.JspURL + 
+                    "sys/sysMenuMgr.jsp?MenuCode=" + menuCodeData.upMenuCode + "'";
+                req.setAttribute("msg", msg);
+                req.setAttribute("url", url);
+                dest = WebUtil.JspURL+"common/msg.jsp";
+            // 수정
+            } else if (jobid.equals("update")) {
+                menuCodeData = new MenuCodeData();
+                box.copyToEntity(menuCodeData);
+                
+                mcdb.updateMenuCode(menuCodeData); 
+                // 메뉴 
+                if ("01".equals(menuCodeData.menuClsf)) {
+                    vcChildMenuCodeData = new Vector();
+                    for (int i = 0; i < rowNum; i++) {
+                        MenuCodeData tmMenuCodeData = new MenuCodeData();
+                        box.copyToEntity(tmMenuCodeData ,i);
+                        vcChildMenuCodeData.add(tmMenuCodeData);
+                    } // end for
+                    mcdb.updateChldMenuCode(vcChildMenuCodeData);
+                // 프로그램 
+                } else {
+                    menuCodeData.pgDetail = new ProgramCodeData();
+                    box.copyToEntity(menuCodeData.pgDetail);
+                    mcdb.updateProgramCode(menuCodeData.pgDetail);
+                } // end if
+                
+                String msg = "msg002";
+                String url = "parent.location.href = '" + WebUtil.JspURL + 
+                    "sys/sysMenuMgr.jsp?MenuCode=" + menuCodeData.menuCode + "'";
+                req.setAttribute("msg", msg);
+                req.setAttribute("url", url);
+                dest = WebUtil.JspURL+"common/msg.jsp";
+            // 삭제
+            } else if (jobid.equals("delete")) {
+                menuCodeData = new MenuCodeData();
+                box.copyToEntity(menuCodeData);
+                mcdb.deleteMenuCode(menuCodeData);
+                String msg = "msg003";
+                String url = "parent.location.href = '" + WebUtil.JspURL + 
+                    "sys/sysMenuMgr.jsp?MenuCode=" + menuCodeData.upMenuCode + "'";
+                req.setAttribute("msg", msg);
+                req.setAttribute("url", url);
+                dest = WebUtil.JspURL+"common/msg.jsp";
+            } // end if
+            isCommit = true;
+        } catch (GeneralException e) {
+            Logger.err.println(e);
+            throw e;
+        } catch (SQLException e) {
+            throw new GeneralException(e);
+        } finally {
+            DBUtil.close(conn ,isCommit);  
+        } // end try
+        printJspPage(req, res, dest);
+        
+    }
+
+}

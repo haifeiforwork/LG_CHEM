@@ -1,0 +1,107 @@
+<SCRIPT LANGUAGE='JavaScript'>
+	function goMSS(tmpurl)
+	{
+	
+		//var url = tmpurl + '&SServer=' + serverName + '&SSNO=' + DBpath;
+		var url = tmpurl + '&SServer=gportal.lgchem.com' +  '&SSNO=<mail:to_empNo/>';
+		// var url = tmpurl + '&SServer=' + serverName + '&SSNO=<mail:to_empNo/>';
+		top.location.href = url;
+	}
+</SCRIPT>
+<style type="text/css">
+* { font-family: Malgun Gothic, Dotum; font-size: 12px; }
+.font00 { background-color: #fff; font-weight: bold }
+.font01 { background-color: #fff; font-weight: bold }
+.font02 { background-color: #FFF; text-align: left; }
+</style>
+
+<table width="760" border="0" cellpadding="0" cellspacing="1" bgcolor="#CCCCCC" style="margin:10px auto">
+	<tr>
+		<td bgcolor="#FFFFFF">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td><img src="http://<mail:ResponseURL/>/<mail:ImageURL/>mail_top2.gif"></td>
+				</tr>
+				<tr>
+					<td height="30">&nbsp;</td>
+				</tr>
+				<tr>
+					<td align="center">
+						<table width="700" border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								<td width="77" valign="top"><img src="http://<mail:ResponseURL/>/<mail:ImageURL/>mail_left.gif"></td>
+								<td width="5">&nbsp;</td>
+								<td valign="top" style="padding:30px 15px; border:1px solid #DDD;" class="font01">안녕하십니까? 
+									다음과 같이 경조금 결재가 진행되었으나,<br>
+									경조대상자와 임직원의 姓이 다르므로 실제 백숙부 대상 확인을 하시기 바랍니다.<br>
+									<br>
+									<!--
+                        - 제목 : <mail:UPMU_NAME/><br>
+                        - 신청자 : <mail:ename/> (사번 : <mail:empno/>)<br> <br> <a href="javascript:goMSS('http://<mail:ResponseURL/>/servlet/servlet.hris.MailAutoLoginSV?AINF_SEQN=<mail:AINF_SEQN/>') "  ><u><font color="#0072BC">결재완료 문서로 이동하기</font></u></a><font color="#0072BC"><br>
+                        </font><br> <br> -->
+									
+									<table width="100%" border="0" cellspacing="1" cellpadding="4" bgcolor="#DDDDDD">
+										<tr>
+											<td width="60" align="center"  valign="top" bgcolor="#F8F8F8">사번</td>
+											<td width="80" align="center"  valign="top" bgcolor="#F8F8F8">성명</td>
+											<td width="160" align=center valign="top" bgcolor="#F8F8F8">소속</td>
+											<td width="60" align=center  valign="top" bgcolor="#F8F8F8">경조명</td>
+											<td width="80" align=center  valign="top" bgcolor="#F8F8F8">경조대상자</td>
+											<td width="90" align=center  valign="top" bgcolor="#F8F8F8">경조발생일</td>
+											<td width="70" align=center  valign="top" bgcolor="#F8F8F8">사업장</td>
+										</tr>
+										<tr>
+											<td valign="top" align=center  bgcolor="#FFFFFF">
+												<mail:empno/>
+											</td>
+											<td valign="top" align=center  bgcolor="#FFFFFF">
+												<mail:ename/>
+											</td>
+											<td valign="top" align=center  bgcolor="#FFFFFF">
+												<mail:E_ORGTX/>
+											</td>
+											<td valign="top" align=center  bgcolor="#FFFFFF">
+												<mail:CONG_NAME/>
+											</td>
+											<td valign="top" align=center  bgcolor="#FFFFFF">
+												<mail:EREL_NAME/>
+											</td>
+											<td valign="top" align=center  bgcolor="#FFFFFF">
+												<mail:CONG_DATE/>
+											</td>
+											<td valign="top" align=center  bgcolor="#FFFFFF">
+												<mail:BTEXT/>
+											</td>
+										</tr>
+										<tr>
+											<td valign="middle" align="center" bgcolor="#F8F8F8">적요</td>
+											<td valign="top" bgcolor="#FFFFFF" colspan="6" align="left">
+												<mail:BIGO_TEXT/>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td width="77" valign="top"></td>
+								<td width="5">&nbsp;</td>
+								<td height="30" colspan="3">&nbsp;</td>
+							</tr>
+							<tr>
+								<td height="30">&nbsp;</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td height="30">&nbsp;</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<form name="form1" method="post" action="http://<mail:ResponseURL/>/servlet/servlet.hris.MailAutoLoginSV">
+	<input type="hidden" name="AINF_SEQN" value="<mail:AINF_SEQN/>">
+	<input type="hidden" name="SServer" value="">
+	<input type="hidden" name="SSNO" value="">
+</form>

@@ -1,0 +1,78 @@
+<%/******************************************************************************/
+/*                                                                              */
+/*   System Name  : MSS                                                         */
+/*   1Depth Name  : MY HR 정보                                                  */
+/*   2Depth Name  : 연급여                                                      */
+/*   Program Name : 연급여                                                      */
+/*   Program ID   : D06YpayDetail_to_year.jsp                                   */
+/*   Description  : 개인의 연급여에 대한 상세내용을 조회                        */
+/*   Note         :                                                             */
+/*   Creation     : 2003-01-13  최영호                                          */
+/*   Update       : 2005-02-01  윤정현                                          */
+/*                  2006-01-23  lsa @v1.1  과세반영(산학자금) 추가              */
+/*   Update       : 2006-03-17  @v1.2 lsa 급여작업으로 막음                     */
+/*                              @v1.2 lsa 5월급여작업으로 막음  전문기술직만    */
+/*                  2006-06-16 @v1.2 kdy 임금인상관련 급여화면 제어              */
+/*                  2007-01-23 @v1.0 lsa 과세반영(기타) 금액이 LGTX2,LGTX3 있는 경우 처리함*/
+/*                  2007-02-13 @v1.3 lsa 과세반영(선택적복리후생) 추가, 과세반영(입학축하금)삭제 */
+/*                  2008-09-03 @v1.4 lsa 생산직비과세 오류로 인해 필드 추가후 반영 */
+/*   Update       : 2013-06-24 [CSR ID:2353407] sap에 추가암검진 추가 건  */
+/*                  2014-07-30  [CSR ID:2583929] 사원서브그룹 추가에 따른 프로그램 수정 요청                                 */
+/*                  2016-03-15  //[CSR ID:3010670] 임금인상 관련 작업 시 월/연급여 조회 사용불가 기능 해제요청  */
+/*                  2016-03-23 [CSR ID:2995203] 보상명세서 적용(Total Compensation)  */
+/********************************************************************************/%>
+
+<%@ page contentType="text/html; charset=euc-kr" %>
+<%@ include file="/web/common/commonProcess.jsp" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+<%@ page import="java.util.Vector" %>
+<%@ page import="hris.D.D06Ypay.*" %>
+<%@ page import="hris.D.D05Mpay.rfc.*" %>
+<%@ page import="com.sns.jdf.util.*" %>
+<%
+String gubun    = WebUtil.nvl(request.getParameter("gubun"));  
+%>
+
+<jsp:include page="/include/header.jsp" />
+<!-- body header 부 title 및 body 시작 부 선언 -->
+<jsp:include page="/include/body-header.jsp">
+    <jsp:param name="title" value="COMMON.MENU.ESS_PY_ANNU_PAY"/>  
+    <jsp:param name="help" value="D06Mpay.html"/>    
+</jsp:include>
+
+<script language="JavaScript">
+//<!--
+
+function doSubmit() {
+    blockFrame();
+	switchScreen();
+	document.form1.jobid.value  = "first";
+<%if(gubun.equals("Y")){%>	
+    document.form1.action = "<%= WebUtil.ServletURL %>hris.D.D06Ypay.D06YpayKoreaSV";
+<%}else{%>
+	document.form1.action = "<%= WebUtil.ServletURL %>hris.D.D05Mpay.D05MpayDetailSV";
+<%}%>
+    document.form1.method = "post";
+    document.form1.submit();
+
+}
+
+
+	function switchScreen() {
+	    document.getElementById("divLoading").style.display = "";
+	}
+//-->
+</script>
+
+<form name="form1" method="post" >
+<div id="divLoading" style="position:absolute; top:35%; left:0; width:100%; text-align:center; margin:0 auto;">
+    <img src="<%=WebUtil.ImageURL %>download.gif" alt="잠시만 기다려 주세요. 로딩중입니다." />
+</div>
+
+
+ <input type="hidden" name="jobid" value="first">
+</form>
+
+<jsp:include page="/include/body-footer.jsp" /> <!-- body footer 부분 -->
+<jsp:include page="/include/footer.jsp"/>       <!-- html footer 부분 -->

@@ -1,0 +1,66 @@
+<SCRIPT LANGUAGE='JavaScript'>
+	function goMSS(tmpurl)
+	{
+	
+		//var url = tmpurl + '&SServer=' + serverName + '&SSNO=' + DBpath;
+		var url = tmpurl + '&SServer=gportal.lgchem.com' +  '&SSNO=<mail:to_empNo/>';
+		// var url = tmpurl + '&SServer=' + serverName + '&SSNO=<mail:to_empNo/>';
+		parent.parent.location.href = url;
+	}
+</SCRIPT>
+<style type="text/css">
+* {font-family:Malgun Gothic, Dotum; font-size:10pt;}
+</style>
+<table border="0" cellspacing="0" cellpadding="1">
+  <tr> 
+    <td width="70" height="10">&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="70">&nbsp;</td>
+    <td><table width="550" border="0" cellpadding="0" cellspacing="1" bgcolor="#CCCCCC">
+        <tr> 
+          <td bgcolor="#FFFFFF"><table width="548" border="0" cellspacing="0" cellpadding="0">
+              <tr> 
+                <td width="548" height="49" background="http://<mail:ResponseURL/>/<mail:ImageURL/>mail_top.gif">&nbsp;</td>
+              </tr>
+              <tr> 
+                <td height="30">&nbsp;</td>
+              </tr>
+              <tr> 
+                <td align="center"><table width="480" border="0" cellspacing="0" cellpadding="0">
+                    <tr> 
+                      <td width="77" valign="top"><img src="http://<mail:ResponseURL/>/<mail:ImageURL/>mail_left.gif"></td>
+                      <td width="5">&nbsp;</td>
+                      <td valign="top" bgcolor="#fafafa" style="padding:30px 25px; border:1px solid #DDD;" class="font01">안녕하십니까?<br>
+                        아래의 최종결재가 완료되었습니다. <br>
+                        교육취소 내용 확인하시기 바랍니다.<br> <br>
+                        - 제목 : <mail:UPMU_NAME/><br>
+                        - 신청자 : <mail:ename/> (사번 : <mail:empno/>)<br>
+                        - 과정명 : <mail:GWAJUNG/><br>
+                        - 차수명 : <mail:CHASU/><br>
+                        - 차수ID : <mail:CHASUID/><br> <br>  <br>
+                        </font><br> <br> </td>
+                    </tr>
+                    <tr> 
+                      <td valign="top"  align="center" colspan="3">
+					  <hr style="border:0px; border-bottom: 1px dashed #BBB;"/>
+                      <font color=blue>※현재 스마트폰에서는 결재처리가 불가합니다.<br>
+ ( 향후 단계적으로 적용 예정입니다.)</font>
+                      </td>
+                    </tr>                     
+                  </table></td>
+              </tr>
+              <tr> 
+                <td height="30">&nbsp;</td>
+              </tr>
+            </table></td>
+        </tr>
+      </table></td>
+  </tr>
+</table>
+<form name="form1" method="post" action="http://<mail:ResponseURL/>/servlet/servlet.hris.MailAutoLoginSV">
+	<input type="hidden" name="AINF_SEQN" value="<mail:AINF_SEQN/>">
+	<input type="hidden" name="SServer" value="">
+	<input type="hidden" name="SSNO" value="">
+</form>

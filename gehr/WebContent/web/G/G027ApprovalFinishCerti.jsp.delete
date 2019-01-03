@@ -1,0 +1,368 @@
+<%/******************************************************************************/
+/*                                                                              */
+/*   System Name  : e-HR                                                        */
+/*   1Depth Name  : HR 결재                                                     */
+/*   2Depth Name  : 결재 완료 문서                                              */
+/*   Program Name : 제증명 결재 완료                                            */
+/*   Program ID   : G026ApprovalFinishCerti.jsp                                 */
+/*   Description  : 제증명 결재 완료                                            */
+/*   Note         : 없음                                                        */
+/*   Creation     : 2003-03-26  이승희                                          */
+/*   Update       : 2003-03-26  이승희                                          */
+/*                  2008-05-08  lsa  [CSR ID:1263333] 제증명서 발급 Process 개선*/
+/*   Update       : 2013-05-15  lsa   C20130513_30354   영문소속명길이추가,필드추가 */
+/*                      2016-05-16 rdcamel [CSR ID:3051222] 재직증명서 출력 관련                                                        */
+/*                      2016-06-08 김불휘S [CSR ID:3081498] 재직증명서 출력 관련               */
+/*                                                                              */
+/********************************************************************************/%>
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ page errorPage="/web/err/error.jsp"%>
+<%@ include file="/web/common/commonProcess.jsp" %>
+
+<%@ page import="java.util.Vector" %>
+<%@ page import="hris.A.A15Certi.*" %>
+<%@ page import="hris.common.rfc.*" %>
+<%@ page import="hris.common.util.*" %>
+<%@ page import="hris.common.*" %>
+<%@ page import="com.sns.jdf.util.*" %>
+<%
+    WebUserData      user    = (WebUserData)session.getAttribute("user");
+
+    A15CertiData  a15CertiData  = (A15CertiData)request.getAttribute("a15CertiData");
+    Vector vcBizPlaceCodeEntity  = (Vector)request.getAttribute("vcBizPlaceCodeEntity");
+
+    Vector      vcAppLineData   = (Vector)request.getAttribute("vcAppLineData");
+    String      RequestPageName = (String)request.getAttribute("RequestPageName");
+
+    boolean isCanGoList ;
+    if (RequestPageName == null || RequestPageName.equals("")) {
+        isCanGoList = false;
+    } else {
+        isCanGoList = true;
+    } // end if
+    // 현재 결재자 구분
+    DocumentInfo docinfo = new DocumentInfo(a15CertiData.AINF_SEQN ,user.empNo);
+    int approvalStep = docinfo.getApprovalStep();
+%>
+<html>
+<head>
+<title>ESS</title>
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr.css" type="text/css">
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr_style.css" type="text/css">
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr_wsg.css" type="text/css">
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ui_library_approval.css" type="text/css">
+
+<script language="javascript" src="<%= WebUtil.ImageURL %>js/snsscript.js"></script>
+
+<script language="JavaScript">
+<!--
+
+    function goToList()
+    {
+        var frm = document.form1;
+    <% if (isCanGoList) { %>
+        frm.action = "<%=RequestPageName.replace('|' ,'&')%>";
+    <% } // end if %>
+        frm.jobid.value ="";
+        frm.submit();
+    }
+// [CSR ID:1263333]
+function go_print() {
+
+    if( "<%= a15CertiData.PRINT_CHK%>" == "1" && document.form1.PRINT_END.value == "X" ) {
+        alert("발행은 1회만 인쇄 가능합니다.");
+        return;
+    }
+    if( "<%= a15CertiData.PRINT_CHK%>" == "1" ){//본인
+       msg ="발행은 1회만 인쇄 가능합니다. 인쇄 하시겠습니까?";
+    }else { //담당자
+       msg ="인쇄 하시겠습니까?";
+    }
+
+    if( confirm(msg) ) {
+        window.open('', 'essPrintWindow', "toolbar=0,location=0,directories=0,status=0,menubar=1,resizable=0,width=700,height=650,left=100,top=60");
+        document.form1.jobid.value = "print_certi";
+        document.form1.target      = "essPrintWindow";
+        document.form1.action      = '<%= WebUtil.ServletURL %>hris.G.G027ApprovalFinishCertiSV';
+        document.form1.method      = "post";
+        document.form1.submit();
+
+        document.form2.target = "ifHidden";
+        document.form2.action = "<%=WebUtil.JspURL%>common/PrintCntUpdate.jsp";
+        document.form2.submit();
+    }
+}
+
+//[CSR ID:3051222] 재직증명서 출력 관련
+function init_alert(){
+	 if( "<%= a15CertiData.PRINT_CHK%>" == "1" ){
+		// alert("※ 인감날인 출력※\n\n파일→페이지 설정→배경색 및 이미지인쇄 체크 후 출력바랍니다.");
+		//[CSR ID:3081498] 재직증명서 출력 관련
+		 alert("※ 인감날인 출력※\n\n[페이지 설정]→[배경색 및 이미지인쇄] 체크 후 출력바랍니다.\n아래 두 가지 방법 중 하나로 설정할 수 있습니다.\n\n① 도구(Alt+x)→인쇄→페이지 설정\n② 화면 상단 마우스 우클릭→메뉴 모음 활성화→파일→페이지 설정");
+	 }
+}
+//-->
+</script>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onLoad="MM_preloadImages('<%= WebUtil.ImageURL %>btn_help_on.gif');init_alert();">
+<form name="form1" method="post" action="">
+<input type="hidden" name="jobid" value="save">
+<input type="hidden" name="BUKRS" value="<%=user.companyCode%>">
+<input type="hidden" name="PERNR"        value="<%=a15CertiData.PERNR%>">
+<input type="hidden" name="BEGDA"        value="<%=a15CertiData.BEGDA%>">
+<input type="hidden" name="AINF_SEQN"    value="<%=a15CertiData.AINF_SEQN%>">
+<input type="hidden" name="LANG_TYPE"    value="<%=a15CertiData.LANG_TYPE%>">
+<input type="hidden" name="APPR_STAT">
+<input type="hidden" name="RequestPageName"   value="<%=RequestPageName%>">
+  <table width="796" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="16">&nbsp;</td>
+      <td><table width="780" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td class="title"><h1>재직 증명서 결재완료 문서</h1></td>
+          </tr>
+          <tr>
+            <td height="10">&nbsp;</td>
+          </tr>
+          <tr>
+            <td height="10">
+                 <!-- 신청자 기본 정보 시작 -->
+                 <%@ include file="/web/common/ApprovalIncludePersInfo.jsp" %>
+                 <!--  신청자 기본 정보 끝-->
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <!--재직증명서 신청정보 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="5">
+                <tr>
+                  <td>
+					<div class="buttonArea">
+	               		<ul class="btn_crud">
+	                       <% if (isCanGoList) {  %>
+	               			<li><a href="javascript:goToList()"><span>목록보기</span></a></li>
+	                       <% } // end if %>
+	               		</ul>
+					  </div>
+					</td>
+                  	</tr>
+                      <tr>
+                        <td><h2 class="subtitle">신청정보</h2></td>
+                      </tr>
+                      <tr>
+                        <td>
+                        <div class="tableArea">
+                        <div class="table">
+                        <table class="tablegeneral tableApproval">
+                            <tr>
+                              <th width="100">신청일자</th>
+                              <td width="260"> <%= WebUtil.printDate(a15CertiData.BEGDA) %></td>
+                              <td colspan="2"   align="right">
+<%  // [CSR ID:1263333]
+    if( ( a15CertiData.PRINT_CHK.equals("1") && user.empNo.equals(a15CertiData.PERNR) ) ||
+        ( a15CertiData.PRINT_CHK.equals("2") && (approvalStep == DocumentInfo.DUTY_CHARGER|| approvalStep == DocumentInfo.DUTY_MANGER )  ) ) {
+
+
+%>
+                              <a class="inlineBtn" href="javascript:go_print();"><span>인쇄하기</span></a>&nbsp;
+<%
+    } else {
+%>
+                    &nbsp;
+<%
+    }
+%>
+                              </td>
+                            </tr>
+                            <tr>
+                              <th><span class="textPink">*</span>구분</th>
+                              <td> <%= a15CertiData.LANG_TYPE.equals("1") ? "한글" : "영문" %></td>
+                              <th width="100" class="th02"><span class="textPink">*</span>발행부수</th>
+                              <td> <%=Integer.parseInt( a15CertiData.PRINT_NUM )%></td>
+                            </tr>
+                            <!--[CSR ID:1263333]-->
+                            <tr>
+                              <th>발행방법</th>
+                              <td colspan="3">
+                                <input type="radio" name="PRINT_CHK" value="1" <%= a15CertiData.PRINT_CHK.equals("1") ? "checked" : "" %> disabled>본인발행
+                                <input type="radio" name="PRINT_CHK" value="2" <%= a15CertiData.PRINT_CHK.equals("2") ? "checked" : "" %> disabled>담당부서 요청발행
+                              </td>
+                            </tr>
+
+                            <tr>
+                              <th><span class="textPink">*</span>주민등록번호</th>
+                              <td>
+<%        String REGNO_dis = a15CertiData.REGNO.substring(0, 6) + "-*******";
+%>
+                              <%=REGNO_dis%>
+                               </td>
+                              <th class="th02">입사일자</th>
+                              <td> <%= WebUtil.printDate(a15CertiData.ENTR_DATE) %></td>
+                            </tr>
+                            <tr>
+                              <th><span class="textPink">*</span>직위</th>
+                              <td><%= a15CertiData.TITEL%></td>
+                              <th class="th02">직책출력</th>
+                              <td><input type="checkbox" <%="X".equals(a15CertiData.TITEL_FLAG) ? "checked" : "" %>  disabled></td>
+                            </tr>
+                          <% if (a15CertiData.LANG_TYPE.equals("1")) {  // 한글 %>
+
+                            <tr>
+                              <th>직무<font color="#006699">&nbsp;</font></th>
+                              <td> <%=a15CertiData.STELLTX%> </td>
+                              <th class="th02">소속부서</th>
+                              <td> <%=a15CertiData.ORGTX_E%></td>
+                            </tr>
+                          <% }else {%>
+
+                            <tr>
+                              <th><span class="textPink">*</span>직무</th>
+                              <td colspan="3"> <%=a15CertiData.STELLTX%> </td>
+                           </tr>
+                           <tr>
+                              <th>소속부서</th>
+                              <td colspan=3> <%=a15CertiData.ORGTX_E%> <%=a15CertiData.ORGTX_E2%></td>
+                            </tr>
+                          <% } %>
+
+                            <tr>
+                              <th><span class="textPink">*</span>현주소</th>
+                              <td colspan="3">
+                                <%=a15CertiData.ADDRESS1%><br>
+                                <%=a15CertiData.ADDRESS2%>
+                              </td>
+                            </tr>
+                            <tr>
+                              <th>전화번호</th>
+                              <td colspan="3"><%=a15CertiData.PHONE_NUM%></td>
+                            </tr>
+                            <tr>
+                              <th><span class="textPink">*</span>제출처</th>
+                              <td colspan="3"> <%=a15CertiData.SUBMIT_PLACE%></td>
+                            </tr>
+                            <tr>
+                              <th><span class="textPink">*</span>용도</th>
+                              <td colspan="3"> <%=a15CertiData.USE_PLACE%></td>
+                            </tr>
+                            <tr>
+                              <th>특기사항</th>
+                              <td colspan="3">
+                                <%=a15CertiData.SPEC_ENTRY1%> <br>
+								<%=a15CertiData.SPEC_ENTRY2%> <br>
+								<%=a15CertiData.SPEC_ENTRY3%> <br>
+								<%=a15CertiData.SPEC_ENTRY4%> <br>
+								<%=a15CertiData.SPEC_ENTRY5%>
+                              </td>
+                            </tr>
+                            <tr>
+                              <th>사업장주소</th>
+                              <td colspan="3"> <%=WebUtil.printOptionText(vcBizPlaceCodeEntity ,a15CertiData.JUSO_CODE)%> </td>
+                            </tr>
+                          </table>
+                          </div>
+                          </div>
+                  </td>
+                </tr>
+              </table>
+              <!--재직증명서 신청정보 테이블 시작-->
+            </td>
+  		<%
+            boolean visible = false;
+            for (int i = 0; i < vcAppLineData.size(); i++) {
+                AppLineData ald = (AppLineData) vcAppLineData.get(i);
+                if (ald.APPL_BIGO_TEXT != null && !ald.APPL_BIGO_TEXT.equals("")) {
+                    visible = true;
+                    break;
+                } // end if
+            } // end for
+        %>
+        <%   if (visible) { %>
+          <tr>
+            <td><h2 class="subtitle">적요</h2></td>
+          </tr>
+          <tr>
+            <td>
+                <table width="780" border="0" cellpadding="0" cellspacing="1">
+                <% for (int i = 0; i < vcAppLineData.size(); i++) { %>
+                    <% AppLineData ald = (AppLineData) vcAppLineData.get(i); %>
+                    <% if (ald.APPL_BIGO_TEXT != null && !ald.APPL_BIGO_TEXT.equals("")) { %>
+                    <tr>
+                    	<td>
+                    		<div class="tableArea">
+                    			<table>
+                    				<tr>
+                    					<th width="100"><%=ald.APPL_ENAME%></th>
+                    					<td><%=ald.APPL_BIGO_TEXT%></td>
+                    				</tr>
+                    			</table>
+                    		</div>
+                    	</td>
+                    </tr>
+                    <% } // end if %>
+                <% } // end for %>
+                </table>
+            </td>
+          </tr>
+        <% } // end if %>
+          <tr>
+            <td>
+              <table width="780" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td><h2 class="subtitle">결재정보</h2></td>
+                </tr>
+                <tr>
+                  <td><table width="780" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td>
+                          <!--결재정보 테이블 시작-->
+                          <%= AppUtil.getAppDetail(vcAppLineData) %>
+                          <!--결재정보 테이블 끝-->
+                        </td>
+                      </tr>
+                    </table></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td>
+                </tr>
+                <tr>
+                  <td align="center">
+                  <!--버튼 들어가는 테이블 시작 -->
+                      <table width="780" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td>
+			               	<div class="buttonArea">
+			               		<ul class="btn_crud">
+			                       <% if (isCanGoList) {  %>
+			               			<li><a href="javascript:goToList()"><span>목록보기</span></a></li>
+			                       <% } // end if %>
+			               		</ul>
+			               	</div>
+                          </td>
+                        </tr>
+                      </table>
+                  <!--버튼 들어가는 테이블 끝 -->
+                  </td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <input type="hidden" name="PRINT_END"   value="<%= a15CertiData.PRINT_END %>">
+</form>
+
+<form name="form2" method="post" action="">
+<input type="hidden" name="PERNR"     value="<%=a15CertiData.PERNR%>">
+<input type="hidden" name="AINF_SEQN" value="<%=a15CertiData.AINF_SEQN%>">
+<input type="hidden" name="MENU" value="CERTI">
+</form>
+<iframe name="ifHidden" width="0" height="0" />
+<%@ include file="/web/common/commonEnd.jsp" %>

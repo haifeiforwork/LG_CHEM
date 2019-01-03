@@ -1,0 +1,224 @@
+<%/******************************************************************************/
+/*                                                                              */
+/*   System Name  : MSS                                                         */
+/*   1Depth Name  : Manaer's Desk                                               */
+/*   2Depth Name  : 발령사항                                                    */
+/*   Program Name : 발령사항                                                    */
+/*   Program ID   : A05AppointDetail_m.jsp                                      */
+/*   Description  : 발령사항 조회                                               */
+/*   Note         : 없음                                                        */
+/*   Creation     : 2005-01-07  윤정현                                          */
+/*   Update       : 2006-05-17  @v1.1 lsa 5월급여작업으로 막음  전문기술직만    */
+/*                     2006-06-16 @v1.1 kdy 임금인상관련 급여화면 제어              */
+/*                  2013-08-21 [CSR ID:2389767] [정보보안] e-HR MSS시스템 수정    */
+/*                                                                              */
+/********************************************************************************/%>
+
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ include file="/web/common/commonProcess.jsp" %>
+
+<%@ page import="java.util.Vector" %>
+<%@ page import="hris.common.*" %>
+<%@ page import="hris.common.rfc.*" %>
+<%@ page import="hris.A.*" %>
+<%@ page import="hris.A.rfc.*" %>
+<%@ page import="hris.D.D05Mpay.rfc.*" %>
+<%@ page import="com.sns.jdf.util.*" %>
+<%
+    WebUserData user_m = WebUtil.getSessionMSSUser(request);
+    WebUserData user = WebUtil.getSessionUser(request);
+    Vector  A05AppointDetail1Data_vt = ( Vector ) request.getAttribute( "A05AppointDetail1Data_vt" ) ;
+    Vector  A05AppointDetail2Data_vt = ( Vector ) request.getAttribute( "A05AppointDetail2Data_vt" ) ;
+
+    A05AppointDetail1Data_vt = com.sns.jdf.util.SortUtil.sort(A05AppointDetail1Data_vt, "3", "desc");
+    A05AppointDetail2Data_vt = com.sns.jdf.util.SortUtil.sort(A05AppointDetail2Data_vt, "2", "desc");
+
+    // 2015- 06-09 MSS 개인정보 통합시 subView ="Y";
+    String subView = WebUtil.nvl(request.getParameter("subView"));
+%>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function  doSearchDetail() {
+    document.form1.action = "<%= WebUtil.ServletURL %>hris.A.A05AppointDetailSV_m";
+    document.form1.method = "post";
+    document.form1.target = "main_ess";
+    document.form1.submit();
+}
+//-->
+</SCRIPT>
+
+<html>
+<head>
+<title>ESS</title>
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr.css" type="text/css">
+
+<script language="JavaScript" src="<%= WebUtil.ImageURL %>js/snsscript.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>
+<!-- 2013-08-21 [CSR ID:2389767] [정보보안] 화면캡쳐방지  -->
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" oncontextmenu="return false" ondragstart="return false" onselectstart="return false" onKeyUp="ClipBoardClear()">
+<form name="form1" method="post">
+  <table width="791" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="1">&nbsp;</td>
+      <td>
+
+      <table width="780" border="0" cellspacing="0" cellpadding="0">
+ <%
+	if(!subView.equals("Y")){
+%>
+          <tr>
+            <td width="780"><table width="780" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td height="5" colspan="2"></td>
+                </tr>
+                <tr>
+                  <td width="624" class="title02"><img src="<%= WebUtil.ImageURL %>ehr/title01.gif">발령사항</td>
+                  <td class="titleRight"><a href="javascript:open_help('X03PersonInfo.html');" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image6','','<%= WebUtil.ImageURL %>btn_help_on.gif',1)"></a></td>
+                </tr>
+              </table></td>
+          </tr>
+          <!--   사원검색 보여주는 부분 시작   -->
+
+          <!--   사원검색 보여주는 부분  끝    -->
+          <tr>
+            <td height="10">&nbsp;</td>
+          </tr>
+   <%} %>
+<% //@v1.1
+   //if (user_m != null&& (user_m.e_persk.equals("32")||user_m.e_persk.equals("33") ) && Integer.parseInt(DataUtil.getCurrentDate()) >= 20060616 &&  Integer.parseInt(DataUtil.getCurrentDate())  < 20060623 ) {
+   String O_CHECK_FLAG = "";
+  if (user_m != null ) {
+      O_CHECK_FLAG = ( new D05ScreenControlRFC() ).getScreenCheckYn( user_m.empNo );
+  }
+  if (user_m != null && O_CHECK_FLAG.equals("N") ) {
+%>
+                    <table border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td class="td09" align="left">
+                           <font color="red">※ 급여작업으로 인해 메뉴 사용을 일시 중지합니다.<br><br></font><!--@v1.1-->
+                         </td>
+                      </tr>
+                    </table>
+<% } else {  //@v1.1 else %>
+
+          <%
+// 사원 검색한 사람이 없을때
+if ( user_m != null ) {
+%>
+        </table>
+        <table width="780" height="20" border="0" cellpadding="0" cellspacing="0">
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif">
+              발령사항</td>
+          </tr>
+          <tr>
+            <td>
+              <!-- 발령사항 리스트 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="2" class="table02">
+                <tr>
+                  <td class="td03" width="10%">발령유형</td>
+                  <td class="td03" width="10%">발령일자</td>
+                  <td class="td03" width="10%">근무지</td>
+                  <td class="td03" width="20%" >소속</td>
+                  <td class="td03" width="10%">신분</td>
+                  <td class="td03" width="10%">직위</td>
+                  <td class="td03" width="10%">직급</td>
+                  <td class="td03" width="10%">직책</td>
+                  <td class="td03" width="10%">직무</td>
+                </tr>
+                <%
+    if( A05AppointDetail1Data_vt.size() > 0 ) {
+        for( int i = 0 ; i < A05AppointDetail1Data_vt.size() ; i++ ) {
+            A05AppointDetail1Data appointDetail1Data = ( A05AppointDetail1Data ) A05AppointDetail1Data_vt.get( i ) ;
+%>
+                <tr>
+                  <td class="td04"><%= appointDetail1Data.MNTXT %></td>
+                  <td class="td04"><%= WebUtil.printDate(appointDetail1Data.BEGDA) %></td>
+                  <td class="td04"><%= appointDetail1Data.BTEXT %></td>
+                  <td class="td04"><%= appointDetail1Data.ORGTX %></td>
+                  <td class="td04"><%= appointDetail1Data.PTEXT %></td>
+                  <td class="td04"><%= appointDetail1Data.TITEL %><%= appointDetail1Data.KEEP_TITL2.equals("") ? "" : "<br>(" +appointDetail1Data.KEEP_TITL2+")" %></td>
+                  <td class="td04"><%= appointDetail1Data.TRFGR %></td>
+                  <td class="td04"><%= appointDetail1Data.TITL2 %></td>
+                  <td class="td04"><%= appointDetail1Data.STLTX %></td>
+                </tr>
+                <%
+        }
+    } else {
+%>
+                <tr align="center">
+                  <td class="td04" colspan="9">해당하는 데이터가 존재하지 않습니다.</td>
+                </tr>
+                <%
+    }
+%>
+              </table>
+              <!-- 발령사항 리스트 테이블 끝-->
+            </td>
+          </tr>
+
+ <%
+
+	if(user_m.e_persk.startsWith("3")){
+%>
+          <tr>
+            <td height="10">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif">
+              승급사항</td>
+          </tr>
+          <tr>
+            <td>
+              <!--승급사항 테이블시작 -->
+              <table width="780" border="0" cellspacing="1" cellpadding="2" class="table02">
+                <tr>
+                  <td class="td03" width="300">승급구분</td>
+                  <td class="td03" width="120">승급일자</td>
+                  <td class="td03" width="120">직급</td>
+                  <td class="td03" width="120">호봉</td>
+                  <td class="td03" width="120">년차/생활급</td>
+                </tr>
+                <%
+    if( A05AppointDetail2Data_vt.size() > 0 ) {
+        for ( int i = 0 ; i < A05AppointDetail2Data_vt.size() ; i++ ) {
+            A05AppointDetail2Data appointDetail2Data = ( A05AppointDetail2Data ) A05AppointDetail2Data_vt.get( i ) ;
+%>
+                <tr>
+                  <td class="td04"><%= appointDetail2Data.RTEXT %></td>
+                  <td class="td04"><%= WebUtil.printDate(appointDetail2Data.BEGDA) %></td>
+                  <td class="td04"><%= appointDetail2Data.TRFGR %></td>
+                  <td class="td04"><%= appointDetail2Data.TRFST.equals("") ? "" : appointDetail2Data.TRFST %></td>
+                  <td class="td04"><%= appointDetail2Data.VGLST.equals("") ? "" : appointDetail2Data.VGLST %></td>
+                </tr>
+                <%
+        }
+    } else {
+%>
+                <tr align="center">
+                  <td class="td04" colspan="5">해당하는 데이터가 존재하지 않습니다.</td>
+                </tr>
+                <%
+    }
+%>
+              </table>
+              <!--더블클릭시 나타나는 테이블끝-->
+            </td>
+          </tr>
+          <tr>
+            <td height="10">&nbsp;</td>
+          </tr>
+ <%} %>
+        </table></td>
+<% } //@v1.1 end %>
+
+    </tr>
+  </table>
+<%
+}
+%>
+</form>
+<%@ include file="/web/common/commonEnd.jsp" %>
+</body>
+</html>

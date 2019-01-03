@@ -1,0 +1,83 @@
+package	hris.D.D05Mpay.rfc;
+
+import com.sap.mw.jco.JCO;
+import com.sns.jdf.GeneralException;
+import com.sns.jdf.Logger;
+import com.sns.jdf.sap.SAPWrap;
+
+import java.util.Vector;
+
+/**
+ * D05LatestPaidRFCUsa.java
+ * 가장 최근 급여내역 정보를 가져오는 RFC를 호출하는 Class (USA)
+ * 
+ * @author jungin
+ * @version 1.0, 2010/10/29
+ */
+public class D05LatestPaidRFCUsa extends SAPWrap {
+
+    private String functionName = "ZGHR_RFC_GET_LATEST_PAID";
+
+    /**
+     * 가장 최근 급여내역 정보를 가져오는 RFC를 호출하는 Method
+     * 
+     * @return java.util.Vector
+     * @exception com.sns.jdf.GeneralException
+     */
+	public Vector getLatestPaid(String I_PERNR) throws GeneralException {
+
+		JCO.Client mConnection = null;
+		try {
+			mConnection = getClient();
+			JCO.Function function = createFunction(functionName);
+			setInput(function, I_PERNR);
+			excute(mConnection, function);
+			Vector ret = getOutput(function);
+			return ret;
+		} catch (Exception ex) {
+			Logger.sap.println(this, "SAPException : " + ex.toString());
+			throw new GeneralException(ex);
+		} finally {
+			close(mConnection);
+		}
+	}
+    
+	/**
+	 * RFC 실행전에 Import 값을 setting 한다. com.sns.jdf.SAPWrap.excute(JCO.Client
+	 * mConnection, JCO.Function function) 가 호출되기 전에 실행되어야하는 메소드
+
+	 */
+	private void setInput(JCO.Function function, String I_PERNR) throws GeneralException {
+		String fieldName = "I_PERNR";
+		setField(function, fieldName, I_PERNR);
+	}  
+    
+    /**
+     * RFC 실행후 Export 값을 Vector 로 Return 한다.
+     * 반드시 com.sns.jdf.SAPWrap.excute(JCO.Client mConnection, JCO.Function function) 가 호출된후에 실행되어야하는 메소드
+     * @param function com.sap.mw.jco.JCO.Function
+     * @return java.util.Vector
+     * @exception com.sns.jdf.GeneralException
+     */
+	private Vector getOutput(JCO.Function function) throws GeneralException {
+		
+		Vector ret = new Vector();
+
+		// Export 변수 조회
+		String fieldName1 = "E_PAYDT";			// 급여결과에 대한 지급일
+		String E_PAYDT = getField(fieldName1, function);
+
+		String fieldName2 = "E_ZOCRSN";		// 급여사유
+		String E_ZOCRSN = getField(fieldName2, function);
+		
+		String fieldName3 = "E_SEQNR";			// 순번
+		String E_SEQNR = getField(fieldName3, function);
+
+		ret.addElement(E_PAYDT);
+		ret.addElement(E_ZOCRSN);
+		ret.addElement(E_SEQNR);
+
+		return ret;
+	}
+	
+}

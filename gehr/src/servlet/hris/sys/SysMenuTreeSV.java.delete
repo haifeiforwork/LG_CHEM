@@ -1,0 +1,96 @@
+/*
+ * 작성된 날짜: 2005. 1. 12.
+ *
+ */
+package servlet.hris.sys;
+
+import hris.sys.MenuCodeData;
+import hris.sys.db.MenuCodeDB;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.sns.jdf.GeneralException;
+import com.sns.jdf.Logger;
+import com.sns.jdf.db.DBUtil;
+import com.sns.jdf.servlet.EHRBaseServlet;
+import com.sns.jdf.util.WebUtil;
+
+/**
+ * @author 이승희
+ * 
+ * 
+ */
+public class SysMenuTreeSV extends EHRBaseServlet {
+
+    /* (비Javadoc)
+     * @see com.sns.jdf.servlet.EHRBaseServlet#performTask(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
+    protected void performTask(HttpServletRequest req, HttpServletResponse res)
+            throws GeneralException 
+    {   
+        String dest = "";
+        boolean isCommit = false;
+        Connection conn = null;
+        Statement stmt;
+        try {
+            conn = DBUtil.getTransaction("HRIS");
+            MenuCodeDB  mcdb = new MenuCodeDB(conn);
+            Vector vcMenuCodeData = mcdb.getMenuList();
+            
+            req.setAttribute("vcMeneCodeData" ,vcMenuCodeData);
+            dest = WebUtil.JspURL+"sys/sysMenuTree.jsp";
+            isCommit = true;
+        } catch (GeneralException e) {
+            Logger.err.println(e);
+            throw e;
+        } catch (SQLException e) {
+           throw new GeneralException(e);
+        } finally {
+            DBUtil.close(conn ,isCommit);  
+        } // end try
+        printJspPage(req, res, dest);
+    } // end performTask
+    
+    /**
+     * 메뉴과 프로그램 멥핑
+     * @param vcMenuCodeData
+     * @param top
+     * @param ptProgramCodeData
+     * @return
+     */
+    protected boolean selectMenu(Vector vcMenuCodeData ,String top,Properties ptProgramCodeData)
+    {
+        boolean returnValue = false;
+        for (int i = 0; i < vcMenuCodeData.size(); i++) {
+            MenuCodeData mncd = (MenuCodeData) vcMenuCodeData.get(i);
+            if (mncd.upMenuCode.equals(top)) {
+                
+                if (mncd.menuClsf.equals("01")) {
+                    // 폴더
+                    if (selectMenu(vcMenuCodeData ,mncd.menuCode ,ptProgramCodeData)) {
+                        mncd.isDisplay = true;
+                        returnValue = true;
+                    } // end if
+                } else {
+                    // 문서
+                    if(ptProgramCodeData.get(mncd.menuCode) != null ) {
+                        mncd.isDisplay = true;
+                        mncd.pgDetail = (ProgramCodeData)ptProgramCodeData.get(mncd.menuCode);
+                        returnValue = true;
+                    } else {
+                        Logger.debug.println(mncd.menuCode +" = code error");
+                    } // end if
+                } // end if
+            } // end if            
+        } // end for
+        return returnValue;
+    } // end selectMenu
+
+}

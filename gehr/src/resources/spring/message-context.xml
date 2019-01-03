@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation=
+		"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+
+	<!-- SpEL -->
+	<util:properties id="prop"		location="classpath:resources/properties/ehr.properties"/>
+	<util:properties id="propDEV"		location="classpath:resources/properties/DEV/ehr.properties"/>
+	<util:properties id="propQAS"		location="classpath:resources/properties/QAS/ehr.properties"/>
+	<util:properties id="propPRD"		location="classpath:resources/properties/PRD/ehr.properties"/>
+
+	<!-- message -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:resources/messages/message-common</value>
+				<value>classpath:resources/messages/message-A</value>
+				<value>classpath:resources/messages/message-B</value>
+				<value>classpath:resources/messages/message-C</value>
+				<value>classpath:resources/messages/message-D</value>
+				<value>classpath:resources/messages/message-E</value>
+				<value>classpath:resources/messages/message-F</value>
+				<value>classpath:resources/messages/message-G</value>
+				<value>classpath:resources/messages/message-N</value>
+			</list>
+		</property>
+		<property name="cacheSeconds" value="60" />
+		<property name="defaultEncoding">
+			<value>UTF-8</value>
+		</property>
+	</bean>
+
+	<bean id="messageResolver" class="com.common.MessageResolver" />
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
+
+	<bean id="global" class="com.common.Global" >
+		<property name="messageResolver" ref="messageResolver" />
+	</bean>
+
+</beans>

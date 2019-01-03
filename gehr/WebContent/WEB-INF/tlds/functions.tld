@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_1_0.xsd"
+    version="2.0">
+
+	<tlib-version>1.1</tlib-version>
+	<short-name>functions</short-name>
+	<uri>http://www.lgchemhr.com/taglibs/functions</uri>
+
+	<!-- 필요한 util 추가  -->
+	<!-- optionList  -->
+	<function>
+		<name>printOption</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String printOption(java.util.Vector,java.lang.String,java.lang.String,java.lang.String)
+		</function-signature>
+		<example>
+			${f:printOptionList(entityList, keyName, textName, selectValue)}
+		</example>
+	</function>
+
+
+	<function>
+		<name>printOptionBankType</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String printOptionBankType(java.util.Vector, java.lang.String)
+		</function-signature>
+		<example>
+			${f:printOptionBankType(keyName, selectValue)}
+		</example>
+	</function>
+
+
+	<function>
+		<name>printOTREasonType</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String printOTREasonType(java.util.Vector, java.lang.String)
+		</function-signature>
+		<example>
+			${f:printOTREasonType(keyName, selectValue)}
+		</example>
+	</function>
+
+
+	<function>
+		<name>printOptionREasonText</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String printOptionREasonText(java.util.Vector, java.lang.String)
+		</function-signature>
+		<example>
+			${f:printOptionREasonText(keyName, selectValue)}
+		</example>
+	</function>
+
+
+	<function>
+
+		<name>printOption2</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String printOption2(java.util.Vector, java.lang.String)
+		</function-signature>
+		<example>
+			${f:printOptionList(entityList, optionValue)}
+		</example>
+	</function>
+
+	<function>
+		<name>printOption3</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String printOption3(java.util.Vector,java.lang.String)
+		</function-signature>
+		<example>
+			${f:printOptionList(entityList, optionValue)}
+		</example>
+	</function>
+
+	<function>
+		<name>printCodeOption</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String printOption(java.util.Vector, java.lang.String)
+		</function-signature>
+		<example>
+			${f:printOptionList(entityList, selectValue)}
+		</example>
+	</function>
+
+	<function>
+		<name>printOptionValueText</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String printOptionText(java.util.Vector,java.lang.String)
+		</function-signature>
+		<example>
+			${f:printOptionValueText(entityList, selectValue)}
+		</example>
+	</function>
+
+	<function>
+		<name>checkEnglish</name>
+		<function-class>hris.common.util.AppUtil</function-class>
+		<function-signature>
+			boolean checkEnglish(java.lang.String)
+		</function-signature>
+		<example>
+			${f:checkEnglish(str)}
+		</example>
+	</function>
+
+	<function>
+		<name>printDate</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String printDate(java.lang.String)
+		</function-signature>
+		<example>
+			${f:printDate(selectValue)}
+		</example>
+	</function>
+
+	<function>
+		<name>printDateDefault</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String printDateDefault(java.lang.String,java.lang.String,java.lang.String)
+		</function-signature>
+		<example>
+			${f:printDateDefault(selectValue, compareValue, defaultValue)}
+		</example>
+	</function>
+
+
+	<function>
+		<name>defaultString</name>
+		<function-class>org.apache.commons.lang.StringUtils</function-class>
+		<function-signature>
+			java.lang.String defaultIfEmpty(java.lang.String,java.lang.String)
+		</function-signature>
+		<example>
+			${f:defaultString(v, default)}
+		</example>
+	</function>
+
+	<function>
+		<name>printNum</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String printNum(java.lang.String)
+		</function-signature>
+		<example>
+			${f:printNum(selectValue)}
+		</example>
+	</function>
+
+	<function>
+		<name>printNumFormat</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String printNumFormat(java.lang.String,int)
+		</function-signature>
+		<example>
+			${f:printNumFormat(selectValue, decimalsize)}
+		</example>
+	</function>
+
+	<function>
+		<name>printNumFormatBlank</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String printNumFormatBlank(java.lang.String,int)
+		</function-signature>
+		<example>
+			${f:printNumFormat(selectValue, decimalsize)}
+		</example>
+	</function>
+
+	<function>
+		<name>convertCurrency</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String convertCurrency(java.lang.String,java.lang.String)
+		</function-signature>
+		<example>
+			${f:convertCurrency(selectValue, decimalsize)}
+		</example>
+	</function>
+
+	<function>
+		<name>convertCurrencyDecimal</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String convertCurrencyDecimal(java.lang.String,java.lang.String)
+		</function-signature>
+		<example>
+			${f:convertCurrencyDecimal(selectValue, decimalsize)}
+		</example>
+	</function>
+
+
+
+	<function>
+		<name>appendSuffix</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String appendSuffix(java.lang.String,java.lang.String)
+		</function-signature>
+		<example>
+			${f:appendSuffix(value, suffix)}
+		</example>
+	</function>
+
+	<function>
+		<name>printRegNo</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String printRegNo(java.lang.String,java.lang.String)
+		</function-signature>
+		<example>
+			${f:printRegNo(regno, maskgubun)}
+		</example>
+	</function>
+
+	<function>
+		<name>printOddRow</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String printOddRow(int)
+		</function-signature>
+	</function>
+
+<!-- [CSR ID:3608185] e-HR 초과근무 사후신청 관련 시스템 개선 요청 -->
+	<function>
+		<name>getBetween</name>
+		<function-class>com.sns.jdf.util.DataUtil</function-class>
+		<function-signature>
+			int getBetween(java.lang.String,java.lang.String)
+		</function-signature>
+	</function>
+	
+	<function>
+		<name>getBetweenTime</name>
+		<function-class>com.sns.jdf.util.DataUtil</function-class>
+		<function-signature>
+			double getBetweenTime(java.lang.String,java.lang.String)
+		</function-signature>
+	</function>
+
+	<function>
+		<name>removeStructur</name>
+		<function-class>com.sns.jdf.util.DataUtil</function-class>
+		<function-signature>
+			java.lang.String  removeStructur(java.lang.String, java.lang.String)
+		</function-signature>
+	</function>
+
+
+	<function>
+		<name>addDays</name>
+		<function-class>com.sns.jdf.util.DataUtil</function-class>
+		<function-signature>
+			java.lang.String  addDays(java.lang.String , int)
+		</function-signature>
+	</function>
+
+	<function>
+		<name>defaultIfZero</name>
+		<function-class>com.sns.jdf.util.DataUtil</function-class>
+		<function-signature>
+			java.lang.String defaultIfZero(java.lang.String,java.lang.String)
+		</function-signature>
+	</function>
+
+	<function>
+		<name>currentDate</name>
+		<function-class>com.sns.jdf.util.DataUtil</function-class>
+		<function-signature>
+			java.lang.String getCurrentDate()
+		</function-signature>
+	</function>
+
+	<function>
+		<name>getCurrentYear</name>
+		<function-class>com.sns.jdf.util.DataUtil</function-class>
+		<function-signature>
+			java.lang.String getCurrentYear()
+		</function-signature>
+	</function>
+
+	<function>
+		<name>currentTime</name>
+		<function-class>com.sns.jdf.util.DataUtil</function-class>
+		<function-signature>
+			java.lang.String getCurrentTime()
+		</function-signature>
+	</function>
+
+	<function>
+		<name>printTime</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String printTime(java.lang.String)
+		</function-signature>
+	</function>
+
+	<function>
+		<name>parseLong</name>
+		<function-class>org.apache.commons.lang.math.NumberUtils</function-class>
+		<function-signature>long toLong(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>parseFloat</name>
+		<function-class>org.apache.commons.lang.math.NumberUtils</function-class>
+		<function-signature>float toFloat(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>insertStr</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String insertStr(java.lang.String,java.lang.String,java.lang.String)
+		</function-signature>
+	</function>
+
+
+	<function>
+		<name>getSize</name>
+		<function-class>com.common.Utils</function-class>
+		<function-signature>int getSize(java.util.Collection)</function-signature>
+	</function>
+
+	<function>
+		<name>changeLocalAmount</name>
+		<function-class>com.sns.jdf.util.DataUtil</function-class>
+		<function-signature>java.lang.String changeLocalAmount(java.lang.String,java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>findOption</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>java.lang.Object findOption(java.util.Collection,java.lang.String,java.lang.String)</function-signature>
+	</function>
+	<function>
+		<name>deleteStr</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.String deleteStr(java.lang.String,java.lang.String)
+		</function-signature>
+	</function>
+	<function>
+		<name>getDay</name>
+		<function-class>com.sns.jdf.util.DataUtil</function-class>
+		<function-signature>
+			int getDay(java.lang.String)
+		</function-signature>
+	</function>
+
+	<function>
+		<name>findRow</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			java.lang.Object findRow(java.util.Vector,java.lang.String,java.lang.String)
+		</function-signature>
+	</function>
+
+	<function>
+		<name>isMultiApproval</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>
+			boolean isMultiApproval(com.sns.jdf.sap.SAPType,java.lang.String,java.lang.String,java.lang.String)
+		</function-signature>
+	</function>
+
+	<function>
+		<name>replaceLiteral</name>
+		<function-class>com.sns.jdf.util.DataUtil</function-class>
+		<function-signature>
+			java.lang.String replaceLiteral(java.lang.String)
+		</function-signature>
+	</function>
+
+	<function>
+		<name>encodeURL</name>
+		<function-class>com.sns.jdf.util.WebUtil</function-class>
+		<function-signature>java.lang.String encodeURL(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>companyCode</name>
+		<function-class>com.sns.jdf.util.DataUtil</function-class>
+		<function-signature>java.lang.String addSeparate2(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>encrypt</name>
+		<function-class>hris.N.AES.AESgenerUtil</function-class>
+		<function-signature>java.lang.String encryptAES(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>decrypt</name>
+		<function-class>hris.N.AES.AESgenerUtil</function-class>
+		<function-signature>java.lang.String decryptAES(java.lang.String)</function-signature>
+	</function>
+
+	<function>
+		<name>isChangeGlobalJIKKT</name>
+		<function-class>hris.common.util.AppUtil</function-class>
+		<function-signature>
+			boolean isChangeGlobalJIKKT(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String )
+		</function-signature>
+	</function>
+
+    <function>
+        <name>humanize</name>
+        <function-class>com.sns.jdf.util.WebUtil</function-class>
+        <function-signature>
+            java.lang.String humanize(java.lang.Object, java.lang.String, java.lang.String)
+        </function-signature>
+        <example>
+            [WorkTime52] D25WorkTimeLeaderMonthlyExcel.jsp
+            ${f:humanize(value, hours, minutes)}
+        </example>
+    </function>
+</taglib>

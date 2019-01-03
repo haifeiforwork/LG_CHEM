@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name='gehr' default='all' basedir='C:\ciserv\hudson\jobs\GEHR_DEV\workspace\gehr'>
+	<!-- Encoding -->
+	<!--
+	<property name='java.encoding' value='MS949' /> -->
+	<!-- 프로젝트 자바 소스 폴더 -->
+	<property name="src.dir.java" value="${basedir}/src" />
+
+	<!-- 프로젝트 웹 소스 위치 -->
+	<property name="src.dir.webcontent" value="${basedir}/WebContent" />
+
+	<!-- Build Home -->
+	<property name="build.dir" value="${basedir}/WebContent/WEB-INF" />
+	<!-- build 시 class file들이 생성될 위치 -->
+	<property name="build.dir.classes" value="${build.dir}/classes" />
+	<!-- WAR file 생성위치 -->
+	<property name="build.dir.war" value="${build.dir}/war" />
+	<!-- classpath 설정  -->
+	<path id="gehr.classpath">
+		<pathelement location="${basedir}/war/WEB-INF/classes" />
+		<fileset dir="${build.dir}/lib" />
+		<fileset dir="${basedir}/tomcat_lib" />
+		<!--<fileset dir="${basedir}/war/WEB-INF/lib"> -->
+		<!--<fileset dir="${build.dir}/lib">
+			<include name="*.jar" />
+			<exclude name="*.dll" />
+		</fileset>
+		-->
+	</path>
+
+	<!-- 개발 서버[WAS] 정보 -->
+	<property name="was-server.ip" value="165.244.254.210" />
+	<property name="was-server.id" value="gehr" />
+	<property name="was-server.pw" value="lgchem123$" />
+	<property name="was-webconent-deploy.dest" value="/sorc001/gehr/gehr.ear/gehrWeb.war" />
+	<property name="was-webcontent-deploy.excludes" value="**/.svn, WEB-INF/classes/test/**/*,WEB-INF/lib/**/*,WEB-INF/web.xml" />
+
+	<!-- 로컬 서버 정보 -->
+	<property name='target.dir' value='C:\ciserv\hudson\jobs\GEHR_DEV\Deploy' />
+	<property name='target.dir.webcontent' value='${target.dir}/war' />
+
+
+	<!-- findbugs -->
+	<property name='findbugs.home' value='C:\ciserv\ant\lib' />
+
+	<!-- 아래 설정에 의해 테스크는 init, compile-debug, report, test 의 순서로 진행이 된다. all
+		타켓이 실행되는 이유는 맨 윗줄의 project 설정에서 default 가 all 로 되어있기 때문이다. 현재 배포용 war 파일을
+		만드는 작업은 all 에서 제외되어 있다. 이유는 배포용 war 에는 컴파일시에 debug 모드등을 제외하고 컴파일된 파일들을 넣어야
+		하기 때문이다. -->
+	<!-- 기존-->
+	<target name="all" depends="init, compile-debug,deploy-dev, devsvrprop, deploy-prod" />
+
+	<!--<target name="all" depends="clean, replaceProperties, copyToServer" />-->
+
+	<target name="init">
+		<mkdir dir="${basedir}/war/WEB-INF/classes" />
+		<copy includeemptydirs="false" todir="${basedir}/war/WEB-INF/classes">
+			<fileset dir="src" excludes="**/*.launch, **/*.java" />
+		</copy>
+	</target>
+
+	<!-- clean (모든것이 초기화된 상태에서 전체 컴파일을 할때 사용) 이 일어나게 하기위해 컴파일 결과물이 쌓이는 target
+		디렉터리를 지우고 다시 만든다. -->
+	<target name="clean">
+		<!--<delete dir="${build.dir}" quiet="true" />-->
+		<delete dir="${target.dir.webcontent}" quiet="true" />
+	</target>
+
+	<!-- Compile : for deploy -->
+	<target name="compile">
+		<javac srcdir="${src.dir.java}" destdir="${build.dir.classes}" fork="yes" executable="C:\ciserv\jdk1.5\bin\javac" compiler="javac1.5" deprecation="true" includeantruntime="false">
+			<classpath refid="gehr.classpath" />
+		</javac>
+
+		<!-- 컴파일이 성공적으로 수행되었을 때 컴파일된 classes 디렉터리를 웹어플리케이션이 구동되는 WEB-INF/classes
+			로 옮긴다. 이렇게 함으로써 개발환경과 같이 여러 개발자가 동시 체크인된 결과가 통합되는 환경에서 컴파일 오류로 인해 이전 버전이
+			망가질 수 있는 문제를 방지한다. - 컴파일 전에 init 과정에서 clean compile 을 위해 target 디렉터리를 지워버린
+			것을 기억하자. 만약 이런 과정을 WEB-INF/classes 에 직접 해버리면 구동되고 있는 개발 혹은 시험환경이 망가지는 결과를
+			초래한다. -->
+		<sync todir="${src.dir.webcontent}/WEB-INF/classes">
+			<fileset dir="${build.dir.classes}" />
+		</sync>
+	</target>
+
+
+	<!-- Compile - debug mode -->
+	<target name="compile-debug" depends="init">
+		<javac srcdir="${src.dir.java}" destdir="${build.dir.classes}" source="1.5" target="1.5" fork="yes" executable="C:\ciserv\jdk1.5\bin\javac" compiler="javac1.5"  deprecation="false" debug="true">
+			<classpath refid="gehr.classpath" />
+		</javac>
+
+		<!-- 컴파일이 성공적으로 수행되었을 때 컴파일된 classes 디렉터리를 웹어플리케이션이 구동되는 WEB-INF/classes
+					로 옮긴다. 이렇게 함으로써 개발환경과 같이 여러 개발자가 동시 체크인된 결과가 통합되는 환경에서 컴파일 오류로 인해 이전 버전이
+					망가질 수 있는 문제를 방지한다. - 컴파일 전에 init 과정에서 clean compile 을 위해 target 디렉터리를 지워버린
+					것을 기억하자. 만약 이런 과정을 WEB-INF/classes 에 직접 해버리면 구동되고 있는 개발 혹은 시험환경이 망가지는 결과를
+					초래한다. -->
+		<sync todir="${src.dir.webcontent}/WEB-INF/classes">
+			<fileset dir="${build.dir.classes}" />
+		</sync>
+	</target>
+
+	<!-- War : for deploy -->
+	<target name="war" depends="compile">
+		<war destfile="${build.dir.war}/${ant.project.name}.war" basedir="${src.dir.webcontent}" webxml="${src.dir.webcontent}/WEB-INF/web.xml" />
+	</target>
+
+	<!-- FTP War send to Prod Server -->
+	<!-- 서버측 WAR 파일 풀린 위치로 WebContent 이하의 파일전송 -->
+	<target name="deploy-prod" depends="init, compile-debug, deploy-dev,devsvrprop">
+		<!-- Build 때 마다 build class target folder를 지워버리면 파일의 날짜가 갱신되어 버리므로 newer
+			option이 무의미해짐 -->
+		<!--
+		     ftp port 할당 옵션 passive 문제해결 : hudson 리부팅으로 해결. 장기적 포트할당이 원인
+		     ftp 속도문제로 scp를 적용함 (c:\ciserv\ant\lib\jsch-0.1.51.jar 파일 추가)
+		      참고 : https://ant.apache.org/manual/Tasks/scp.html -->
+
+		<!-- 서버측 WAR 파일 풀린 위치로 WebContent 이하의 파일전송 -->
+
+		<scp todir="${was-server.id}:${was-server.pw}@${was-server.ip}:${was-webconent-deploy.dest}" trust="Yes" verbose="Yes">
+			<fileset dir="${target.dir.webcontent}" excludes="${was-webcontent-deploy.excludes}">
+			</fileset>
+		</scp>
+
+	</target>
+
+	<!-- Deploy to development server -->
+	<target name='deploy-dev' depends='init, compile-debug'>
+		<sync todir='${target.dir.webcontent}' includeemptydirs='true'>
+			<fileset dir='${src.dir.webcontent}' />
+			<preserveintarget>
+				<include name='**/WEB-INF/web.xml' />
+			</preserveintarget>
+		</sync>
+	</target>
+
+	<!-- * 빌드결과물이 실행될 환경에 맞는 설정 파일로 교체. * 이 타겟은 resource.pattern (리소스 치환 패턴)
+		프로퍼티가 * 존재하는 경우에만 실행된다. (ex: *.prodsvr) * * 실행시 넘겨줄 프로퍼티 * - resource.dir
+		: 교체작업 대상 디렉토리 -->
+	<target name="devsvrprop" depends='init, compile-debug, deploy-dev'>
+		<copy todir="${target.dir.webcontent}/WEB-INF/classes/resources/properties" overwrite="true">
+			<fileset dir="${target.dir.webcontent}/WEB-INF/classes/resources/properties/DEV" />
+			<mapper type="glob" from="*.properties" to="*" />
+		</copy>
+	</target>
+
+
+	<!-- compile 없이 서버 전송을 위해 기존 내용 copy -->
+	<target name="replaceProperties" depends="clean">
+		<copy todir="${src.dir.webcontent}/WEB-INF/classes/resources" overwrite="true">
+			<fileset dir="${src.dir.java}/resources" />
+		</copy>
+
+		<copy todir="${src.dir.webcontent}/WEB-INF/classes/resources/properties" overwrite="true">
+			<fileset dir="${src.dir.java}/resources/properties/DEV" />
+			<mapper type="glob" from="*.properties" to="*.properties" />
+		</copy>
+
+		<sync todir="${target.dir.webcontent}" >
+			<fileset dir="${src.dir.webcontent}" />
+		</sync>
+
+	</target>
+	
+	<target name="copyToServer" depends="clean, replaceProperties">
+		<!-- Build 때 마다 build class target folder를 지워버리면 파일의 날짜가 갱신되어 버리므로 newer
+			option이 무의미해짐 -->
+		<!--
+		     ftp port 할당 옵션 passive 문제해결 : hudson 리부팅으로 해결. 장기적 포트할당이 원인
+		     ftp 속도문제로 scp를 적용함 (c:\ciserv\ant\lib\jsch-0.1.51.jar 파일 추가)
+		      참고 : https://ant.apache.org/manual/Tasks/scp.html -->
+
+		<!-- 서버측 WAR 파일 풀린 위치로 WebContent 이하의 파일전송 -->
+
+		<scp todir="${was-server.id}:${was-server.pw}@${was-server.ip}:${was-webconent-deploy.dest}" trust="Yes" verbose="Yes">
+			<fileset dir="${target.dir.webcontent}" excludes="${was-webcontent-deploy.excludes}">
+			</fileset>
+		</scp>
+
+	</target>
+</project>

@@ -1,0 +1,134 @@
+/********************************************************************************/
+/*	  System Name  	: g-HR                                                														
+/*   1Depth Name		: HR Approval Box  
+/*   2Depth Name  	: Approved Document                                                   
+/*   Program Name 	: Contract Extension                                              
+/*   Program ID   		: G071ApprovalFinishContractExtensionUsaSV.java                                               
+/*   Description  		: Contract Extension 결재 완료 문서 Class                         
+/*   Note         		:                                                            
+/*   Creation     		: 2010-10-13 jungin @v1.0 Contract Extension 신규 개발      
+/********************************************************************************/
+
+package servlet.hris.G;
+
+import hris.D.D09ContractExtension.D09CurrentDataUsa;
+import hris.D.D09ContractExtension.D09ExtensionDataUsa;
+import hris.D.D09ContractExtension.rfc.D09ContractExtensionRFCUsa;
+import hris.common.PersInfoData;
+import hris.common.WebUserData;
+import hris.common.rfc.PersInfoWithNoRFC;
+import hris.common.util.AppUtilEurp;
+
+import java.sql.Connection;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import com.sns.jdf.BusinessException;
+import com.sns.jdf.GeneralException;
+import com.sns.jdf.Logger;
+import com.sns.jdf.db.DBUtil;
+import com.sns.jdf.servlet.Box;
+import com.sns.jdf.servlet.EHRBaseServlet;
+import com.sns.jdf.util.DataUtil;
+import com.sns.jdf.util.WebUtil;
+/**
+ * 
+ * G071ApprovalFinishContractExtensionSV 
+ * 
+ * @author jungin
+ * @creation 2010/10/13
+ */
+public class G071ApprovalFinishContractExtensionUsaSV extends EHRBaseServlet {
+	protected void performTask(HttpServletRequest req, HttpServletResponse res)
+			throws GeneralException {
+		Connection con = null;
+		
+		try {
+			HttpSession session = req.getSession(false);
+			
+			WebUserData user = (WebUserData) session.getAttribute("user");
+
+            Vector vcAppLineData;
+            
+            Vector D09ContractExtensionData_vt;
+            Vector D09ExtensionDataUsa_vt;
+            Vector D09CurrentDataUsa_vt;
+
+			String dest = "";
+			String jobid = "";
+
+			Box box = WebUtil.getBox(req);
+
+			String AINF_SEQN = box.get("AINF_SEQN");
+			String APPL_PERNR = req.getParameter("APPL_PERNR"); 
+			
+			// 처리 후 돌아 갈 페이지
+			String RequestPageName = box.get("RequestPageName");
+			req.setAttribute("RequestPageName", RequestPageName);
+
+			jobid = box.get("jobid");
+			if (jobid == null || jobid.equals("")) {
+				jobid = "search";
+			}// end if
+			
+            String I_DATLO = DataUtil.getCurrentDate();
+
+			if (jobid.equals("search")) {
+
+            	D09ContractExtensionRFCUsa rfc = new D09ContractExtensionRFCUsa();
+                
+            	D09ContractExtensionData_vt = rfc.getContractExtensionDetail(APPL_PERNR, I_DATLO, AINF_SEQN);
+                //Logger.debug.println(this, "#####	D09ContractExtensionData_vt : " + D09ContractExtensionData_vt.toString());
+
+				if (D09ContractExtensionData_vt.size() < 1) {
+					String msg = "System Error! \n\n 조회할 항목이 없습니다.";
+					
+					req.setAttribute("msg", msg);
+					
+					dest = WebUtil.JspURL + "common/caution.jsp";
+					
+				} else {
+                    // 계약연장 정보
+                	D09CurrentDataUsa_vt = (Vector)D09ContractExtensionData_vt.get(0);
+                	D09ExtensionDataUsa_vt = (Vector)D09ContractExtensionData_vt.get(1);
+                	
+                    // 결재자 정보
+                    vcAppLineData = AppUtilEurp.getAppChangeVt(AINF_SEQN);
+
+                    D09CurrentDataUsa ceCurrent = (D09CurrentDataUsa)D09CurrentDataUsa_vt.get(0);
+                    D09ExtensionDataUsa ceExtension = (D09ExtensionDataUsa)D09ExtensionDataUsa_vt.get(0);
+
+                    Logger.debug.println(this, "#####	D09CurrentDataUsa_vt : " + D09CurrentDataUsa_vt);
+                    Logger.debug.println(this, "#####	D09ExtensionDataUsa_vt : " + D09ExtensionDataUsa_vt);
+					
+                    PersInfoWithNoRFC piRfc = new PersInfoWithNoRFC();
+                    PersInfoData pid = (PersInfoData) piRfc.getApproval(ceExtension.PERNR).get(0);
+             
+                    req.setAttribute("PersInfoData", pid);
+					
+					req.setAttribute("ceCurrent", ceCurrent);
+					req.setAttribute("ceExtension", ceExtension);
+					req.setAttribute("vcAppLineData", vcAppLineData);
+
+					dest = WebUtil.JspURL + "G/G071ApprovalFinishContractExtensionUsa.jsp.delete";
+				} // end if
+
+			} else {
+				throw new BusinessException("#####	내부명령(jobid)이 올바르지 않습니다.");
+			} // end if
+
+			Logger.debug.println(this, "#####	dest = " + dest);
+			printJspPage(req, res, dest);
+
+		} catch (Exception e) {
+			Logger.err.println(DataUtil.getStackTrace(e));
+			throw new GeneralException(e);
+		} finally {
+			DBUtil.close(con);
+		}
+	}
+	
+}

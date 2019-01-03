@@ -1,0 +1,26 @@
+/* 사용방법안내 CSS : Designed & UI Development By 박수현 */
+
+/* Default Setting */
+  body, td {font-family: arial, helvetica, verdana, dotum; font-size: 9pt; color : #333333;}
+  tr {height: 1px;}
+
+
+/* Form Setting */
+  select, option {font-family: arial, helvetica, verdana, dotum; font-size: 9pt; color : #333333; border: #C4C9C2 solid 1px; background-color:#E7F3F7; }
+
+
+/* 사용방법안내 타이틀 텍스트가 사용하는 클래스 */
+  .title00 { font-family: arial, helvetica, verdana, dotum; font-size: 12pt; color : #333399; font-weight: bold; padding-left:3px; padding-top:2px;  }
+
+/* 서브타이틀 텍스트가 사용하는 클래스 */
+  .title01 { font-family: arial, helvetica, verdana, dotum; font-size: 9pt;  font-weight: bold; }
+  .title02 { font-family: arial, helvetica, verdana, dotum; font-size: 9pt;  padding-top:5px;   }
+
+/*  내용 */
+  .text01 { line-height: 140%; }
+  .text02 { line-height: 140%; padding-left: 14px}
+  
+/*  기본 링크 */
+a:link {font-family: dotum; font-size: 9pt; color : #1B59B1; text-decoration : none;}
+a:visited {font-family: dotum; font-size: 9pt; color : #1B59B1; text-decoration : none;}
+a:hover {font-family: dotum; font-size: 9pt; color : #000000; text-decoration : none;}

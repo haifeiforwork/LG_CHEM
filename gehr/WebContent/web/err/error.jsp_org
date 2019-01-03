@@ -1,0 +1,64 @@
+<%@ page contentType="text/html; charset=euc-kr" isErrorPage="true"%>
+<%@ page errorPage="/web/err/error.jsp"%>
+<%@ page import="com.sns.jdf.*"%>
+<%@ page import="com.sns.jdf.util.*"%>
+<html>
+<head>
+<title>ESS</title>
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr.css" type="text/css">
+<script language="javascript" src="<%= WebUtil.ImageURL %>css/ess.js"></script>
+<script language="JavaScript" src="<%= WebUtil.ImageURL %>js/snsscript.js"></script>
+<%
+    String errorMode     = "";
+    String message1      = "";
+    String message2      = "";
+
+    boolean DebugMessageMode=true;
+
+    try{
+        com.sns.jdf.Config conf = new com.sns.jdf.Configuration();
+        DebugMessageMode = conf.getBoolean("com.sns.jdf.jspDebugMessageMode");
+    }catch(Exception ex){
+        Logger.debug.println("Config에러 : "+ex.toString());
+    }
+    
+    Exception ex;
+
+    ex = (Exception)request.getAttribute("error");
+
+    if (ex != null && (ex instanceof  GeneralException || ex instanceof  ConfigurationException)) {
+        message1    =  ex.getMessage();
+        message2    =  DataUtil.getStackTrace(ex);
+    } else {
+        message1    =  exception.getMessage();
+        message2    =  DataUtil.getStackTrace(exception);
+    } // end if
+%>
+<body bgcolor=white>
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" height="100%">
+    <tr> 
+      <td width="100">&nbsp; </td>
+      <td > 
+        <!--주의사항 테이블 시작-->
+        <table width="450" border="0" cellspacing="1" cellpadding="0" class="table03">
+          <tr> 
+            <td class="td04" style="text-align : center">
+                <img src="<%= WebUtil.ImageURL %>img_caution.gif"> &nbsp;
+            </td>
+          </tr>
+          <tr> 
+            <td class="td04" style="text-align : center"><%= message1 %></td>
+          </tr>
+          <tr> 
+            <td id = "xMessage" class="td04" style="text-align : left;display:none">
+            <% Logger.err.println(this ,message2); %>
+				<pre><%= message2 %></pre>
+            </td>
+          </tr>
+        </table>
+        <!--주의사항 테이블 끝-->
+      </td>
+    </tr>
+  </table>
+</body>
+</html> 

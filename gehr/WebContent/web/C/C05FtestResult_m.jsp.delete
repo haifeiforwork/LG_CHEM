@@ -1,0 +1,1048 @@
+<%/******************************************************************************/
+/*                                                                              */
+/*   System Name  : MSS                                                         */
+/*   1Depth Name  : Manaer's Desk                                               */
+/*   2Depth Name  : 어학능력                                                    */
+/*   Program Name : 어학능력 조회                                               */
+/*   Program ID   : C05FtestResult_m.jsp                                        */
+/*   Description  : 어학능력 조회                                               */
+/*   Note         : 없음                                                        */
+/*   Creation     : 2005-01-07  윤정현                                          */
+/*   Update       :                                                             */
+/*                  2006-01-06  lsa @v1.1  teps추가                             */
+/*                                                                              */
+/*                  2013-08-21 [CSR ID:2389767] [정보보안] e-HR MSS시스템 수정    */
+/*                  2013/12/18 C20131202_46202  0010:TOEIC Speaking,0011:OPIc,0012:JLPT  */
+/*                  2014-02-07 C20140204_80557  어학 이라는 표현을  외국어 로 변경*/
+/*                  2015-08-05  이지은D [CSR ID:2842390] 어학성적입력 인포타입 화면 중 수정사항 반영요청의 件 */
+/*                  2016/02/11 [CSR ID:2981372] SAP/ERP 및 G Portal(e-HR) 어학성적 추가 요청의 건   */
+/*                             */
+/********************************************************************************/%>
+
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ include file="/web/common/commonProcess.jsp" %>
+<%@ page import="com.sns.jdf.util.*" %>
+<%@ page import="java.util.Vector" %>
+<%@ page import="hris.C.*" %>
+
+<%
+    WebUserData user_m = WebUtil.getSessionMSSUser(request);
+    WebUserData user = WebUtil.getSessionUser(request);
+
+    // 어학능력
+    Vector c05FtestResult1Data_1 = (Vector)request.getAttribute("c05FtestResult1Data_1");
+           c05FtestResult1Data_1 = SortUtil.sort( c05FtestResult1Data_1, "1", "desc" );      //Vector Sort
+    Vector c05FtestResult1Data_2 = (Vector)request.getAttribute("c05FtestResult1Data_2");
+           c05FtestResult1Data_2 = SortUtil.sort( c05FtestResult1Data_2, "1", "desc" );      //Vector Sort
+    Vector c05FtestResult1Data_3 = (Vector)request.getAttribute("c05FtestResult1Data_3");
+           c05FtestResult1Data_3 = SortUtil.sort( c05FtestResult1Data_3, "1", "desc" );      //Vector Sort
+    Vector c05FtestResult1Data_4 = (Vector)request.getAttribute("c05FtestResult1Data_4");
+           c05FtestResult1Data_4 = SortUtil.sort( c05FtestResult1Data_4, "1", "desc" );      //Vector Sort
+    Vector c05FtestResult1Data_5 = (Vector)request.getAttribute("c05FtestResult1Data_5");
+           c05FtestResult1Data_5 = SortUtil.sort( c05FtestResult1Data_5, "1", "desc" );      //Vector Sort
+    Vector c05FtestResult1Data_6 = (Vector)request.getAttribute("c05FtestResult1Data_6");
+           c05FtestResult1Data_6 = SortUtil.sort( c05FtestResult1Data_6, "1", "desc" );      //Vector Sort
+    Vector c05FtestResult1Data_7 = (Vector)request.getAttribute("c05FtestResult1Data_7");
+           c05FtestResult1Data_7 = SortUtil.sort( c05FtestResult1Data_7, "1", "desc" );      //Vector Sort
+    Vector c05FtestResult1Data_8 = (Vector)request.getAttribute("c05FtestResult1Data_8");
+           c05FtestResult1Data_8 = SortUtil.sort( c05FtestResult1Data_8, "1", "desc" );      //Vector Sort
+    Vector c05FtestResult1Data_9 = (Vector)request.getAttribute("c05FtestResult1Data_9");
+           c05FtestResult1Data_9 = SortUtil.sort( c05FtestResult1Data_9, "1", "desc" );      //Vector Sort
+    //C20131202_46202
+    Vector c05FtestResult1Data_10 = (Vector)request.getAttribute("c05FtestResult1Data_10");
+           c05FtestResult1Data_10 = SortUtil.sort( c05FtestResult1Data_10, "1", "desc" );      //Vector Sort
+    Vector c05FtestResult1Data_11 = (Vector)request.getAttribute("c05FtestResult1Data_11");
+           c05FtestResult1Data_11 = SortUtil.sort( c05FtestResult1Data_11, "1", "desc" );      //Vector Sort
+    Vector c05FtestResult1Data_12 = (Vector)request.getAttribute("c05FtestResult1Data_12");
+           c05FtestResult1Data_12 = SortUtil.sort( c05FtestResult1Data_12, "1", "desc" );      //Vector Sort
+
+    // [CSR ID:2981372]
+    Vector c05FtestResult1Data_13 = (Vector)request.getAttribute("c05FtestResult1Data_13");
+           c05FtestResult1Data_13 = SortUtil.sort( c05FtestResult1Data_13, "1", "desc" );    //Vector Sort
+    Vector c05FtestResult1Data_14 = (Vector)request.getAttribute("c05FtestResult1Data_14");
+           c05FtestResult1Data_14 = SortUtil.sort( c05FtestResult1Data_14, "1", "desc" );    //Vector Sort
+    Vector c05FtestResult1Data_15 = (Vector)request.getAttribute("c05FtestResult1Data_15");
+           c05FtestResult1Data_15 = SortUtil.sort( c05FtestResult1Data_15, "1", "desc" );    //Vector Sort
+    Vector c05FtestResult1Data_16 = (Vector)request.getAttribute("c05FtestResult1Data_16");
+           c05FtestResult1Data_16 = SortUtil.sort( c05FtestResult1Data_16, "1", "desc" );    //Vector Sort
+    Vector c05FtestResult1Data_17 = (Vector)request.getAttribute("c05FtestResult1Data_17");
+           c05FtestResult1Data_17 = SortUtil.sort( c05FtestResult1Data_17, "1", "desc" );    //Vector Sort
+    Vector c05FtestResult1Data_18 = (Vector)request.getAttribute("c05FtestResult1Data_18");
+           c05FtestResult1Data_18 = SortUtil.sort( c05FtestResult1Data_18, "1", "desc" );    //Vector Sort
+    Vector c05FtestResult1Data_19 = (Vector)request.getAttribute("c05FtestResult1Data_19");
+           c05FtestResult1Data_19 = SortUtil.sort( c05FtestResult1Data_19, "1", "desc" );      //Vector Sort
+    Vector c05FtestResult1Data_20 = (Vector)request.getAttribute("c05FtestResult1Data_20");
+           c05FtestResult1Data_20 = SortUtil.sort( c05FtestResult1Data_20, "1", "desc" );      //Vector Sort
+
+//         2015- 06-08 개인정보 통합시 subView ="Y";
+           String subView = WebUtil.nvl(request.getParameter("subView"));
+%>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function  doSearchDetail() {
+    document.form1.action = "<%= WebUtil.ServletURL %>hris.C.C05FtestResultSV_m";
+    document.form1.method = "post";
+    document.form1.target = "menuContentIframe";
+    document.form1.submit();
+}
+//-->
+</SCRIPT>
+
+<html>
+<head>
+<title>ESS</title>
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr.css" type="text/css">
+
+<script language="JavaScript" src="<%= WebUtil.ImageURL %>js/snsscript.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>
+<!-- 2013-08-21 [CSR ID:2389767] [정보보안] 화면캡쳐방지  -->
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" oncontextmenu="return false" ondragstart="return false" onselectstart="return false" onKeyUp="ClipBoardClear()">
+<form name="form1" method="post">
+  <table width="796" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="1">&nbsp;</td>
+      <td><table width="780" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td>
+            <table width="780" border="0" cellpadding="0" cellspacing="0">
+<%if(!subView.equals("Y")){ %>
+
+                <tr>
+                  <td  colspan="2" class="title02"><img src="<%= WebUtil.ImageURL %>ehr/title01.gif">외국어능력</td><!-- C20140204_80557 어학 을  외국어로 변경-->
+
+                </tr>
+              </table>
+<%} %>
+              </td>
+
+<%
+// 사원 검색한 사람이 없을때
+if ( user_m != null ) {
+%>
+
+<!-- 조회할 어학능력이 하나도 존재하지 않을때 -->
+<%
+    if( c05FtestResult1Data_1.size() == 0 && c05FtestResult1Data_2.size() == 0 &&
+        c05FtestResult1Data_3.size() == 0 && c05FtestResult1Data_4.size() == 0 &&
+        c05FtestResult1Data_5.size() == 0 && c05FtestResult1Data_6.size() == 0 &&
+        c05FtestResult1Data_7.size() == 0 ) {
+%>
+          <tr>
+            <td height="7"></td>
+          </tr>
+          <tr>
+            <td> <table width="750" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif">
+                    TOEIC</td>
+                  <!-- 0001 -->
+                </tr>
+              </table></td>
+          </tr>
+          <tr>
+            <td>
+              <!--TOEIC 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="4" class="table02">
+                <tr>
+                  <td class="td03">검정일</td>
+                  <td class="td03">L/C</td>
+                  <td class="td03">R/C</td>
+                  <td class="td03">TOTAL</td>
+                </tr>
+                <tr>
+                  <td class="td04" colspan="4">해당하는 데이터가 존재하지 않습니다.</td>
+                </tr>
+              </table>
+              <!--TOEIC 테이블 시작-->
+            </td>
+          </tr>
+<%
+    }
+%>
+<!--------------------------------------- TOEIC 시작 --------------------------------------->
+<%
+    if( c05FtestResult1Data_1.size() > 0 ) {
+%>
+          <tr>
+            <td height="7"></td>
+          </tr>
+          <tr>
+            <td> <table width="750" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif">
+                    TOEIC</td>
+                  <!-- 0001 -->
+                </tr>
+              </table></td>
+          </tr>
+          <tr>
+            <td>
+              <!--TOEIC 테이블 시작-->
+              <table width="470" border="0" cellspacing="1" cellpadding="4" class="table02">
+                <tr>
+                  <td class="td03" width="110">검정일</td>
+                  <td class="td03" width="100">L/C</td>
+                  <td class="td03" width="100">R/C</td>
+                  <td class="td03" width="160">TOTAL</td>
+                </tr>
+<%
+        for ( int i = 0 ; i < c05FtestResult1Data_1.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_1.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><%= data.LISN_SCOR %></td>
+                  <td class="td04"><%= data.READ_SCOR %></td>
+                  <td class="td04"> <font color="<%= data.LAST_FLAG.equals("Y") ? "#FF0000" : "#000000" %>"><%= data.TOTL_SCOR %></font> </td>
+                </tr>
+                <%
+        }
+%>
+              </table>
+              <!--TOEIC 리스트 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+<!--------------------------------------- JPT 시작 --------------------------------------->
+<%
+    if( c05FtestResult1Data_2.size() > 0 ) {
+%>
+          <tr>
+            <td height="7"></td>
+          </tr>
+          <tr>
+            <td> <table width="750" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif">
+                    JPT</td>
+                  <!-- 0002 -->
+                </tr>
+              </table></td>
+          </tr>
+          <tr>
+            <td>
+              <!--JPT 테이블 시작-->
+              <table width="470" border="0" cellspacing="1" cellpadding="4" class="table02">
+                <tr>
+                  <td class="td03" width="110">검정일</td>
+                  <td class="td03" width="100">L/C</td>
+                  <td class="td03" width="100">R/C</td>
+                  <td class="td03" width="160">TOTAL</td>
+                </tr>
+                <%
+        for ( int i = 0 ; i < c05FtestResult1Data_2.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_2.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><%= data.LISN_SCOR %></td>
+                  <td class="td04"><%= data.READ_SCOR %></td>
+                  <td class="td04"> <font color="<%= data.LAST_FLAG.equals("Y") ? "#FF0000" : "#000000" %>"><%= data.TOTL_SCOR %></font> </td>
+                </tr>
+                <%
+        }
+%>
+              </table>
+              <!--JPT 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+
+<!--------------------------------------- TOEFL 시작 --------------------------------------->
+<%
+    if( c05FtestResult1Data_3.size() > 0 ) {
+%>
+          <tr>
+            <td height="7"></td>
+          </tr>
+          <tr>
+            <td> <table width="750" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif">
+                    TOEFL</td>
+                  <!-- 0003 -->
+                </tr>
+              </table></td>
+          </tr>
+          <tr>
+            <td>
+              <!--TOEFL 테이블 시작-->
+              <table width="640" border="0" cellspacing="1" cellpadding="4" class="table02">
+                <tr>
+                  <td class="td03" width="110">검정일</td>
+                  <td class="td03" width="100">L/C</td>
+                  <td class="td03" width="100">Structure</td>
+                  <td class="td03" width="100">R/C</td>
+                  <td class="td03" width="100">Writing</td>
+                  <td class="td03" width="130">TOTAL</td>
+                </tr>
+                <%
+        for ( int i = 0 ; i < c05FtestResult1Data_3.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_3.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><%= data.LISN_SCOR %></td>
+                  <td class="td04"><%= data.STRU_SCOR %></td>
+                  <td class="td04"><%= data.READ_SCOR %></td>
+                  <td class="td04"><%= data.WRIT_SCOR %></td>
+                  <td class="td04"> <font color="<%= data.LAST_FLAG.equals("Y") ? "#FF0000" : "#000000" %>"><%= data.TOTL_SCOR %></font> </td>
+                </tr>
+                <%
+        }
+%>
+              </table>
+              <!--TOEFL 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+<!--------------------------------------- 한어수평고시 시작 --------------------------------------->
+<%
+    if( c05FtestResult1Data_4.size() > 0 ) {
+%>
+          <tr>
+            <td height="7"></td>
+          </tr>
+          <tr>
+            <td> <table width="750" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif">
+                    한어수평고시</td>
+                  <!-- 0004 -->
+                </tr>
+              </table></td>
+          </tr>
+          <tr>
+            <td>
+              <!--한어수평고시 테이블 시작-->
+              <table width="670" border="0" cellspacing="1" cellpadding="4" class="table02">
+                <tr>
+                  <td class="td03" width="110">검정일</td>
+                  <td class="td03" width="70">청력</td>
+                  <td class="td03" width="70">어법</td>
+                  <td class="td03" width="70">독해</td>
+                  <td class="td03" width="70">종합</td>
+                  <td class="td03" width="70">작문</td>
+                  <td class="td03" width="70">구술</td>
+                  <td class="td03" width="80">TOTAL</td>
+                  <td class="td03" width="60">등급</td>
+                </tr>
+                <%
+        for ( int i = 0 ; i < c05FtestResult1Data_4.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_4.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><%= data.HEAR_SCOR %></td>
+                  <td class="td04"><%= data.EXPR_SCOR %></td>
+                  <td class="td04"><%= data.UNDR_SCOR %></td>
+                  <td class="td04"><%= data.SUMM_SCOR %></td>
+                  <td class="td04"><%= data.COMP_SCOR %></td>
+                  <td class="td04"><%= data.ORAL_SCOR %></td>
+                  <td class="td04"><%= data.TOTL_SCOR %></td>
+                  <td class="td04"> <font color="<%= data.LAST_FLAG.equals("Y") ? "#FF0000" : "#000000" %>"><%= data.LANG_LEVL %></font> </td>
+                </tr>
+                <%
+        }
+%>
+              </table>
+              <!--한어수평고시 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+<!--------------------------------------- LGA-LAP Oral Test 시작 --------------------------------------->
+<%
+    if( c05FtestResult1Data_5.size() > 0 ) {
+%>
+          <tr>
+            <td height="7"></td>
+          </tr>
+          <tr>
+            <td> <table width="750" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif">
+                    LGA-LAP Oral Test</td>
+                  <!-- 0005 -->
+                </tr>
+              </table></td>
+          </tr>
+          <tr>
+            <td>
+              <!--LGA-LAP Oral Test 테이블 시작-->
+              <table width="470" border="0" cellspacing="1" cellpadding="4" class="table02">
+                <tr>
+                  <td class="td03" width="110">검정일</td>
+                  <td class="td03" width="360">Oral Score</td>
+                </tr>
+                <%
+        for ( int i = 0 ; i < c05FtestResult1Data_5.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_5.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><%= data.STEXT %>( <font color="<%= data.LAST_FLAG.equals("Y") ? "#FF0000" : "#000000" %>"><%= data.LGAX_SCOR %></font>) </td>
+                </tr>
+                <%
+        }
+%>
+              </table>
+              <!--LGA-LAP Oral Test 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+<!--------------------------------------- LGA-LAP Written 시작 --------------------------------------->
+<%
+    if( c05FtestResult1Data_6.size() > 0 ) {
+%>
+          <tr>
+            <td height="7"></td>
+          </tr>
+          <tr>
+            <td> <table width="750" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif">
+                    LGA-LAP Written
+                    <!-- 0006 -->
+                    Test</td>
+                </tr>
+              </table></td>
+          </tr>
+          <tr>
+            <td>
+              <!--LGA-LAP Written Test 테이블 시작-->
+              <table width="470" border="0" cellspacing="1" cellpadding="4" class="table02">
+                <tr>
+                  <td class="td03" width="110">검정일</td>
+                  <td class="td03" width="360">Written Score</td>
+                </tr>
+                <%
+        for ( int i = 0 ; i < c05FtestResult1Data_6.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_6.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><%= data.STEXT %>( <font color="<%= data.LAST_FLAG.equals("Y") ? "#FF0000" : "#000000" %>"><%= data.LAPX_SCOR %></font>) </td>
+                </tr>
+                <%
+        }
+%>
+              </table>
+              <!--LGA-LAP Written Test 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+<!--------------------------------------- SEPT 시작 --------------------------------------->
+<%
+    if( c05FtestResult1Data_7.size() > 0 ) {
+%>
+          <tr>
+            <td height="7"></td>
+          </tr>
+          <tr>
+            <td> <table width="780" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif">
+                    SEPT</td>
+                  <!-- 0007 -->
+                </tr>
+              </table></td>
+          </tr>
+          <tr>
+            <td> <table width="780" border="0" cellspacing="1" cellpadding="4" class="table02">
+                <tr>
+                  <td class="td03" width="110">검정일</td>
+                  <td class="td03" width="100">Weighted Score</td>
+                  <td class="td03" width="360">레벨</td>
+                </tr>
+                <%
+        for ( int i = 0 ; i < c05FtestResult1Data_7.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_7.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><%= data.SEPT_SCOR %></td>
+                  <td class="td04"><%= data.STEXT %>( <font color="<%= data.LAST_FLAG.equals("Y") ? "#FF0000" : "#000000" %>"><%= data.SEPT_LEVL %></font>) </td>
+                </tr>
+                <%
+        }
+%>
+              </table></td>
+          </tr>
+<%
+    }
+%>
+<!--------------------------------------- @v1.1 TEPS 시작 --------------------------------------->
+<%
+    if( c05FtestResult1Data_8.size() > 0 ) {
+%>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> TEPS</td> <!-- 0008 -->
+          </tr>
+          <tr>
+            <td>
+              <!--TEPS 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="2" class="table02">
+                <tr>
+                  <td class="td03" width="150" rowspan=2>검정일</td>
+                  <td class="td03" colspan=2>청해</td>
+                  <td class="td03" colspan=2>문법</td>
+                  <td class="td03" colspan=2>어휘</td>
+                  <td class="td03" colspan=2>독해</td>
+                  <td class="td03" colspan=2>총점</td>
+                </tr>
+                <tr>
+                  <td class="td03" width="43">점수</td>
+                  <td class="td03" width="43">등급</td>
+                  <td class="td03" width="43">점수</td>
+                  <td class="td03" width="43">등급</td>
+                  <td class="td03" width="43">점수</td>
+                  <td class="td03" width="43">등급</td>
+                  <td class="td03" width="43">점수</td>
+                  <td class="td03" width="43">등급</td>
+                  <td class="td03" width="43">점수</td>
+                  <td class="td03" width="43">등급</td>
+                </tr>
+<%
+        for ( int i = 0 ; i < c05FtestResult1Data_8.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_8.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><%= Long.parseLong(data.TEPS_SCOR1) %></td>
+                  <td class="td04"><%= data.TEPS_LEVL1 %></td>
+                  <td class="td04"><%= Long.parseLong(data.TEPS_SCOR2) %></td>
+                  <td class="td04"><%= data.TEPS_LEVL2 %></td>
+                  <td class="td04"><%= Long.parseLong(data.TEPS_SCOR3) %></td>
+                  <td class="td04"><%= data.TEPS_LEVL3 %></td>
+                  <td class="td04"><%= Long.parseLong(data.TEPS_SCOR4) %></td>
+                  <td class="td04"><%= data.TEPS_LEVL4 %></td>
+                  <td class="td04"><font color="<%= data.LAST_FLAG.equals("Y") ? "#CC3300" : "#000000" %>"><%= Long.parseLong(data.TEPS_AMNT) %></td>
+                  <td class="td04"><%= data.TEPS_LEVL %></font>
+                </tr>
+<%
+        }
+%>
+              </table>
+              <!--TEPS 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+          <tr>
+            <td height="10">&nbsp;</td>
+          </tr>
+<!--------------------------------------- 신 HSK --------------------------------------->
+<%
+    if( c05FtestResult1Data_9.size() > 0 ) {
+%>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> 신HSK</td> <!-- 0009-->
+          </tr>
+          <tr>
+            <td>
+              <!--TEPS 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="2" class="table02">
+                <tr>
+                  <td class="td03" width="150">검정일</td>
+                  <td class="td03">듣기</td>
+                  <td class="td03">독해</td>
+                  <td class="td03">쓰기</td>
+                  <td class="td03">총점</td>
+                  <td class="td03">등급</td>
+                </tr>
+<%
+        for ( int i = 0 ; i < c05FtestResult1Data_9.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_9.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><%= Long.parseLong(data.HEAR_SCOR) %></td>
+                  <td class="td04"><%= Long.parseLong(data.UNDR_SCOR) %></td>
+                  <td class="td04"><%= Long.parseLong(data.COMP_SCOR) %></td>
+                  <td class="td04"><font color="<%= data.LAST_FLAG.equals("Y") ? "#CC3300" : "#000000" %>"><%= Long.parseLong(data.TOTL_SCOR) %></td>
+                  <td class="td04"><%= Long.parseLong(data.LANG_LEVL) %></font>
+                  </td>
+                </tr>
+<%
+        }
+%>
+              </table>
+              <!--TEPS 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+
+
+<!---------------------------------------※C20131202_46202  TOEIC Speaking 0010--------------------------------------->
+<%
+    if( c05FtestResult1Data_10.size() > 0 ) {
+%>
+
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> TOEIC Speaking</td> <!-- 0010 -->
+          </tr>
+          <tr>
+            <td>
+              <!--TOEIC Speaking 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="2" class="table02">
+                <tr>
+                  <td class="td03" width="150">검정일</td>
+		  <td class="td03">SPEAKING</td>
+		  <td class="td03">SPEAKING LEVEL</td>
+		  <td class="td03">WRITING</td>
+		  <td class="td03">WRITING LEVEL</td>
+                </tr>
+<%
+        for ( int i = 0 ; i < c05FtestResult1Data_10.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_10.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><font color="<%= data.LAST_FLAG.equals("Y") ? "#CC3300" : "#000000" %>"><%= data.SPEA_SCOR  %></td>
+                  <td class="td04"><font color="<%= data.LAST_FLAG.equals("Y") ? "#CC3300" : "#000000" %>"><%= data.SPEA_LEVL  %></td>
+                  <td class="td04"><font color="<%= data.LAST_FLAG.equals("Y") ? "#CC3300" : "#000000" %>"><%= data.WRIT_SCOR1  %></td>
+                  <td class="td04"><font color="<%= data.LAST_FLAG.equals("Y") ? "#CC3300" : "#000000" %>"><%= data.WRIT_LEVL  %></td>
+                  </td>
+                </tr>
+<%
+        }
+%>
+              </table>
+              <!--TOEIC Speaking 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+
+<!---------------------------------------※C20131202_46202  OPIc 0011--------------------------------------->
+<%
+    if( c05FtestResult1Data_11.size() > 0 ) {
+%>
+
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> OPIc</td> <!-- 0011 -->
+          </tr>
+          <tr>
+            <td>
+              <!--OPIc 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="2" class="table02">
+                <tr>
+                  <td class="td03" width="150">검정일</td>
+		  <td class="td03">등급</td>
+                </tr>
+<%
+        for ( int i = 0 ; i < c05FtestResult1Data_11.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_11.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><font color="<%= data.LAST_FLAG.equals("Y") ? "#CC3300" : "#000000" %>"><%= data.OPIC_TEXT  %></td><!-- [CSR ID:2842390] 어학성적입력 인포타입 화면 중 수정사항 반영요청의 件 -->
+                  </td>
+                </tr>
+<%
+        }
+%>
+              </table>
+              <!--OPIc 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+
+
+<!---------------------------------------※C20131202_46202  JLPT 0012--------------------------------------->
+<%
+    if( c05FtestResult1Data_12.size() > 0 ) {
+%>
+
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> JLPT</td> <!-- 0012 -->
+          </tr>
+          <tr>
+            <td>
+              <!--OPIc 테이블 시작-->
+               <table width="780" border="0" cellspacing="1" cellpadding="2" class="table02">
+                <tr>
+                  <td class="td03" width="150">검정일</td>
+		  <td class="td03">Level</td>
+      		  <td class="td03">언어지식</td>
+      		  <td class="td03">독해</td>
+      		  <td class="td03">청해</td>
+      		  <td class="td03">TOTAL</td>
+                </tr>
+<%
+        for ( int i = 0 ; i < c05FtestResult1Data_12.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_12.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><%= data.JLPT_LEVL  %></td>
+                  <td class="td04"><%= data.LANG_SCOR  %></td>
+                  <td class="td04"><%= data.READ_SCOR1  %></td>
+                  <td class="td04"><%= data.LISN_SCOR1  %></td>
+                  <td class="td04"><font color="<%= data.LAST_FLAG.equals("Y") ? "#CC3300" : "#000000" %>"><%= data.TOTL_SCOR  %></td>
+                  </td>
+                </tr>
+<%
+        }
+%>
+              </table>
+              <!--OPIc 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+<!---------------------------------------[CSR ID:2981372] TSC 0013--------------------------------------->
+<%
+    if( c05FtestResult1Data_13.size() > 0 ) {
+%>
+
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> TSC</td> <!-- 0013 -->
+          </tr>
+          <tr>
+            <td>
+              <!--OPIc 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="2" class="table02">
+                <tr>
+                  <td class="td03" width="150">검정일</td>
+		  <td class="td03">등급</td>
+                </tr>
+<%
+        for ( int i = 0 ; i < c05FtestResult1Data_13.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_13.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><font color="<%= data.LAST_FLAG.equals("Y") ? "#CC3300" : "#000000" %>"><%= data.TSC_TEXT  %></td>
+                  </td>
+                </tr>
+<%
+        }
+%>
+              </table>
+              <!--OPIc 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+<!---------------------------------------[CSR ID:2981372] SJPT(일본어) 0014--------------------------------------->
+<%
+    if( c05FtestResult1Data_14.size() > 0 ) {
+%>
+
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> SJPT(일본어)</td> <!-- 0014 -->
+          </tr>
+          <tr>
+            <td>
+              <!--OPIc 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="2" class="table02">
+                <tr>
+                  <td class="td03" width="150">검정일</td>
+		  <td class="td03">등급</td>
+                </tr>
+<%
+        for ( int i = 0 ; i < c05FtestResult1Data_14.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_14.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><font color="<%= data.LAST_FLAG.equals("Y") ? "#CC3300" : "#000000" %>"><%= data.SJPT_TEXT  %></td>
+                  </td>
+                </tr>
+<%
+        }
+%>
+              </table>
+              <!--OPIc 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+
+<!---------------------------------------[CSR ID:2981372] ZD(독어) 0015--------------------------------------->
+<%
+    if( c05FtestResult1Data_15.size() > 0 ) {
+%>
+
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> ZD(독어)</td> <!-- 0015 -->
+          </tr>
+          <tr>
+            <td>
+              <!--OPIc 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="2" class="table02">
+                <tr>
+                  <td class="td03" width="150">검정일</td>
+		  <td class="td03">등급</td>
+                </tr>
+<%
+        for ( int i = 0 ; i < c05FtestResult1Data_15.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_15.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><font color="<%= data.LAST_FLAG.equals("Y") ? "#CC3300" : "#000000" %>"><%= data.ZD_TEXT  %></td>
+                  </td>
+                </tr>
+<%
+        }
+%>
+              </table>
+              <!--OPIc 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+
+<!---------------------------------------[CSR ID:2981372] DALF(프랑스어) 0016--------------------------------------->
+<%
+    if( c05FtestResult1Data_16.size() > 0 ) {
+%>
+
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> DALF(프랑스어)</td> <!-- 0016 -->
+          </tr>
+          <tr>
+            <td>
+              <!--OPIc 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="2" class="table02">
+                <tr>
+                  <td class="td03" width="150">검정일</td>
+		  <td class="td03">등급</td>
+                </tr>
+<%
+        for ( int i = 0 ; i < c05FtestResult1Data_16.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_16.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><font color="<%= data.LAST_FLAG.equals("Y") ? "#CC3300" : "#000000" %>"><%= data.DALF_TEXT  %></td>
+                  </td>
+                </tr>
+<%
+        }
+%>
+              </table>
+              <!--OPIc 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+
+<!---------------------------------------[CSR ID:2981372] DELF(프랑스어) 0017--------------------------------------->
+<%
+    if( c05FtestResult1Data_17.size() > 0 ) {
+%>
+
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> DELF(프랑스어)</td> <!-- 0017 -->
+          </tr>
+          <tr>
+            <td>
+              <!--OPIc 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="2" class="table02">
+                <tr>
+                  <td class="td03" width="150">검정일</td>
+		  <td class="td03">등급</td>
+                </tr>
+<%
+        for ( int i = 0 ; i < c05FtestResult1Data_17.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_17.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><font color="<%= data.LAST_FLAG.equals("Y") ? "#CC3300" : "#000000" %>"><%= data.DELF_TEXT  %></td>
+                  </td>
+                </tr>
+<%
+        }
+%>
+              </table>
+              <!--OPIc 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+
+<!---------------------------------------[CSR ID:2981372] DELE(스페인어) 0018--------------------------------------->
+<%
+    if( c05FtestResult1Data_18.size() > 0 ) {
+%>
+
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> DELE(스페인어)</td> <!-- 0018 -->
+          </tr>
+          <tr>
+            <td>
+              <!--OPIc 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="2" class="table02">
+                <tr>
+                  <td class="td03" width="150">검정일</td>
+		  <td class="td03">등급</td>
+                </tr>
+<%
+        for ( int i = 0 ; i < c05FtestResult1Data_18.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_18.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><font color="<%= data.LAST_FLAG.equals("Y") ? "#CC3300" : "#000000" %>"><%= data.DELE_TEXT  %></td>
+                  </td>
+                </tr>
+<%
+        }
+%>
+              </table>
+              <!--OPIc 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+
+<!---------------------------------------[CSR ID:2981372] CELPE-BRAS(포르투칼어) 0019--------------------------------------->
+<%
+    if( c05FtestResult1Data_19.size() > 0 ) {
+%>
+
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> CELPE-BRAS(포르투칼어)</td> <!-- 0019 -->
+          </tr>
+          <tr>
+            <td>
+              <!--OPIc 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="2" class="table02">
+                <tr>
+                  <td class="td03" width="150">검정일</td>
+		  <td class="td03">등급</td>
+                </tr>
+<%
+        for ( int i = 0 ; i < c05FtestResult1Data_19.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_19.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><font color="<%= data.LAST_FLAG.equals("Y") ? "#CC3300" : "#000000" %>"><%= data.CELPE_TEXT  %></td>
+                  </td>
+                </tr>
+<%
+        }
+%>
+              </table>
+              <!--OPIc 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+
+<!---------------------------------------[CSR ID:2981372] TORFL(러시아어) 0020--------------------------------------->
+<%
+    if( c05FtestResult1Data_20.size() > 0 ) {
+%>
+
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> TORFL(러시아어)</td> <!-- 0020 -->
+          </tr>
+          <tr>
+            <td>
+              <!--OPIc 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="2" class="table02">
+                <tr>
+                  <td class="td03" width="150">검정일</td>
+		  <td class="td03">등급</td>
+                </tr>
+<%
+        for ( int i = 0 ; i < c05FtestResult1Data_20.size() ; i++ ) {
+            C05FtestResult1Data data = (C05FtestResult1Data)c05FtestResult1Data_20.get(i);
+%>
+                <tr>
+                  <td class="td04"><%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %></td>
+                  <td class="td04"><font color="<%= data.LAST_FLAG.equals("Y") ? "#CC3300" : "#000000" %>"><%= data.TORFL_TEXT  %></td>
+                </tr>
+<%
+        }
+%>
+              </table>
+              <!--OPIc 테이블 끝-->
+            </td>
+          </tr>
+<%
+    }
+%>
+<!------------------------END ---------------      -->
+        </table></td>
+    </tr>
+  </table>
+<%
+}
+%>
+</form>
+<%@ include file="/web/common/commonEnd.jsp" %>
+</body>
+</html>

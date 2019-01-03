@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="ko">
+	
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<!--[if lt IE 9]> 
+	<script src="http://getbootstrap.com/2.3.2/assets/js/html5shiv.js"></script>
+	<script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js">IE7_PNG_SUFFIX=".png";</script> 
+	<![endif]--> 
+	<title>LG화학 e-HR 시스템</title>
+	<meta name="description" content="LG화학 e-HR 시스템" />
+	<link rel="stylesheet" type="text/css" href="images/css/ehr_style.css" />
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
+	<script src="js/jquery.bxslider.js"></script> 
+	<script type="text/javascript">
+		$(document).ready(function(){     
+			$('.bxslider').bxSlider();
+		}); 
+		function popup(theURL,winName,features) { 
+		  window.open(theURL,winName,features);
+		}	
+	</script>
+</head>
+
+<body id="subBody">  
+<div class="subWrapper eap"> 
+	<div class="subHead"><h2>심리 상담 신청하기</h2></div>
+	<div class="contentBody">
+		
+		<!-- 테이블 시작 -->
+		<table class="tb_def fixed" summary="" >
+			<caption></caption>
+			<col width="80" /><col  /><col width="80" /><col  /><col width="80" /><col  />
+			<tbody>
+				<tr>
+					<th>성명</th>
+					<td class="left">자동 설정</td> 
+					<th>소속</th>
+					<td class="left">자동 설정</td> 
+					<th>직위</th>
+					<td class="left">자동 설정</td> 
+				</tr> 
+				<tr>
+					<th>성명</th>
+					<td class="left" colspan="5">
+						<input type="radio" /> 개인상담
+						<input type="radio" /> 가족상담
+						<input type="radio" /> 심리검사
+						<input type="radio" /> 팀 P/G
+					</td> 
+				</tr> 
+				<tr>
+					<th>희망일자</th>
+					<td class="left"> 
+						<input type="text" class="text" size="10" />
+						<input type="button" value="검색" onclick="location.href='#'" class="btnInner" />
+					</td> 
+					<th>희망시간</th>
+					<td class="left" colspan="3"> 
+						<input type="text" class="text" size="10" />
+						<input type="button" value="검색" onclick="location.href='#'" class="btnInner" />
+					</td> 
+				<tr>
+					<th>상담사유</th>
+					<td class="left" colspan="5">						
+						<input type="text" class="text" size="100" /> 
+					</td> 
+				</tr>
+			</tbody>
+		</table>
+		<!-- 테이블 끝 -->		
+		
+		<div class="bottomMent">
+			※ 본 메일은 심리 상담사 전용 발신 메일로서, 상담 신청 후 개별 연락드릴 예정입니다.
+		</div>
+		 
+		<form id="">
+		<div class="btnWrap center">
+			<input type="button" value="신청하기" onclick="location.href='#'" class="btnDef" />
+		</div>
+		</form>
+		
+		
+	</div>
+</div><!-- /subWrapper -->
+</body>
+</html>

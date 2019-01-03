@@ -1,0 +1,192 @@
+package hris.E.E05House.db;
+
+import java.util.*;
+import java.sql.*;
+
+import com.sns.jdf.*;
+import com.sns.jdf.db.*;
+import com.sns.jdf.util.*;
+
+import hris.E.E05House.*;
+
+/**
+ * E05HouseDB.java
+ *  주택자금융자 관련 
+ *  DB Table Name : "ZHRA014T"                               
+ *    
+ * @author 김성일 
+ * @version 1.0, 2001/12/13
+ */
+public class E05HouseDB {
+
+    Connection conn = null;
+	
+	  public E05HouseDB(Connection connection) {
+		    conn = connection;
+	  }
+
+    /**
+     * 주택자금융자 신청
+     * @param hris.E.E05House.E05HouseData 주택자금관련 데이터
+     * @return int
+     * @exception com.sns.jdf.GeneralException
+     */
+    public int create(E05HouseData data) throws GeneralException {
+        int result = 0;
+		    Statement stmt = null;
+        String tableName = null;
+		    try{
+            tableName = DBUtil.getOwner() + "ZHRA014T";
+			      DataUtil.fixNull( data );
+            data.PERNR = DataUtil.fixEndZero(data.PERNR, 8);
+            data.AINF_SEQN = DataUtil.fixEndZero(data.AINF_SEQN, 10);
+
+            data.REQU_MONY  	= Double.toString(Double.parseDouble(data.REQU_MONY    ) / 100.0 ) ;  // 신청금
+
+            StringBuffer query = new StringBuffer();
+      			query.append(" insert into "+tableName+"( MANDT,                    PERNR,                       ");
+      			query.append("                            BEGDA,                    AINF_SEQN,                   ");
+      			query.append("                            DLART,                                                 ");
+      			query.append("                            REQU_MONY,                ZZFUND_CODE,                 ");
+      			query.append("                            ZZSECU_FLAG )                                          ");
+      			query.append("                    values( '" + data.MANDT + "',     '" + data.PERNR + "',        ");
+      			query.append("                            '" + data.BEGDA + "',     '" + data.AINF_SEQN + "',    ");
+      			query.append("                            '" + data.DLART + "',                                  ");
+      			query.append("                             " + data.REQU_MONY + ",  '" + data.ZZFUND_CODE + "',  ");
+      			query.append("                            '" + data.ZZSECU_FLAG + "')                            ");
+
+            stmt = conn.createStatement();
+			      JDFStatement jdfStmt = new JDFStatement(this, stmt);
+			      result = jdfStmt.executeUpdate(query.toString());
+		    }
+		    catch (Exception e){
+			      throw new GeneralException(e);
+		    }
+		    finally {
+			      DBUtil.close(stmt);
+		    }
+		    return result;
+    }
+
+    /**
+     * 주택자금 융자 변경신청
+     * @param hris.E.E05House.E05HouseData 주택자금관련 데이터
+     * @return int
+     * @exception com.sns.jdf.GeneralException
+     */
+    public int change(E05HouseData data) throws GeneralException {
+        int result = 0;
+		    Statement stmt = null;
+        String tableName = null;
+		    try{
+            tableName = DBUtil.getOwner() + "ZHRA014T";
+			      DataUtil.fixNull( data );
+            data.PERNR = DataUtil.fixEndZero(data.PERNR, 8);
+            data.AINF_SEQN = DataUtil.fixEndZero(data.AINF_SEQN, 10);
+
+            data.REQU_MONY  	= Double.toString(Double.parseDouble(data.REQU_MONY    ) / 100.0 ) ;  // 신청금
+
+            StringBuffer query = new StringBuffer();			
+            query.append(" update "+tableName+"                                                         ");
+			      query.append("    set DLART       = '" + data.DLART + "',                                   ");
+            query.append("        REQU_MONY   =  " + data.REQU_MONY + ",                                ");
+      			query.append("        ZZFUND_CODE = '" + data.ZZFUND_CODE + "',                             ");
+      			query.append("        ZZSECU_FLAG = '" + data.ZZSECU_FLAG + "'                              ");
+      			query.append("  where MANDT     = '" + data.MANDT + "'                                      ");
+      			query.append("    and PERNR     = '" + data.PERNR + "'                                      ");
+      			query.append("    and BEGDA     = '" + data.BEGDA + "'                                      ");
+			      query.append("    and AINF_SEQN = '" + data.AINF_SEQN + "'                                  ");
+
+            stmt = conn.createStatement();
+			      JDFStatement jdfStmt = new JDFStatement(this, stmt);
+		    	  result = jdfStmt.executeUpdate(query.toString());
+    		}
+		    catch (Exception e){
+			      throw new GeneralException(e);
+		    }
+		    finally {
+			      DBUtil.close(stmt);
+		    }
+		    return result;
+    }
+
+    /**
+     * 주택자금 융자신청 취소
+     * @param hris.E.E05House.E05HouseData 주택자금관련 데이터
+     * @return int
+     * @exception com.sns.jdf.GeneralException
+     */
+    public int delete(E05HouseData data) throws GeneralException {
+        int result = 0;
+		    Statement stmt = null;
+        String tableName = null;
+		    try{
+            tableName = DBUtil.getOwner() + "ZHRA014T";
+			      DataUtil.fixNull( data );
+            data.PERNR = DataUtil.fixEndZero(data.PERNR, 8);
+            data.AINF_SEQN = DataUtil.fixEndZero(data.AINF_SEQN, 10);
+
+            StringBuffer query = new StringBuffer();			
+            query.append(" delete from "+tableName+"                                                    ");
+			      query.append("  where MANDT     = '" + data.MANDT + "'                                      ");
+			      query.append("    and PERNR     = '" + data.PERNR + "'                                      ");
+			      query.append("    and BEGDA     = '" + data.BEGDA + "'                                      ");
+			      query.append("    and AINF_SEQN = '" + data.AINF_SEQN + "'                                  ");
+
+            stmt = conn.createStatement();
+			      JDFStatement jdfStmt = new JDFStatement(this, stmt);
+			      result = jdfStmt.executeUpdate(query.toString());
+		    }
+		    catch (Exception e){
+			      throw new GeneralException(e);
+		    }
+		    finally {
+			      DBUtil.close(stmt);
+		    }
+		    return result;
+    }
+
+    /**
+     * 주택자금 융자신청 조회
+     * @param hris.E.E05House.E05HouseData 주택자금관련 데이터
+     * @return int
+     * @exception com.sns.jdf.GeneralException
+     */
+    public void getDetail(E05HouseData data) throws GeneralException {
+        Statement stmt = null;
+        ResultSet rs   = null;
+        String tableName = null;
+		    try{
+            tableName = DBUtil.getOwner() + "ZHRA014T";
+            DataUtil.fixNull( data );
+            data.PERNR = DataUtil.fixEndZero(data.PERNR, 8);
+            data.AINF_SEQN = DataUtil.fixEndZero(data.AINF_SEQN, 10);
+            
+            StringBuffer query = new StringBuffer();
+			      query.append("select DLART, REQU_MONY, ZZSECU_FLAG, ZZFUND_CODE "); 
+			      query.append("  from "+tableName+"                              ");
+			      query.append(" where MANDT     =  " + data.MANDT + "            ");
+			      query.append("   and PERNR     =  " + data.PERNR + "            ");
+			      query.append("   and BEGDA     = '" + data.BEGDA + "'           ");
+			      query.append("   and AINF_SEQN = '" + data.AINF_SEQN + "'       ");
+            
+            stmt = conn.createStatement();
+            JDFStatement jdfStmt = new JDFStatement(this, stmt);
+			      rs = jdfStmt.executeQuery(query.toString());
+
+            if( rs.next() ){
+                Logger.debug.println(this, rs);
+                
+                data.DLART       = rs.getString("DLART");
+                data.REQU_MONY   = Double.toString(Double.parseDouble(rs.getString("REQU_MONY"    )) * 100.0 ) ;  // 신청금
+                data.ZZSECU_FLAG = rs.getString("ZZSECU_FLAG");
+                data.ZZFUND_CODE = rs.getString("ZZFUND_CODE");
+            }
+        } catch( Exception e ){
+            throw new GeneralException(e);
+        } finally {
+            DBUtil.close(rs, stmt);
+        }
+    }
+}
+

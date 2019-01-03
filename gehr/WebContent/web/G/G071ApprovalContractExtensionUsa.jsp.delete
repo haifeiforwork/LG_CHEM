@@ -1,0 +1,388 @@
+<%/***************************************************************************************/                              																				
+/*   System Name  	: g-HR                                                         																	*/
+/*   1Depth Name  	: HR Approval Box                                                 															*/
+/*   2Depth Name  	: Requested Document                                                  													*/
+/*   Program Name  	: Contact Extension Approval                                           													*/
+/*   Program ID   		: G071ApprovalContractExtensionUsa.jsp                                     											*/
+/*   Description  		: 계약 연장 신청을 결재 하는 화면 (USA)                                           											*/
+/*   Note         		: 없음                                                        																				*/
+/*   Creation    		: 2010-10-13 jungin @v1.0 Contract Extension 신규 개발															*/
+/*	  Update				: 2011-02-08 jungin @v1.1 [C20110207_19781] 'Pay Type' 추가.												*/
+/***************************************************************************************/%>
+
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ page errorPage="/web/err/error.jsp"%>
+<%@ include file="/web/common/commonProcess.jsp" %>
+
+<%@ page import="java.util.Vector" %>
+<%@ page import="com.sns.jdf.util.WebUtil"%>
+<%@ page import="hris.common.*" %>
+<%@ page import="hris.common.rfc.*" %>
+<%@ page import="hris.common.util.*" %>
+<%@ page import="hris.D.*" %>
+<%@ page import="hris.D.D09ContractExtension.*" %>
+<%@ page import="hris.D.D09ContractExtension.rfc.*" %>
+<%
+    WebUserData user = (WebUserData)session.getAttribute("user");
+
+	D09CurrentDataUsa ceCurrent = (D09CurrentDataUsa)request.getAttribute("ceCurrent");
+	D09ExtensionDataUsa ceExtension = (D09ExtensionDataUsa)request.getAttribute("ceExtension");
+    
+    Vector vcAppLineData = (Vector)request.getAttribute("vcAppLineData");
+    String RequestPageName = (String)request.getAttribute("RequestPageName");
+    
+    String AINF_SEQN = (String)request.getAttribute("AINF_SEQN");
+   
+    boolean isCanGoList ; 
+    if (RequestPageName == null || RequestPageName.equals("")) {
+        isCanGoList = false;
+    } else {
+        isCanGoList = true;
+    } // end if
+   
+    // 현재 결재자 구분
+    DocumentInfo docinfo = new DocumentInfo(ceExtension.AINF_SEQN, user.empNo , false);
+    int approvalStep = docinfo.getApprovalStep();
+%>
+
+<html>
+<head>
+<title>ESS</title>
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr.css" type="text/css">
+<script language="javascript" src="<%= WebUtil.ImageURL %>css/ess.js"></script>
+<script language="javascript" src="<%= WebUtil.ImageURL %>js/snsscript.js"></script>
+
+<script language="JavaScript">
+<!--
+
+   //달력 사용 시작
+function fn_openCal(Objectname) {
+   var lastDate;
+   lastDate = eval("document.form1." + Objectname + ".value");
+   small_window=window.open("/web/common/calendar.jsp?formname=form1&fieldname="+Objectname+"&curDate="+lastDate+"&iflag=0&optionvalue=","essCal","toolbar=0,location=0,directories=0,status=0,menubar=0,resizable=0,width=270,height=285,top=" + document.body.clientHeight/2 + ",left=" + document.body.clientWidth/2);
+}
+
+function approval() {   
+    var frm = document.form1;
+    if(!confirm("Are you sure to approve?")) {
+        return;
+    } // end if
+    frm.BEGDA.value = removePoint(frm.BEGDA.value);
+    frm.CBEGDA.value = removePoint(frm.CBEGDA.value);
+    frm.CTEDT.value = removePoint(frm.CTEDT.value);
+    frm.BILRTE.value = removeComma(frm.BILRTE.value);
+    frm.OTBRTE.value = removeComma(frm.OTBRTE.value);
+    frm.APPR_STAT.value = "A";
+    frm.submit();
+}
+   
+function reject() {
+
+    if(!confirm("Are you sure to reject?")) {
+        return;
+    } // end if
+    
+    var frm = document.form1;
+    frm.BEGDA.value = removePoint(frm.BEGDA.value);
+    frm.CBEGDA.value = removePoint(frm.CBEGDA.value);
+    frm.CTEDT.value = removePoint(frm.CTEDT.value);
+    frm.BILRTE.value = removeComma(frm.BILRTE.value);
+    frm.OTBRTE.value = removeComma(frm.OTBRTE.value);
+    frm.APPR_STAT.value = "R";
+    frm.submit();
+}
+   
+function goToList() {
+    var frm = document.form1;
+<% if (isCanGoList) { %>
+    frm.action = "<%= RequestPageName.replace('|' ,'&') %>";
+<% } // end if %>
+    frm.jobid.value ="";
+    frm.submit();
+}
+
+// Quota Plan/Result Status	
+function f_popQuotaPlan() {
+	window.open("<%= WebUtil.ServletURL %>hris.F.F79QuotaPlanResultStatusUsaSV","DeptPers","toolbar=no,location=no,directories=no,status=yes,menubar=no,resizable=no,scrollbars=yes,width=815,height=500,left=100,top=100");
+}
+ 
+//-->
+</script>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onLoad="MM_preloadImages('<%= WebUtil.ImageURL %>btn_help_on.gif');">
+<form name="form1" method="post" action="">
+<input type="hidden" name="jobid" value="save">
+<input type="hidden" name="APPU_TYPE" value="<%= docinfo.getAPPU_TYPE() %>">
+<input type="hidden" name="APPR_SEQN" value="<%= docinfo.getAPPR_SEQN() %>">
+<input type="hidden" name="BUKRS" value="<%= user.companyCode %>">
+
+<input type="hidden" name="AINF_SEQN" value="<%= ceExtension.AINF_SEQN %>">
+<input type="hidden" name="STELL" value="<%= ceExtension.STELL %>">
+<input type="hidden" name="OBJID" value="<%= ceExtension.OBJID %>">
+<input type="hidden" name="CTTYP" value="<%= ceExtension.CTTYP %>">
+<input type="hidden" name="CBEGDA" value="<%= WebUtil.printDate(ceExtension.CBEGDA, ".") %>">
+<input type="hidden" name="CTEDT" value="<%= WebUtil.printDate(ceExtension.CTEDT, ".") %>">
+<input type="hidden" name="BILRTE" value="<%= WebUtil.printNumFormat(ceExtension.BILRTE, 2) %>">
+<input type="hidden" name="BWAERS" value="<%= ceExtension.BWAERS %>">
+<input type="hidden" name="OTBRTE" value="<%= WebUtil.printNumFormat(ceExtension.OTBRTE, 2) %>">
+<input type="hidden" name="OWAERS" value="<%= ceExtension.OWAERS %>">
+<input type="hidden" name="TLINE" value="<%= ceExtension.TLINE %>">
+<input type="hidden" name="PERNR" value="<%= ceExtension.PERNR %>">
+<input type="hidden" name="PERNR_D" value="<%= ceExtension.PERNR_D %>">
+<input type="hidden" name="ZPERNR" value="<%= ceExtension.ZPERNR %>">
+<input type="hidden" name="APPL_TYPE" value="<%= ceExtension.APPL_TYPE %>">
+<input type="hidden" name="PAYTYPE" value="<%= ceExtension.PAYTYPE %>">
+<input type="hidden" name="PTTXT" value="<%= ceExtension.PTTXT %>">
+
+<input type="hidden" name="APPR_STAT">
+<input type="hidden" name="RequestPageName" value="<%= RequestPageName %>">
+<input type="hidden" name="approvalStep" value="<%= approvalStep %>">
+  <table width="796" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="16">&nbsp;</td>
+      <td><table width="780" border="0" cellspacing="0" cellpadding="0">
+          <tr> 
+            <td><table width="780" border="0" cellpadding="0" cellspacing="0">
+                <tr> 
+                  <td height="5" colspan="2"></td>
+                </tr>
+                <tr> 
+                  <td width="624" class="title02"><img src="<%= WebUtil.ImageURL %>ehr/title01.gif"> Contract Extension Approval</td>
+                  <td align="right" style="padding-bottom:4px">&nbsp;</td>
+                </tr>
+                <tr> 
+                  <td height="3" colspan="2" align="left" valign="top" background="/web/images/maintitle_line.gif"><img src="<%= WebUtil.ImageURL %>ehr/space.gif"></td>
+                </tr>
+              </table></td>
+          </tr>
+          <tr> 
+            <td height="10">&nbsp;</td>
+          </tr>
+          <tr> 
+            <td height="10">
+                 <!-- 신청자 기본 정보 시작 -->
+                 <%@ include file="/web/common/ApprovalIncludePersInfo.jsp" %>
+                 <!--  신청자 기본 정보 끝-->
+            </td>
+          </tr>
+          <tr> 
+            <td height="10">&nbsp;</td>
+          </tr>      
+	      <tr>
+	        <td>
+	           <table  width="780" border="0" cellspacing="1" cellpadding="0" class="table02">
+	             <tr>
+	               <td width="150" class="td01">Request Date</td>
+	               <td width="630" class="td09" colspan="3"><input type="text" name="BEGDA" size="10" class="input04" value="<%= WebUtil.printDate(ceExtension.BEGDA,".") %>" readonly></td>
+	             </tr>
+	             <tr> 
+	               <td width="150" class="td01">Job Title</td>
+	               <td width="240" class="td09"><%= ceCurrent.STLTX == null ? "" : ceCurrent.STLTX %></td>
+				   <td width="150" class="td01">Agency</td>
+	               <td width="240" class="td09"><%= ceCurrent.STEXT == null ? "" : ceCurrent.STEXT %></td>
+	           	 </tr>
+	           	 <tr> 
+	               <td width="150" class="td01">Application Type</td>
+	               <td width="240" class="td09">
+	               	<select name="APPL_TYPE1" class="input03" onchange="javascript:getApp()" disabled="true">
+                       <option value="">Select</option>
+                       		<%= WebUtil.printOption2((new SelectedCodeRFC()).getSelectedCode("ZDAPTYP"), ceExtension.APPL_TYPE) %>
+                     </select></td>
+				   <td width="395" class="td09" colspan="2">&nbsp;<img src="<%= WebUtil.ImageURL %>btn_quotaPlan_resultStatus.gif" border="0" align="absmiddle" style="cursor:hand;margin-top:0px;" onclick="f_popQuotaPlan();"></td>
+	           	 </tr>
+	           </table>
+			 </td>
+		  </tr>
+          <tr> 
+            <td>&nbsp;</td>
+          </tr>
+          <tr> 
+            <td> 
+              <!-- 리스트테이블 시작 -->
+              <table width="780" border="0" cellpadding="0" cellspacing="1" class="table02">
+                <tr> 
+                  <td width="150" class="td01"></td>
+                  <td width="315" class="td03" align="center">Current</td>
+                  <td width="315" class="td03" align="center">Extension</td>     
+                </tr>
+                <tr>
+                  <td class="td01">Contract Type&nbsp;<font color="#006699"><b>*</b></font></td>
+                  <td class="td04"><%= ceCurrent.CTTXT == null ? "" : ceCurrent.CTTXT %></td>
+                  <td class="td04"><select name="CTTYP1" class="input03" style="width:185;" disabled="true">
+	                            			<option value="">Select</option>
+	   	                        				<%= WebUtil.printOption2((new D09ContractExtensionTypeRFCUsa()).getContractExtensionType("U"), ceExtension.CTTYP) %>  
+	                           			  </select> </td>
+                </tr>
+                <tr>
+                  <td class="td01">Contract Period&nbsp;<font color="#006699"><b>*</b></font></td>
+                  <td class="td04"><%= WebUtil.printDate(ceCurrent.CBEGDA, ".") %> ~ <%= WebUtil.printDate(ceCurrent.CTEDT,".") %></td>
+                  <td class="td04"><%= WebUtil.printDate(ceExtension.CBEGDA, ".") %> ~ <%= WebUtil.printDate(ceExtension.CTEDT,".") %></td>
+                </tr>
+                <tr>
+                  <td class="td01">Bill Rate&nbsp;<font color="#006699"><b>*</b></font></td>
+                  <td class="td04"><input type="text" name="CR_BILRTE" size="15" class="input04" value="<%= ceCurrent.BILRTE.equals("0") ? "0.00" : WebUtil.printNumFormat(ceCurrent.BILRTE, 2) %>" readonly style="ime-mode:active;text-align:right;">&nbsp;&nbsp;&nbsp;
+                                          <input type="text" name="CR_BWAERS" size="1" class="input04" value="<%= ceCurrent.BWAERS.equals("") ? "USD" : ceCurrent.BWAERS %>" readonly></td>
+                  <td class="td04"><input type="text" name="ET_BILRTE" size="22" class="input04" value="<%= ceExtension.BILRTE.equals("0") ? "0.00" : WebUtil.printNumFormat(ceExtension.BILRTE, 2) %>" readonly style="ime-mode:active;text-align:right;">&nbsp;&nbsp;&nbsp; 
+                                          <input type="text" name="ET_BWAERS" size="1" class="input04" value="<%= ceExtension.BWAERS.equals("") ? "USD" : ceExtension.BWAERS %>"></td>
+                </tr>
+                <tr>
+                  <td class="td01">OT Bill Rate</td>
+                  <td class="td04"><input type="text" name="CR_OTBRTE" size="15" class="input04" value="<%= ceCurrent.OTBRTE.equals("0") ? "0.00" : WebUtil.printNumFormat(ceCurrent.OTBRTE, 2) %>" readonly style="ime-mode:active;text-align:right;">&nbsp;&nbsp;&nbsp;
+                                          <input type="text" name="CR_OWAERS" size="1" class="input04" value="<%= ceCurrent.OWAERS.equals("") ? "USD" : ceCurrent.OWAERS %>" readonly></td>
+                  <td class="td04"><input type="text" name="ET_OTBRTE" size="22" class="input04" value="<%= ceExtension.OTBRTE.equals("0") ? "0.00" : WebUtil.printNumFormat(ceExtension.OTBRTE, 2) %>" readonly style="ime-mode:active;text-align:right;">&nbsp;&nbsp;&nbsp;
+                                          <input type="text" name="ET_OWAERS" size="1" class="input04" value="<%= ceExtension.OWAERS.equals("") ? "USD" : ceExtension.OWAERS %>" readonly></td>
+                </tr>
+                <tr><!-- @v1.1 -->
+                  <td class="td01">Pay Type</td>
+                  <td class="td04"><%= ceCurrent.PTTXT %></td>
+                  <td class="td04">
+                  	<select name="PAYTYPE1" class="input03" style="width:185;" disabled="true">
+                       <option value="">Select</option>
+                       		<%= WebUtil.printOption2((new SelectedCodeRFC()).getSelectedCode("ZPAYTYPE"), ceExtension.PAYTYPE) %>
+                     </select>
+                  </td>
+                </tr>
+                <!-- 
+                <tr>
+                  <td class="td01">Emp. Rate</td>
+                  <td class="td04"><input type="text" name="CR_EMPRTE" size="15" class="input04" value="<%= ceCurrent.EMPRTE.equals("0") ? "" : WebUtil.printNumFormat(ceCurrent.EMPRTE, 2) %>" readonly style="ime-mode:active;text-align:right;">&nbsp;&nbsp;&nbsp;
+                                          <input type="text" name="CR_EWAERS" size="1" class="input04" value="<%= ceCurrent.EWAERS.equals("") ? "USD" : ceCurrent.EWAERS %>" readonly></td>
+                  <td class="td04"><input type="text" name="ET_EMPRTE" size="22" class="input04" value="<%= ceExtension.EMPRTE.equals("0") ? "" : WebUtil.printNumFormat(ceExtension.EMPRTE, 2) %>" readonly style="ime-mode:active;text-align:right;">&nbsp;&nbsp;&nbsp;
+                                          <input type="text" name="ET_EWAERS" size="1" class="input04" value="<%= ceExtension.EWAERS.equals("") ? "USD" : ceExtension.EWAERS %>" readonly></td>
+                </tr>
+                <tr>
+                  <td class="td01">Extra. Rate</td>
+                  <td class="td04"><input type="text" name="CR_EXARTE" size="15" class="input04" value="<%= ceCurrent.EXARTE.equals("0") ? "" : WebUtil.printNumFormat(ceCurrent.EXARTE, 2) %>" readonly style="ime-mode:active;text-align:right;">&nbsp;&nbsp;&nbsp;
+                                          <input type="text" name="CR_XWAERS" size="1" class="input04" value="<%= ceCurrent.XWAERS.equals("") ? "USD" : ceCurrent.XWAERS %>" readonly></td>
+                  <td class="td04"><input type="text" name="ET_EXARTE" size="22" class="input04" value="<%= ceExtension.EXARTE.equals("0") ? "" : WebUtil.printNumFormat(ceExtension.EXARTE, 2) %>" readonly style="ime-mode:active;text-align:right;">&nbsp;&nbsp;&nbsp;
+                                          <input type="text" name="ET_XWAERS" size="1" class="input04" value="<%= ceExtension.XWAERS.equals("") ? "USD" : ceExtension.XWAERS %>" readonly></td>
+                </tr>
+                 -->
+              </table>
+              <!-- 리스트테이블 끝-->
+            </td>
+          </tr>
+          <tr> 
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+	        <td>
+	           <table  width="780" border="0" cellspacing="1" cellpadding="0" class="table02">
+	             <tr>
+	               <td width="150" class="td01">Reason for Contract<br>Extension</td>
+	               <td class="td09" colspan="3"><input type="text" name="ET_TLINE" size="99" class="input04" value="<%= ceExtension.TLINE == null ? "" : ceExtension.TLINE %>"></td>
+	             </tr>
+	           </table>
+			 </td>
+		  </tr>
+          <tr> 
+            <td height="10">&nbsp;</td>
+          </tr>
+          <tr> 
+            <td>  
+              <!--담당자입력정보 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="5" class="table02">
+                <colgroup>
+			        <col width="20%"/>
+			        <col width="30%"/>
+			        <col width="20%"/>
+			        <col width="30%"/>
+		        </colgroup>
+             </table>
+            </td>
+          </tr>            
+          <tr> 
+            <td>&nbsp;</td>
+          </tr>
+          <tr> 
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> Summary</td>
+          </tr>
+            <%
+	            String tmpBigo = "";
+	        %>
+	        <% for (int j = 0; j < vcAppLineData.size(); j++) { %>
+	           <% AppLineData ald = (AppLineData) vcAppLineData.get(j); %>
+	           <% if (ald.APPL_BIGO_TEXT != null && !ald.APPL_BIGO_TEXT.equals("")) { %>
+	                <% if (ald.APPL_PERNR.equals(user.empNo)) { %>
+	                    <% tmpBigo = ald.APPL_BIGO_TEXT; %>
+	                <% } else { %>
+	          <tr>
+	            <td>
+	                <table width="780" border="0" cellpadding="0" cellspacing="1" class="table02">
+	                    <tr> 
+	                       <td width="150" class="td01"><%=ald.APPL_ENAME%></td>
+	                       <td width="630" class="td09"><%=ald.APPL_BIGO_TEXT%></td>
+	                    </tr>
+	                </table>
+	            </td>
+	          </tr>
+	                <% } // end if %>
+	            <% } // end if %>
+	        <% } // end for %>
+              <tr height="3"> 
+            <td></td>
+          </tr>
+          <tr> 
+            <td>
+            <table width="780" border="0" cellpadding="0" cellspacing="1" class="table02">
+            <tr>
+               <td style="background:#f2f2f2;text-align:center;padding:5px 0px;">
+                 <textarea name="BIGO_TEXT" cols="80" rows="2"><%=tmpBigo%></textarea>
+                </td>
+            </tr>
+            </table>
+            </td>
+          </tr>
+          <tr> 
+            <td> 
+              <table width="780" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td>&nbsp;</td>
+                </tr>
+                <tr> 
+                  <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> Approval Informations</td>
+                </tr>
+                <tr> 
+                  <td><table width="780" border="0" cellspacing="0" cellpadding="0">
+                      <tr> 
+                        <td> 
+                          <!--결재정보 테이블 시작-->
+                          <%= AppUtilEurp.getAppDetail(vcAppLineData) %>
+                          <!--결재정보 테이블 끝-->
+                        </td>
+                      </tr>
+                    </table></td>
+                </tr>
+                <tr> 
+                  <td>&nbsp;</td>
+                </tr>
+                <tr> 
+                  <td align="center">
+                  <!--버튼 들어가는 테이블 시작 -->
+                      <table width="780" border="0" cellpadding="0" cellspacing="0">
+                        <tr> 
+                          <td class="td04">
+                          <% if (isCanGoList) {  %>
+                            <a href="javascript:goToList()"><img src="<%= WebUtil.ImageURL %>btn_list.gif" border="0"></a>&nbsp;&nbsp;&nbsp;
+                          <% } // end if %>
+                            <a href="javascript:approval()"><img src="<%= WebUtil.ImageURL %>btn_submit.gif" border="0" /></a>&nbsp;&nbsp;&nbsp;
+                            <a href="javascript:reject()"><img src="<%= WebUtil.ImageURL %>btn_return.gif" border="0"></a>
+                          </td>
+                        </tr>
+                      </table>
+                  <!--버튼 들어가는 테이블 끝 -->
+                  </td>
+                </tr>
+                <tr> 
+                  <td>&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>
+<%@ include file="/web/common/commonEnd.jsp" %>

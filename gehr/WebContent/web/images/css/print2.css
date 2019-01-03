@@ -1,0 +1,8 @@
+		/*A4용지에 맞게 출력하기*/
+		@page a4sheet {size:21.0cm 29.7cm}
+		.a4 {page:a4sheet;page-break-after:always}
+		
+		@media print {
+    page-divide {
+        page-break-after: always;
+    }

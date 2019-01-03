@@ -1,0 +1,361 @@
+<%/******************************************************************************/
+/*                                                                              */
+/*   System Name  : MSS                                                         */
+/*   1Depth Name  : MY HR 정보                                                  */
+/*   2Depth Name  : 진급자격요건 시뮬레이션                                     */
+/*   Program Name : 진급자격요건 시뮬레이션                                     */
+/*   Program ID   : B04Promotion02.jsp                                          */
+/*   Description  : 진급자격요건 시뮬레이션을 조회                              */
+/*   Note         :                                                             */
+/*   Creation     :                                                             */
+/*   Update       : 2005-01-31  윤정현                                          */
+/*                    :2014-06-23 이지은D [CSR ID:2561802] G Portal 內 HR 카테고리 내 파일 변경 요청    */
+/*                                                                              */
+/********************************************************************************/%>
+
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ include file="/web/common/commonProcess.jsp" %>
+
+<%@ page import="com.sns.jdf.util.*" %>
+<%@ page import="java.util.Vector" %>
+<%@ page import="hris.B.B04Promotion.*" %>
+<%@ page import="hris.B.db.*" %>
+
+<%
+   WebUserData       user    = (WebUserData)session.getAttribute("user");
+
+   Vector Pyunga_vt       = (Vector)request.getAttribute("Pyunga_vt");
+   Vector Edu_vt          = (Vector)request.getAttribute("Edu_vt");
+   Vector PyunggaScore_vt = (Vector)request.getAttribute("PyunggaScore_vt");
+   Vector Lang_vt         = (Vector)request.getAttribute("Lang_vt");
+   Vector LangGijun_vt    = (Vector)request.getAttribute("LangGijun_vt");
+   B04PromotionCData fielddata= (B04PromotionCData)request.getAttribute("B04PromotionCData");
+
+    String sb = null;
+    String sb1 = null;
+    String sb2 = null;
+    String sb3 = null;
+    String sb4 = null;
+    String sb5 = null;
+
+    for( int i = 0 ; i < PyunggaScore_vt.size(); i++ ) {
+            B04PromotionBData pdata = (B04PromotionBData)PyunggaScore_vt.get(i);
+        if( i==0){
+            sb = pdata.EVAL_LEVL+":"+WebUtil.printNum(pdata.EVAL_AMNT);
+        } else if(i==1){
+            sb1 = pdata.EVAL_LEVL+":"+WebUtil.printNum(pdata.EVAL_AMNT);
+        } else if(i==2){
+            sb2 = pdata.EVAL_LEVL+":"+WebUtil.printNum(pdata.EVAL_AMNT);
+            sb5 = "입사시 인정경력 기간중에는 개인평가 등급을 "+pdata.EVAL_LEVL+"등급 "+WebUtil.printNum(pdata.EVAL_AMNT)+"점 기준으로 진급누적점수 산정에 반영하였음.";
+        } else if(i==3){
+            sb3 = pdata.EVAL_LEVL+":"+WebUtil.printNum(pdata.EVAL_AMNT);
+        } else if(i==4){
+            sb4 = pdata.EVAL_LEVL+":"+WebUtil.printNum(pdata.EVAL_AMNT);
+        }
+    }
+ 
+    B01ValuateDetailDB valuateDetailDB     = new B01ValuateDetailDB();
+    String       DB_YEAR            = valuateDetailDB.getYEAR();
+    String       StartDate           = valuateDetailDB.getStartDate();
+    String       EVAL_AMNT_T = "0";
+%>
+<html>
+<head>
+<title>ESS</title>
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr.css" type="text/css">
+
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<form name="form1" method="post">
+  <table width="791" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="11">&nbsp;</td>
+      <td>
+        <table width="780" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td>&nbsp;</td>
+        </tr>
+<%
+    if( (user.e_trfar).equals("02") && ( (user.e_trfgr).equals("Ⅱ-1급") || (user.e_trfgr).equals("Ⅱ-2급")
+                                      || (user.e_trfgr).equals("Ⅲ급")   || (user.e_trfgr).equals("Ⅲ-1급")
+                                      || (user.e_trfgr).equals("Ⅲ-2급") || (user.e_trfgr).equals("Ⅳ-1급")
+                                      || (user.e_trfgr).equals("Ⅳ-2급") || (user.e_trfgr).equals("Ⅳ-3급") ) ){
+%>        
+<%
+        if( user.companyCode.equals("C100") ) { %>
+    <tr>
+      <td>
+        <table width="780" border="0" cellspacing="1" cellpadding="0">
+          <tr>
+                <td>本 진급자격요건 Simulation은 신입사원으로 입사하여 정상적인 진급 단계를 거친 경우를 기준으로 본인의 
+                  진급관련 사항을 조회하는 <br>서비스를 제공하는 기능입니다. <br> <br>
+                  단, 직간전환자(신분변경 포함), 재입사자(지사근무 포함), 일부 경력입사자 등의 Case에 대해서는 채용품의시 
+                  명시된 별도의 진급자격을 <br>적용함에 따라 정확한 Simulation을 제공하지 못하므로 
+                  첨부의 진급제도를 참조하시거나 또는 인사기획팀(진급담당자)으로
+                  <br> 문의해 주시기 바랍니다.<b><br>
+                  <br>
+                  <!-- [CSR ID:2561802] <a href="/web/B/B04Promotion/B04_2010Guide.pdf" target="_blank"><font color="#006699">※사무기술직 --></b> 
+                  <!-- [CSR ID:2688370] 사무기술직 진급제도 안내 파일 변경 요청의 件 -->
+                  </b><a href="/web/B/B04Promotion/PromotionGuide_DRM.ppt" target="_blank"><font color="#006699">※사무기술직 
+                  진급제도 안내</font></a> </td>
+          </tr>
+        </table><br>
+          </td>
+    </tr>
+<%
+        } 
+%>
+    <tr>
+      <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"><a name="1"> 평가등급</a></td>
+    </tr>
+    <tr>
+      <td>
+        <!--평가등급 테이블 시작-->
+        <table width="780" border="0" cellspacing="1" cellpadding="5" class="table01">
+          <tr>
+            <td class="tr01">
+              <table width="770" border="0" cellspacing="1" cellpadding="0">
+                <tr>
+                  <td width="300">
+                    <table width="300" border="0" cellspacing="1" cellpadding="2" class="table02">
+                      <tr>
+                        <td class="td03" width="100">평가년도</td>
+                        <td class="td03" width="100">평가등급</td>
+                        <td class="td03" width="100">점수화</td>
+                      </tr>
+<%
+    // R/3이관된 평가data의 평가년도가 평가년도(HRES)와 같고, 평가결과조회일자(HRES)가 현재일자보다 늦은 경우 해당data가 조회되지 않도록 함.
+    for( int i = 0 ; i < Pyunga_vt.size(); i++ ) {
+        B04PromotionAData pyungadata = (B04PromotionAData)Pyunga_vt.get(i);
+ 	if( user.companyCode.equals("C100")&&pyungadata.PROM_YEAR.equals(DB_YEAR)&&(Long.parseLong(StartDate) > Long.parseLong(DataUtil.getCurrentDate())) ) {
+            EVAL_AMNT_T = pyungadata.EVAL_AMNT;
+        } else {
+ %>
+                      <tr>
+                        <td class="td03"><%= pyungadata.PROM_YEAR %></td>
+                        <td class="td04"><%= pyungadata.EVAL_LEVL %></td>
+                        <td class="td04" ><%= WebUtil.printNum(pyungadata.EVAL_AMNT) %></td>
+                      </tr>
+<%
+        }
+    }
+%>
+                    </table>
+                  </td>
+                  <td valign="bottom">
+                    <% if (Integer.parseInt(fielddata.E_GIJUN_AMNT) <= (Integer.parseInt(fielddata.E_SCPM_AMNT)-Integer.parseInt(EVAL_AMNT_T))) { %><font class="td04">
+                      진급점수 기준을 충족하셨습니다.</font><br>
+                    <% } %>
+                    <input type="text" name="SCPM_AMNT" size="15" class="input04" style="text-align:right" value="<%=  WebUtil.printNum(Integer.parseInt(fielddata.E_SCPM_AMNT)-Integer.parseInt(EVAL_AMNT_T))%>" readonly>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <!--평가등급 테이블 끝-->
+      </td>
+    </tr>
+    <tr>
+      <td class="style01">
+        <ul>
+          <li> 직급별 진급심의 대상선정 평가기준 점수<br>
+            -
+            <input type="text" name="PROM_NAME" size="18" class="input02" value="<%= fielddata.E_PROM_NAME %>" readonly>
+            <input type="text" name="GIJUN_AMNT" size="15" class="input02" style="text-align:right" value="<%= fielddata.E_GIJUN_AMNT %> 점 이상" readonly><br>
+            - 점수화기준<br>
+            &nbsp;&nbsp;
+            <input type="text" name="GIJUN" size="40" class="input02" value="<%=sb4%>  <%=sb3%>  <%=sb2%>  <%=sb1%>  <%=sb%>" readonly>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="style01"><%= sb5%></td>
+    </tr>
+    <tr>
+      <td  height="30">&nbsp;</td>
+    </tr>
+    <tr>
+      <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"><a name="2"> 진급필수교육이수 현황</a></td>
+    </tr>
+    <tr>
+      <td>
+        <!--진급필수 테이블 시작-->
+        <table width="780" border="0" cellspacing="1" cellpadding="5" class="table01">
+          <tr>
+            <td class="tr01">
+              <table width="770" border="0" cellspacing="1" cellpadding="0">
+                <tr>
+                  <td width="400" >
+                    <table width="400" border="0" cellspacing="1" cellpadding="2" class="table02">
+                      <tr>
+                        <td class="td03" width="300">필수교육명</td>
+                        <td class="td03" width="100">이수여부</td>
+                      </tr>
+<%
+    for( int i = 0 ; i < Edu_vt.size(); i++ ) {
+        B04PromotionAData edudata = (B04PromotionAData)Edu_vt.get(i);
+%>
+                      <tr>
+                        <td class="td03"><%=edudata.EDU_NAME %></td>
+                        <td class="td04"><%=edudata.EDU_FLAG.equals("Y") ? "이수" : "미이수"  %></td>
+                      </tr>
+<%
+    }
+%>
+                    </table>
+                  </td>
+                  <td valign="bottom">
+<%
+    if( Edu_vt.size() > 0 ) {
+%>
+                    <input type="text" name="EDU_FLAG" size="15" class="input04" value="<%= fielddata.E_EDU_FLAG.equals("Y") ? "이수" : "미이수" %>" readonly>
+<%
+    } else {
+%>
+                    <input type="text" name="EDU_FLAG" size="15" class="input04" value="" readonly>
+<%
+    }
+%>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <!--진급필수 테이블 끝-->
+      </td>
+    </tr>
+    <tr>
+      <td  height="30">&nbsp;</td>
+    </tr>
+    <tr>
+      <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"><a name="3"> 어학</a></td>      
+    </tr>
+    <tr>
+      <td>
+        <!--어학 테이블 시작-->
+        <table width="780" border="0" cellspacing="1" cellpadding="5" class="table01">
+          <tr>
+            <td class="tr01">
+              <table width="770" border="0" cellspacing="1" cellpadding="0">
+                <tr>
+                  <td width="380">
+                    <table width="380" border="0" cellspacing="1" cellpadding="0" class="table02">
+                      <tr>
+                        <td class="td03" width="180">어학명</td>
+                        <td class="td03" width="120">어학점수/등급</td>
+                        <td class="td03" width="80">기준</td>
+                      </tr>
+<%
+    for( int i = 0 ; i < Lang_vt.size(); i++ ) {
+        B04PromotionBData langbdata = (B04PromotionBData)Lang_vt.get(i);
+%>
+                      <tr>
+                        <td class="td03"><%=langbdata.LANG_NAME %></td>
+                        <td class="td04"><%=WebUtil.printNum(langbdata.LANG_AMNT) %></td>
+                        <td class="td04"><%=WebUtil.printNum(langbdata.GIJUN_AMNT) %></td>
+                      </tr>
+<%
+    }
+%>
+                    </table>
+                  </td>
+                  <td width="10">&nbsp;</td>
+                  <td class="td04" style="text-align:left">
+                  <% if( fielddata.E_LANG_FLAG.equals("Y") ) { %>
+                    진급어학 기준자격요건을 충족하셨습니다.
+                  <% }else if(LangGijun_vt.size()==0) { %>
+                    당 승급구간은 어학기준이 없습니다.
+                  <% }else { %>
+                    진급어학기준 자격요건에 도달하기에는 좀 더 노력이 필요합니다.
+                  <% } %>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <!--어학 테이블 끝-->
+      </td>
+    </tr>
+<% if(LangGijun_vt.size()!=0) {%>
+    <tr>
+      <td class="style01">
+        <ul>
+          <li>직급별 진급심의 대상선정 어학기준점수<br>
+            - 어학구분별 기준<br>
+            <table width="400" border="0" cellspacing="0" cellpadding="0">
+<%
+    for( int i = 0 ; i < LangGijun_vt.size(); i++ ) {
+        B04PromotionCData gijundata = (B04PromotionCData)LangGijun_vt.get(i);
+%>
+              <tr>
+                <td width="110" class="style01">
+                  <input type="text" name="lang_name" size="13" class="input02" value="<%= gijundata.LANG_NAME %>" readonly>
+                  <input type="text" name="text001" size="1" class="input02" value=":" readonly>
+                </td>
+                <td class="style01" >
+                  <input type="text" name="lang_amnt" size="13" class="input02" style="text-align:right" value="<%= WebUtil.printNum(gijundata.LANG_AMNT) %> 점수/등급" readonly>
+                </td>
+              </tr>
+<%
+    }
+%>
+            </table>
+          </li>
+        </ul>
+      </td>
+    </tr>
+<% } %>
+    <!--@v1.1 start-->
+<!--    
+    <tr>
+      <td  height="30">&nbsp;</td>
+    </tr>
+    <tr>
+      <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"><a name="4"> 6sigma 인증</a></td>      
+    </tr>
+    <tr>
+      <td>
+        <table width="780" border="0" cellspacing="1" cellpadding="5" class="table01">
+          <tr>
+            <td class="tr01">
+              <table width="770" border="0" cellspacing="1" cellpadding="0">
+                <tr>
+                  <td width="380">
+                    <table width="380" border="0" cellspacing="1" cellpadding="0" class="table02">
+                      <tr>
+                        <td class="td03" width="200">인증자격</td>
+                        <td class="td03" width="180">인증여부</td>
+                      </tr>
+                      <tr>
+                        <td class="td03">GB</td>
+                        <td class="td04"><%= fielddata.E_SFLAG.equals("Y") ? "인증" : "미인증" %></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td class="style01">
+          <li> 6sigma 인증가점<br>
+            &nbsp;&nbsp;- BB인증&nbsp&nbsp&nbsp&nbsp: 1점<br>
+            &nbsp;&nbsp;- MBB인증: 2점<br>
+          </li>
+      </td>
+    </tr>
+-->    
+    <!--@v1.1 end-->
+<% } %>
+    <tr height="150"><td>&nbsp;</td></tr>
+    </table>
+</form>
+<%@ include file="/web/common/commonEnd.jsp" %>

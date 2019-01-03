@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../images/css/ehr_wsg.css" type="text/css">
+<link rel="stylesheet" href="../images/css/ui_library_approval.css" type="text/css">
+<script language="JavaScript" type="text/JavaScript">
+
+	function popupOpen(){
+		var popOption = "width=500, height=225, resizable=yes, scrollbars=no, status=no; toolbar=no";    //팝업창 옵션(optoin)
+			window.open("approvalPop.html","",popOption);
+		}
+</script>
+</head>
+
+<body>
+	<div class="subWrapper">
+		<div class="title">
+			<h1>결재공통</h1>
+		</div>
+		<div class="tableInquiry">
+			<table>
+				<tr>
+					<th>선택구분</th>
+					<td>
+						<select>
+							<option>성명별</option>
+							<option>직위별</option>
+						</select>
+					</td>
+					<td>
+						<input type="text" size="12" />
+					</td>
+					<td>
+						<div class="tableBtnSearch">
+							<a href="" class="search"><span>부서찾기</span></a>
+						</div>
+					</td>
+					<th class="divider">하위조직포함<input type="checkbox" /></th>
+					<td>
+						<div class="tableBtnSearch">
+							<a href="" class="search"><span>조직도로 사원찾기</span></a>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+       	<div class="buttonArea">
+       		<ul class="btn_crud">
+       			<li><a class="darken" href=""><span>결재</span></a></li>
+       			<li><a href=""><span>반려</span></a></li>
+       			<li><img src="../images/sshr/brdr_buttons.gif" /></li>
+       			<li><a href=""><span>목록보기</span></a></li>
+       		</ul>
+       	</div>
+<!-- 신청문서헤더 - 공통 start -->
+		<div class="tableArea">
+			<div class="table">
+				<table class="tableGeneral tableApproval">
+					<tr>
+						<th>작성자</th>
+						<td colspan="3">부서 - 직위 - 홍길동(0000-0000-0000)</td>
+					</tr>
+					<tr>
+						<th>작성일</th>
+						<td>2016.07.31 23:18:00</td>
+						<th class="th02">보존년한</th>
+						<td>영구</td>
+					</tr>
+					<tr>
+						<th>제목</th>
+						<td colspan="3">E-HR 신청업무 TEXT를 Import</td>
+					</tr>
+				</table>
+			</div>
+
+<!-- 신청문서헤더 - 공통 end -->
+
+			<h2 class="subtitle">개별 내용</h2>
+			<div class="table">
+				<table class="tableGeneral tableApproval">
+					<tr>
+						<th>자격증</th>
+						<td></td>
+						<th class="th02">자격등급</th>
+						<td></td>
+					</tr>
+					<tr>
+						<th>자격증</th>
+						<td colspan="3"></td>
+					</tr>
+					<tr>
+						<th>자격증번호</th>
+						<td></td>
+						<th class="th02">취득일</th>
+						<td></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="listArea">
+			<h2 class="subtitle">승인자 정보</h2>
+			<div class="table">
+				<table class="listTable">
+					<thead>
+						<tr>
+							<th>구분</th>
+							<th>성명</th>
+							<th>직위</th>
+							<th>부서</th>
+							<th>결재시간</th>
+							<th>결재결과</th>
+							<th class="lastCol">결재의견</th>
+						</tr>
+					</thead>
+					<tr class="oddRow">
+						<td>신청부서</td>
+						<td>홍길동</td>
+						<td>차장</td>
+						<td>석유화학. 여수지원팀</td>
+						<td>2016.07.31 23:18:00</td>
+						<td>승인</td>
+						<td class="lastCol">승인합니다.</td>
+					</tr>
+					<tr>
+						<td>신청부서</td>
+						<td>김길동</td>
+						<td>부장</td>
+						<td>석유화학. 여수지원팀</td>
+						<td></td>
+						<td>진행 중</td>
+						<td class="lastCol"></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+       	<div class="buttonArea">
+       		<ul class="btn_crud">
+       			<li><a class="darken" href="javascript:popupOpen();"><span>결재</span></a></li>
+       			<li><a href=""><span>반려</span></a></li>
+       			<li><img src="../images/sshr/brdr_buttons.gif" /></li>
+       			<li><a href=""><span>목록보기</span></a></li>
+       		</ul>
+       	</div>
+	</div>
+</body>
+</html>

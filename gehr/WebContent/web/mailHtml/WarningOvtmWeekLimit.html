@@ -1,0 +1,108 @@
+<!-- 
+초과근무 신청 시 1주 12시간 이상 신청이 발생했을 경우 팀장에게 자동 메일 발송(SAP에서 발송)
+ -->
+<SCRIPT LANGUAGE='JavaScript'>
+	function goMSS(tmpurl)
+	{
+	
+		//var url = tmpurl + '&SServer=' + serverName + '&SSNO=' + DBpath;
+		var url = tmpurl + '&SServer=gportal.lgchem.com' +  '&SSNO=<mail:to_empNo/>';
+		// var url = tmpurl + '&SServer=' + serverName + '&SSNO=<mail:to_empNo/>';
+		top.location.href = url;
+	}	
+</SCRIPT>
+<style type="text/css">
+<!--
+* { font-family: Malgun Gothic, Dotum; font-size: 12px; }
+-->
+</style>
+
+<table width="760" border="0" cellpadding="0" cellspacing="1" bgcolor="#CCCCCC" style="margin:10px auto">
+	<tr>
+		<td bgcolor="#FFFFFF">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td><img src="http://<mail:ResponseURL/>/<mail:ImageURL/>mail_top2.gif"></td>
+				</tr>
+				<tr>
+					<td height="30">&nbsp;</td>
+				</tr>
+				<tr>
+					<td align="center">
+						<table width="700" border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								<td width="77" valign="top"><img src="http://<mail:ResponseURL/>/<mail:ImageURL/>mail_left.gif"></td>
+								<td width="5"></td>
+								<td valign="top" style="padding:30px 15px; border:1px solid #DDD;"> &nbsp;소속팀 內 <b><u>연장근로 법정기준 초과 인원이 발생</u></b>하여 다음과 같이 안내드리오니<br>
+									업무 몰입 및 효율적인 근무시간 관리가 될 수 있도록 만전을 기해주시기 바랍니다. <br>
+									<br>
+									<center>
+										- 다  음 -
+									</center>
+									<br>
+									<b>▣ 법정기준 초과 대상자 현황</b> 
+									<!--
+					- 제목 : <mail:UPMU_NAME/><br>
+					- 신청자 : <mail:ename/> (사번 : <mail:empno/>)<br> <br> <a href="javascript:goMSS('http://<mail:ResponseURL/>/servlet/servlet.hris.MailAutoLoginSV?AINF_SEQN=<mail:AINF_SEQN/>') "  ><u><font color="#0072BC">결재완료 문서로 이동하기</font></u></a><font color="#0072BC"><br>
+					</font><br> <br> -->
+									<table width="100%" border="0" cellspacing="1" cellpadding="3" bgcolor="#CCC">
+										<tr>
+											<td width="60"  valign="top" align=center bgcolor=#f8f8f8><b>사번</b></td>
+											<td width="80"  valign="top" align=center bgcolor=#f8f8f8><b>성명</b></td>
+											<td width="80"  valign="top" align=center bgcolor=#f8f8f8><b>일자</b></td>
+											<td width="80"  valign="top" align=center bgcolor=#f8f8f8><b>시간</b></td>
+											<td width="400"  valign="top" align=center bgcolor=#f8f8f8><b>초과근로 사유</b></td>
+										</tr>
+										<tr>
+											<td valign="top" align=center  bgcolor="#FFFFFF">1
+												<mail:empno/>
+											</td>
+											<td valign="top" align=center  bgcolor="#FFFFFF">2
+												<mail:ename/>
+											</td>
+											<td valign="top" align=center  bgcolor="#FFFFFF">3
+												<mail:E_ORGTX/>
+											</td>
+											<td valign="top" align=center  bgcolor="#FFFFFF">4
+												<mail:CONG_NAME/>
+											</td>
+											<td valign="top" align=left  bgcolor="#FFFFFF">5
+												<mail:EREL_NAME/>
+											</td>
+										</tr>
+										<!-- <tr> 
+					  <td width="60"  valign="middle" align=center height=30>적요</td>
+					  <td valign="top"   bgcolor="#F6F6F6" colspan=6 align=left><mail:BIGO_TEXT/></td>
+					  </tr> -->
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td width="77" valign="top"></td>
+								<td width="5">&nbsp;</td>
+								<td valign="top" style="padding-left:25px;padding-right:25px"> -.법 소정 근로시간(1주 52시간)을 초과하는 경우, 관련 법령기준에 따라 과태료 등 벌칙이 부과될 수 있음.<br>
+									&nbsp;&nbsp;(52시간 = 정상근무 40시간 + 연장근로 12시간)<br>
+									<br>
+									<center>
+										//     이  상     //
+									</center>
+								</td>
+							</tr>
+							<tr>
+								<td height="30">&nbsp;</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td height="30">&nbsp;</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<form name="form1" method="post" action="http://<mail:ResponseURL/>/servlet/servlet.hris.MailAutoLoginSV">
+	<input type="hidden" name="AINF_SEQN" value="<mail:AINF_SEQN/>">
+	<input type="hidden" name="SServer" value="">
+	<input type="hidden" name="SSNO" value="">
+</form>

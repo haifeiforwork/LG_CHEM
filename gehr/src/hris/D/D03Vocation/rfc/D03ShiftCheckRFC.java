@@ -1,0 +1,65 @@
+package hris.D.D03Vocation.rfc;
+
+import java.util.*;
+
+import com.sns.jdf.*;
+import com.sns.jdf.sap.*;
+import com.sns.jdf.util.*;
+import com.sap.mw.jco.*;
+
+import hris.D.D03Vocation.*;
+
+
+/**
+ * D03ShiftCheckRFC.java
+ * 장치교대근무자인지 체크하는 Class                        
+ *
+ * @author  김도신
+ * @version 1.0, 2002/05/29
+ */
+public class D03ShiftCheckRFC extends SAPWrap {
+
+//    private String functionName = "ZHRW_RFC_SHIFT_CHECK";
+    private String functionName = "ZGHR_RFC_SHIFT_CHECK";
+
+    /**
+     * 장치교대근무자 체크 RFC 호출하는 Method
+     * @return java.util.Vector
+     * @exception com.sns.jdf.GeneralException
+     */
+    public String check( String i_pernr, String i_date ) throws GeneralException {
+
+        JCO.Client mConnection = null;
+        try{
+            mConnection = getClient();
+            JCO.Function function = createFunction(functionName) ;
+            setInput( function, i_pernr, i_date );
+            excute(mConnection, function);
+            
+            return getField("E_FLAG", function);
+        } catch(Exception ex){
+            Logger.sap.println(this, "SAPException : "+ex.toString());
+            throw new GeneralException(ex);
+        } finally {
+            close(mConnection);
+        }
+    }
+
+    /**
+     * RFC 실행전에 Import 값을 setting 한다.
+     * com.sns.jdf.SAPWrap.excute(JCO.Client mConnection, JCO.Function function) 가 호출되기 전에 실행되어야하는 메소드
+     * @param function com.sap.mw.jco.JCO.Function
+	   * @param java.lang.String 사원번호
+     * @param java.lang.String 결재정보 일련번호
+     * @param job java.lang.String 기능정보
+     * @exception com.sns.jdf.GeneralException
+     */
+    private void setInput( JCO.Function function, String i_pernr, String i_date ) throws GeneralException {
+        String fieldName1 = "I_PERNR";
+        setField( function, fieldName1, i_pernr );
+        String fieldName2 = "I_DATE";
+        setField( function, fieldName2, i_date );
+    }
+}
+
+

@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>header</title>
+<link rel="stylesheet" type="text/css" href="../images/css/header.css">
+<script src="../js/jquery-1.9.0.js"></script>
+<script>
+
+$(function(){
+  $(".menu li").hover(function(){
+    $('ul:first',this).show();
+  }, function(){
+    $('ul:first',this).hide();
+  });
+  $(".menu >li:has(ul)>a").each( function() {
+    $(this).html( $(this).html() );
+  });
+  $(".menu ul li:has(ul)")
+    .find("a:first")
+    .append("<p style='float:right;margin:-3px'>&#9656;</p>");
+});
+
+
+$(document).ready(function(){
+
+	var menu = $('.all_menu')
+
+	$('.btn_allMenu').click(function(event){
+		event.preventDefault();
+
+		if (menu.is(":visible")){
+			menu.slideUp(400);
+		}
+		else{
+			menu.slideDown(400);
+		}
+	});
+});
+</script>
+</head>
+<body>
+<div class="wrapper">
+	<div class="header">
+		<a class="logo" href=""><img src="../images/img_logo.png" alt="HR Portal"/></a>
+		<ul class="menu">
+			<li>
+				<a href="">MY HR</a>
+				<ul class="subMenu" style="display:none">
+					<li><a href="">개인인적사항</a></li>
+					<li><a href="">제증명신청</a></li>
+					<li><a href="">복리후생</a></li>
+					<li><a href="">급여</a></li>
+					<li><a href="">휴가/근태</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="">조직관리</a>
+				<ul class="subMenu" style="display:none">
+					<li><a href="">조직/인원현황</a></li>
+					<li><a href="">인건비</a></li>
+					<li><a href="">부서인사정보</a></li>
+					<li><a href="">핵심인재POOL</a></li>
+					<li><a href="">S-HR REPORT</a></li>
+					<li><a href="">LG CHEM 리더십서베이</a></li>
+					<li><a href="">자사시스템 관리자화면</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="">교육지원</a>
+			</li>
+			<li>
+				<a href="">개인평가</a>
+			</li>
+			<li>
+				<a href="">육성면담</a>
+			</li>
+			<li>
+				<a href="">해외주재원서비스</a>
+				<ul class="subMenu" style="display:none">
+					<li><a href="">해외주재원 제도소개</a></li>
+					<li><a href="">파견국주요정보</a></li>
+					<li><a href="">파견전 지원사항</a></li>
+					<li><a href="">파견중 지원사항</a></li>
+					<li><a href="">복귀전 지원사항</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="">HR제도/규정</a>
+				<ul class="subMenu" style="display:none">
+					<li><a href="">HR POLICY</a></li>
+					<li><a href="">인재상</a></li>
+					<li><a href="">HR제도</a></li>
+					<li><a href="">HR CALENDAR</a></li>
+				</ul>
+			</li>
+		</ul>
+		<div class="userInfo">
+			<ul>
+				<li class="user"><a class="userTeam" href="">국내팀</a><a class="userName" href="">홍길동</a></li>
+				<li class="userRank">대리</li>
+			</ul>
+		</div>
+		<div class="subInfo">
+			<ul>
+				<li><a href="">HR공지</a></li>
+				<li><a href="">FAQ</a></li>
+				<li><a href="">Q&A</a></li>
+				<li><a href="">담당자</a></li>
+			</ul>
+		</div>
+		<a class="btn_allMenu" href=""><img src="../images/btn_allMenu.png" /></a>
+	</div>
+
+	<div class="all_menu" style="display:none;">
+		<div class="innerWrapper">
+			<ul>
+				<li>
+					<h3>Communication</h3>
+					<div>
+						<ul class="megaDrop">
+							<li><a href="">메일수신</a></li>
+							<li><a href="">메일수신</a></li>
+							<li><a href="">메일수신</a></li>
+							<li><a href="">메일수신</a></li>
+							<li><a href="">메일수신</a></li>
+							<li><a href="">메일수신</a></li>
+						</ul>
+					</div>
+				</li>
+				<li>
+					<h3>My Work</h3>
+					<div>
+						<ul class="megaDrop">
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+						</ul>
+					</div>
+				</li>
+				<li>
+					<h3>Co Work</h3>
+					<div>
+						<ul class="megaDrop">
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+						</ul>
+					</div>
+				</li>
+				<li>
+					<h3>Knowledge</h3>
+					<div>
+						<ul class="megaDrop">
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+						</ul>
+					</div>
+				</li>
+				<li>
+					<h3>Service</h3>
+					<div>
+						<ul class="megaDrop">
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+						</ul>
+					</div>
+				</li>
+				<li>
+					<h3>IT Help desk</h3>
+					<div>
+						<ul class="megaDrop">
+							<li><a href="">전자결재</a></li>
+							<li><a href="">전자결재</a></li>
+						</ul>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="footer">
+			<a href="">Close</a>
+		</div>
+	</div>
+</div>
+</body>
+</html>

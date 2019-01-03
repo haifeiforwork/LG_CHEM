@@ -1,0 +1,335 @@
+<%/******************************************************************************/
+/*                                                                              */
+/*   System Name  : e-HR                                                        */
+/*   1Depth Name  : HR 결재                                                     */
+/*   2Depth Name  : 결재 진행 중 문서                                           */
+/*   Program Name : 자격면허등록 결재 진행중/취소                               */
+/*   Program ID   : G024ApprovalIngLicence.jsp                                  */
+/*   Description  : 자격면허등록 결재 진행중/취소                               */
+/*   Note         : 없음                                                        */
+/*   Creation     : 2003-03-26  이승희                                          */
+/*   Update       : 2003-03-26  이승희                                          */
+/*                                                                              */
+/*                                                                              */
+/********************************************************************************/%>
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ page errorPage="/web/err/error.jsp"%>
+<%@ include file="/web/common/commonProcess.jsp" %>
+
+<%@ page import="java.util.Vector" %>
+<%@ page import="hris.A.A17Licence.*" %>
+<%@ page import="hris.common.rfc.*" %>
+<%@ page import="hris.common.util.*" %>
+<%@ page import="hris.common.*" %>
+<%@ page import="com.sns.jdf.util.*" %>
+<%
+    WebUserData      user    = (WebUserData)session.getAttribute("user");
+    
+    A17LicenceData  a17LicenceData  = (A17LicenceData)request.getAttribute("a17LicenceData");
+    
+    Vector      vcAppLineData     = (Vector)request.getAttribute("vcAppLineData");
+    String      RequestPageName     = (String)request.getAttribute("RequestPageName");
+   
+    boolean isCanGoList ; 
+    if (RequestPageName == null || RequestPageName.equals("")) {
+        isCanGoList = false;
+    } else {
+        isCanGoList = true;
+    } // end if
+   
+    // 현재 결재자 구분
+    DocumentInfo docinfo = new DocumentInfo(a17LicenceData.AINF_SEQN ,user.empNo);
+    int approvalStep = docinfo.getApprovalStep();
+%>
+<html>
+<head>
+<title>ESS</title>
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr.css" type="text/css">
+
+<script language="javascript" src="<%= WebUtil.ImageURL %>js/snsscript.js"></script>
+
+<script language="JavaScript">
+<!--
+    function cancel()
+    {
+        if(!confirm("취소 하시겠습니까.")) {
+            return;
+        } // end if
+        var frm = document.form1;
+        frm.CERT_DATE.value = removePoint(frm.CERT_DATE.value);
+        frm.PAY_DATE.value = removePoint(frm.PAY_DATE.value);
+        frm.LICN_AMNT.value = removeComma(frm.LICN_AMNT.value);
+        frm.APPR_STAT.value = "";
+        frm.submit();
+    }
+    
+    function goToList() 
+    {
+        var frm = document.form1;
+    <% if (isCanGoList) { %>
+        frm.action = "<%=RequestPageName.replace('|' ,'&')%>";
+    <% } // end if %>
+        frm.jobid.value ="";
+        frm.submit();
+    }
+
+
+//-->
+</script>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onLoad="MM_preloadImages('<%= WebUtil.ImageURL %>btn_help_on.gif');">
+<form name="form1" method="post" action="">
+<input type="hidden" name="jobid" value="save">
+<input type="hidden" name="APPU_TYPE" value="<%=docinfo.getAPPU_TYPE()%>">
+<input type="hidden" name="APPR_SEQN" value="<%=docinfo.getAPPR_SEQN()%>">
+<input type="hidden" name="BUKRS" value="<%=user.companyCode%>">
+
+<input type="hidden" name="PERNR"      value="<%=a17LicenceData.PERNR%>">
+<input type="hidden" name="BEGDA"      value="<%=a17LicenceData.BEGDA%>">
+<input type="hidden" name="AINF_SEQN"  value="<%=a17LicenceData.AINF_SEQN%>">
+<input type="hidden" name="LICN_TYPE"  value="<%=a17LicenceData.LICN_TYPE%>">
+<input type="hidden" name="GUBN_NAME"  value="<%=a17LicenceData.GUBN_NAME%>">
+<input type="hidden" name="FILD_TYPE"  value="<%=a17LicenceData.FILD_TYPE%>">
+<input type="hidden" name="FILD_NAME"  value="<%=a17LicenceData.FILD_NAME%>">
+<input type="hidden" name="LICN_CODE"  value="<%=a17LicenceData.LICN_CODE%>">
+<input type="hidden" name="LICN_NAME"  value="<%=a17LicenceData.LICN_NAME%>">
+<input type="hidden" name="LICN_GRAD"  value="<%=a17LicenceData.LICN_GRAD%>">
+<input type="hidden" name="GRAD_NAME"  value="<%=a17LicenceData.GRAD_NAME%>">
+<input type="hidden" name="OBN_DATE"   value="<%=a17LicenceData.OBN_DATE%>">
+<input type="hidden" name="LICN_NUMB"  value="<%=a17LicenceData.LICN_NUMB%>">
+<input type="hidden" name="PUBL_ORGH"  value="<%=a17LicenceData.PUBL_ORGH%>">
+
+
+<input type="hidden" name="EQUI_NAME"  value="<%=a17LicenceData.EQUI_NAME%>">
+<input type="hidden" name="ESTA_AREA"  value="<%=a17LicenceData.ESTA_AREA%>">
+<input type="hidden" name="PRIZ_TEXT"  value="<%=a17LicenceData.PRIZ_TEXT%>">
+<input type="hidden" name="ZPERNR"     value="<%=a17LicenceData.ZPERNR%>">
+<input type="hidden" name="ZUNAME"     value="<%=a17LicenceData.ZUNAME%>">
+<input type="hidden" name="AEDTM"      value="<%=a17LicenceData.AEDTM%>">
+<input type="hidden" name="UNAME"      value="<%=a17LicenceData.UNAME%>">
+
+<input type="hidden" name="APPR_STAT">
+<input type="hidden" name="RequestPageName"   value="<%=RequestPageName%>">
+<input type="hidden" name="approvalStep" value="<%=approvalStep%>">
+  <table width="796" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="16">&nbsp;</td>
+      <td><table width="780" border="0" cellspacing="0" cellpadding="0">
+          <tr> 
+            <td><table width="780" border="0" cellpadding="0" cellspacing="0">
+                <tr> 
+                  <td height="5" colspan="2"></td>
+                </tr>
+                <tr> 
+                  <td width="624" class="title02">
+                    <img src="<%= WebUtil.ImageURL %>ehr/title01.gif"> 자격면허 결재해야 할 문서 
+                  </td>
+                  <td align="right" style="padding-bottom:4px">&nbsp;</td>
+                </tr>
+              </table></td>
+          </tr>
+          <tr> 
+            <td height="10">&nbsp;</td>
+          </tr>
+          <tr> 
+            <td height="10">
+                 <!-- 신청자 기본 정보 시작 -->
+                 <%@ include file="/web/common/ApprovalIncludePersInfo.jsp" %>
+                 <!--  신청자 기본 정보 끝-->
+            </td>
+          </tr>
+          <tr> 
+            <td height="10">&nbsp;</td>
+          </tr>
+          <tr> 
+            <td> 
+              <!-- 상단 입력 테이블 시작-->
+		        <table width="780" border="0" cellspacing="1" cellpadding="5" class="table02">
+                <tr> 
+                  <td class="tr01"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tr> 
+                        <td><table border="0" cellspacing="1" cellpadding="0">
+                            <tr> 
+                              <td width="100" class="td01">신청일자</td>
+                              <td colspan="5" class="td09"><%= WebUtil.printDate(a17LicenceData.BEGDA) %></td>
+                            </tr>
+                            <tr> 
+                              <td class="td01">자격증구분</td>
+                              <td width="150" class="td09"><%= a17LicenceData.GUBN_NAME %></td>
+                              <td width="50" class="td09">&nbsp;</td>
+                              <td width="100" class="td01">분야</td>
+                              <td width="100" class="td09"><%= a17LicenceData.FILD_NAME %></td>
+                              <td class="td09">&nbsp;</td>
+                            </tr>
+                            <tr> 
+                              <td class="td01">자격증</td>
+                              <td width="78" class="td09"><%= a17LicenceData.LICN_NAME %></td>
+                              <td class="td09">&nbsp;</td>
+                              <td class="td01">자격등급</td>
+                              <td class="td09"><%= a17LicenceData.GRAD_NAME %></td>
+                              <td class="td09">&nbsp;</td>
+                            </tr>
+                            <tr> 
+                              <td class="td01">발행처</td>
+                              <td colspan="5" class="td09"><%= a17LicenceData.PUBL_ORGH %></td>
+                            </tr>
+                            <tr> 
+                              <td class="td01">자격증번호</td>
+                              <td colspan="2" class="td09"><%= a17LicenceData.LICN_NUMB %></td>
+                              <td class="td01">취득일</td>
+                              <td colspan="2" class="td09"><%= WebUtil.printDate(a17LicenceData.OBN_DATE) %></td>
+                            </tr>
+                          </table></td>
+                      </tr>
+                    </table></td>
+                </tr>
+              </table>
+              <!--신청사항 테이블 끝-->
+          <tr> 
+            <td height="10">&nbsp;</td>
+          </tr>
+          <tr> 
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> 
+              <strong>담당자입력정보</strong></td>
+          </tr>
+          <tr> 
+            <td> 
+             <!--담당자입력정보 테이블 시작-->
+              <table width="780" border="0" cellspacing="1" cellpadding="5" class="table02">
+                <tr> 
+                  <td class="tr01"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tr> 
+                        <td><table border="0" cellspacing="1" cellpadding="0">
+                            <tr> 
+                              <td width="100" class="td01">자격관리부서</td>
+                              <td width="261" class="td09"><input name="txt_deptNm" type="text" class="input04" size="20" value="<%=a17LicenceData.ORGTX%>" readonly>
+                              </td>
+                                <input type="hidden" name="authClsf" value="S">
+                                <input type="hidden" name="ORGEH" value="<%=a17LicenceData.ORGEH%>">
+                              <td class="td01" width="100">증빙접수일</td>
+                              <td width="317" class="td09"> 
+                                <input type="text" name="CERT_DATE" size="10" maxlength="10" class="input03" value="<%=WebUtil.printDate(a17LicenceData.CERT_DATE,".")%>" readonly>
+                              </td>
+                            </tr>
+                            <tr> 
+                              <td class="td01">지급율</td>
+                              <td class="td09"> 
+                                <select name="GIVE_RATE1" class="input03" readonly>
+                                    <% if(a17LicenceData.GIVE_RATE1.equals("50")) {%>            <option value = "50">50</option>
+                                    <% }else if(a17LicenceData.GIVE_RATE1.equals("100")) {%><option value = "100">100</option>
+                                    <% }else if(a17LicenceData.GIVE_RATE1.equals("")) {%>      <option value = "">이력입력용</option>
+                                    <% } %>
+                                </select>
+                              </td>
+                              <td class="td01">적용일자</td>
+                              <td class="td09"> 
+                                <input type="text" name="PAY_DATE" size="10" maxlength="10" class="input03"  value="<%=WebUtil.printDate(a17LicenceData.PAY_DATE,".")%>" readonly>
+                              </td>
+                            </tr>
+                            <tr> 
+                              <td class="td01">자격수당</td>
+                              <td class="td09">
+                                <input name="LICN_AMNT" type="text" style="text-align:right" size="20" class="input03" value="<%=WebUtil.printNumFormat(Double.parseDouble(a17LicenceData.LICN_AMNT)*100)%>" readonly> 
+                                <select name="WAERS" class="input03">
+                                    <option value = "<%=a17LicenceData.WAERS%>"><%=a17LicenceData.WAERS%></option>
+                                </select>
+                              </td>
+                              <td colspan="2" class="td09">&nbsp;</td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table></td>
+                </tr>
+              </table>
+              <!--담당자입력정보 테이블 끝-->
+            <!-- 상단 입력 테이블 끝-->
+            </td>
+          </tr>
+          <tr> 
+            <td>&nbsp;</td>
+          </tr>
+        <% 
+            boolean visible = false;
+            for (int i = 0; i < vcAppLineData.size(); i++) {
+                AppLineData ald = (AppLineData) vcAppLineData.get(i);
+                if (ald.APPL_BIGO_TEXT != null && !ald.APPL_BIGO_TEXT.equals("")) { 
+                    visible = true;
+                    break;
+                } // end if 
+            } // end for 
+        %>
+        <%   if (visible) { %>
+          <tr> 
+            <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> 적요</td>
+          </tr>  
+          <tr>
+            <td>
+                <table width="780" border="0" cellpadding="0" cellspacing="1" class="table03">
+                <% for (int i = 0; i < vcAppLineData.size(); i++) { %>
+                    <% AppLineData ald = (AppLineData) vcAppLineData.get(i); %>
+                    <% if (ald.APPL_BIGO_TEXT != null && !ald.APPL_BIGO_TEXT.equals("")) { %>
+                    <tr> 
+                       <td width="80" class="td03"><%=ald.APPL_ENAME%></td>
+                       <td width="700" class="td09"><%=ald.APPL_BIGO_TEXT%></td>
+                    </tr>
+                    <% } // end if %>
+                <% } // end for %>
+                </table>
+            </td>
+          </tr>
+        <% } // end if %>
+          <tr> 
+            <td> 
+              <table width="780" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td>&nbsp;</td>
+                </tr>
+                <tr> 
+                  <td class="font01" style="padding-bottom:2px"><img src="<%= WebUtil.ImageURL %>ehr/icon_o.gif"> 결재정보</td>
+                </tr>
+                <tr> 
+                  <td><table width="780" border="0" cellspacing="0" cellpadding="0">
+                      <tr> 
+                        <td> 
+                          <!--결재정보 테이블 시작-->
+                          <%= AppUtil.getAppDetail(vcAppLineData) %>
+                          <!--결재정보 테이블 끝-->
+                        </td>
+                      </tr>
+                    </table></td>
+                </tr>
+                <tr> 
+                  <td>&nbsp;</td>
+                </tr>
+                <tr> 
+                  <td align="center">
+                  <!--버튼 들어가는 테이블 시작 -->
+                      <table width="780" border="0" cellpadding="0" cellspacing="0">
+                        <tr> 
+                          <td class="td04">
+                          <% if (isCanGoList) {  %>
+                            <a href="javascript:goToList()"><img src="<%= WebUtil.ImageURL %>btn_list.gif" border="0"></a>&nbsp;&nbsp;&nbsp;
+                          <% } // end if %>
+                          <% if (docinfo.isHasCancel()) {  %>
+                            <a href="javascript:cancel()"><img src="<%= WebUtil.ImageURL %>btn_cancel01.gif" border="0" /></a>&nbsp;&nbsp;&nbsp;
+                          <% } // end if %>
+                          </td>
+                        </tr>
+                      </table>
+                  <!--버튼 들어가는 테이블 끝 -->
+                  </td>
+                </tr>
+                <tr> 
+                  <td>&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>
+<%@ include file="/web/common/commonEnd.jsp" %>

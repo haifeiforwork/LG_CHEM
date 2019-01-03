@@ -1,0 +1,35 @@
+@charset "UTF-8";
+
+/* 2018-06-07 [WorkTime52] 유정우 */
+
+div.real-worktime-list, div.real-worktime-list * {box-sizing:border-box}
+div.real-worktime-list {margin-bottom:0; width:100%; padding:15px}
+div.real-worktime-list sup {font-size:smaller; vertical-align:super}
+div.real-worktime-list div.rwt-title {position:relative; margin-left:10px; width:100%; height:30px; line-height:30px; font-size:13px; font-weight:bold}
+div.real-worktime-list button.rwt-button {position:absolute; right:0; line-height:normal}
+div.real-worktime-list table.infoTable th,
+div.real-worktime-list table.infoTable td {font-size:12px; text-align:center}
+div.real-worktime-list div.commentOne {padding:0 0 4px 20px; font-size:12px; display:inline-block}
+
+table.infoTable.real-worktime-info th,
+table.infoTable.real-worktime-info td {border-bottom-width:0; text-align:center}
+table.infoTable.real-worktime-info th {background:none; font-weight:bold}
+
+label.for-radio + label.for-radio {margin-left:15px}
+input[type="checkbox"] {border:none; padding:0; background:none}
+
+.datetime-yyyymmdd {width:80px; text-align:center}
+.datetime-hhmm {width:60px; text-align:center}
+.datetime-hours {width:40px; text-align:center}
+
+/* 신청사유 */
+.reason-box, .reason-box * {box-sizing:border-box}
+.reason-box {padding:0}
+.reason-box table, .reason-box select, .reason-box input[type="text"] {width:100%}
+.reason-box input[type="text"] {max-width:none}
+.reason-box table td {padding:0; border:none}
+
+/* 상세업무일정 */
+.work-detail-box, .work-detail-box * {box-sizing:border-box}
+.work-detail-box {height:230px; padding:5px 8px !important}
+.work-detail-box textarea {width:100%; height:100%}

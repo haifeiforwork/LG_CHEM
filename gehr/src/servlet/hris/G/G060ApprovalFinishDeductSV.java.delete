@@ -1,0 +1,187 @@
+/********************************************************************************/
+/*                                                                              */
+/*   System Name  : MSS                                                         */
+/*   1Depth Name  : 결재해야할 문서                                             */
+/*   2Depth Name  :                                                             */
+/*   Program Name : 근로소득/갑근세 결재                                        */
+/*   Program ID   : G060ApprovalFinishDeductSV                                  */
+/*   Description  : 근로소득/갑근세 결재를 위한 서블릿                          */
+/*   Note         : 없음                                                        */
+/*   Creation     : 2005-03-11 유용원                                           */
+/*   Update       : 2008-05-13  lsa  [CSR ID:1263333] 제증명서 발급 Process 개선 */
+/*                                                                              */
+/********************************************************************************/
+
+package servlet.hris.G;
+   
+import com.sns.jdf.BusinessException;
+import com.sns.jdf.GeneralException;
+import com.sns.jdf.Logger;
+import com.sns.jdf.servlet.Box;
+import com.sns.jdf.servlet.EHRBaseServlet;
+import com.sns.jdf.util.DataUtil;
+import com.sns.jdf.util.WebUtil;
+import hris.A.A18Deduct.A18DeductData;
+import hris.A.A18Deduct.rfc.A18DeductRFC;
+import hris.common.PersInfoData;
+import hris.common.WebUserData;
+import hris.common.rfc.PersInfoWithNoRFC;
+import hris.common.util.AppUtil;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.Vector;
+ 
+public class G060ApprovalFinishDeductSV extends EHRBaseServlet
+{
+    protected void performTask(HttpServletRequest req, HttpServletResponse res) throws GeneralException
+    {
+        try{
+            HttpSession session = req.getSession(false);
+            WebUserData user    = (WebUserData)session.getAttribute("user");
+
+            Vector        vcAppLineData    = null;
+            Vector        A18DeductData_vt = null;
+            A18DeductData a18DeductData    = null;
+
+            String dest  = "";
+            String jobid = "";
+
+            Box box = WebUtil.getBox(req);
+            String  AINF_SEQN  = box.get("AINF_SEQN");
+
+            // 처리 후 돌아 갈 페이지
+            String RequestPageName = box.get("RequestPageName");
+            req.setAttribute("RequestPageName", RequestPageName);
+
+            jobid = box.get("jobid");
+
+            if(jobid == null || jobid.equals("") ){
+                jobid = "search";
+            }// end if
+
+            if( jobid.equals("search") ) {
+
+                //근로소득/갑근세 조회
+                A18DeductRFC   func = new A18DeductRFC();
+                A18DeductData_vt    = func.getDetail(  );
+                Logger.debug.println(this, "원천징수 조회 : " + A18DeductData_vt.toString());
+
+                if( A18DeductData_vt.size() < 1 ){
+                    String msg = "System Error! \n\n 조회할 항목이 없습니다.";
+                    req.setAttribute("msg", msg);
+                    dest = WebUtil.JspURL+"common/caution.jsp";
+                }else{
+                    //근로소득/갑근세
+                    a18DeductData  = (A18DeductData)A18DeductData_vt.get(0);
+
+                    // 결재자 정보
+                    vcAppLineData = AppUtil.getAppChangeVt(AINF_SEQN);
+
+                    // 결재 정보.
+                    PersInfoWithNoRFC piRfc = new PersInfoWithNoRFC();
+                    PersInfoData      pid   = (PersInfoData) piRfc.getApproval(a18DeductData.PERNR).get(0);
+
+                    req.setAttribute("PersInfoData" ,pid );
+                    req.setAttribute("vcAppLineData" , vcAppLineData);
+                    req.setAttribute("A18DeductData_vt", A18DeductData_vt);
+
+                    dest = WebUtil.JspURL+"G/G060ApprovalFinishDeduct.jsp";
+                } // end if
+            //본인발행[CSR ID:1263333]
+            } else if( jobid.equals("print_certi") ) {               //새창띠움(빈페이지)
+                String GUEN_TYPE = box.get("GUEN_TYPE");             //01:근로소득 원천징수 영수증, 02:갑근세 원천징수 증명서
+
+                A18DeductRFC   func = new A18DeductRFC();
+                A18DeductData_vt    = func.getDetail();
+                //근로소득/갑근세
+                a18DeductData  = (A18DeductData)A18DeductData_vt.get(0);
+                req.setAttribute("AINF_SEQN", AINF_SEQN);
+                req.setAttribute("PERNR" ,       a18DeductData.PERNR );
+                req.setAttribute("MENU" ,      "DEDUCT"); 
+                req.setAttribute("GUEN_TYPE" ,  GUEN_TYPE); 
+                req.setAttribute("print_page_name", WebUtil.ServletURL+"hris.G.G060ApprovalFinishDeductSV?AINF_SEQN="+AINF_SEQN+"&GUEN_TYPE="+GUEN_TYPE+"&jobid=print_certi_print");
+                dest = WebUtil.JspURL+"common/printFrame_Deduct.jsp";
+           
+            } else if( jobid.equals("print_certi_print") ) {
+                String GUEN_TYPE = box.get("GUEN_TYPE");
+ 
+                //A18CertiPrint02RFC rfc_02 = new A18CertiPrint02RFC();
+                Logger.debug.println(this, "원천징수 조회 : rfc_02"  );
+      
+                //Vector             ret    = new Vector();
+
+                A18DeductRFC   func = new A18DeductRFC();
+                A18DeductData_vt    = func.getDetail();
+                a18DeductData  = (A18DeductData)A18DeductData_vt.get(0);      
+                
+//              프린트는 1회로 출력을 제한한다.
+               // func.updateFlag(a18DeductData.PERNR, AINF_SEQN);
+//프린트는 1회로 출력을 제한한다.                
+
+                //PersonInfoRFC      numfunc        = new PersonInfoRFC();
+                //PersonData     publicdata   = new PersonData();
+                //publicdata = (PersonData)numfunc.getPersonInfo(a18DeductData.PERNR);
+            	String sTargetYear = a18DeductData.EBEGDA.substring(0,4);   // 신청연도
+                if( GUEN_TYPE.equals("01") ) {                //01:근로소득 원천징수 영수증
+
+                    //String sTargetYear = String.valueOf(DateTime.getYear() - 1);   // 귀속연도
+                    req.setAttribute("sPerNR",      a18DeductData.PERNR);
+                    req.setAttribute("sTargetYear", sTargetYear);
+                    req.setAttribute("sAinfSeqn",   AINF_SEQN);
+                    dest = WebUtil.JspURL+"A/A18Deduct/A18DeductPrintFormEmbedGunroSoduk.jsp";
+                     
+                } else if( GUEN_TYPE.equals("02") ) {          //02:갑근세 원천징수 증명서
+                	/*
+//                  갑종근로소득 신청 정보 조회
+                    A18DeductData dataA18 = new A18DeductData();
+               
+                    A18DeductData_vt = func.getDetail( a18DeductData.PERNR, box.get("AINF_SEQN") );
+
+                    Logger.debug.println(this, "원천징수 조회 : 02:" + A18DeductData_vt.toString());
+     
+                    if( A18DeductData_vt.size() > 0 ) {     dataA18 = (A18DeductData)A18DeductData_vt.get(0);     }
+                    
+                    //                  갑종근로소득 급여정보 조회
+                    ret = rfc_02.detail(a18DeductData.PERNR, AINF_SEQN);
+                    Logger.debug.println(this, "원천징수 조회 : 02:----1" + ret.toString());
+                                
+                    A18CertiPrintBusiData dataBus            = (A18CertiPrintBusiData)ret.get(0);
+                    Vector                A18CertiPrint02_vt = (Vector)ret.get(1);
+                    Logger.debug.println(this, "원천징수 조회 : 02:----2" + dataBus.toString());
+                    Logger.debug.println(this, "원천징수 조회 : 02:----3" + A18CertiPrint02_vt.toString());
+
+                   // func.updateFlag(a18DeductData.PERNR, AINF_SEQN);  
+                    req.setAttribute("dataA18",            dataA18);
+                    req.setAttribute("dataBus",            dataBus);
+                    req.setAttribute("publicdata",     publicdata);
+                    req.setAttribute("A18CertiPrint02_vt", A18CertiPrint02_vt);
+                    dest = WebUtil.JspURL+"A/A18Deduct/A18DeductPrintCerti02.jsp";
+ */
+
+                    //String sTargetYear = String.valueOf(DateTime.getYear() - 1);   // 귀속연도
+                    req.setAttribute("sPerNR",      a18DeductData.PERNR);
+                    req.setAttribute("sTargetYear", sTargetYear);
+                    req.setAttribute("sAinfSeqn",   AINF_SEQN);
+                    dest = WebUtil.JspURL+"A/A18Deduct/A18DeductPrintFormEmbedGabgnse.jsp";    
+           	
+                }
+
+                Logger.debug.println(this, "AINF_SEQN   " +AINF_SEQN);
+                Logger.debug.println(this, "sPerNR   " +a18DeductData.PERNR);
+                Logger.debug.println(this, "sTargetYear   " +sTargetYear);
+                
+            } else {
+                throw new BusinessException(g.getMessage("MSG.COMMON.0016"));
+            } // end if
+
+            Logger.debug.println(this, " destributed = " + dest);
+            printJspPage(req, res, dest);
+
+        } catch(Exception e) {
+            Logger.err.println(DataUtil.getStackTrace(e));
+            throw new GeneralException(e);
+        }
+    }
+}

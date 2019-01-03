@@ -1,0 +1,131 @@
+package hris.A.rfc;
+
+import com.sap.mw.jco.JCO;
+import com.sns.jdf.GeneralException;
+import com.sns.jdf.Logger;
+import com.sns.jdf.sap.SAPWrap;
+import com.sns.jdf.util.DataUtil;
+import com.sns.jdf.util.WebUtil;
+import hris.A.A01SelfDetailMRLicenseData;
+import hris.common.ChangePasswordResultData;
+
+import java.util.Vector;
+
+/**
+ * A01SelfDetailMRLicenseRFC.java
+ * [CSR ID:3350062] MR인증내역 조회화면 반영 
+ *
+ * @author 이지은
+ * @version 1.0, 2017/04/08
+ */
+public class A01SelfDetailMRLicenseRFC extends SAPWrap {
+
+    private String functionName = "ZGHR_RFC_MR_CERTI_LIST";
+    
+    /**
+     * MR자격 대상 및 데이터 유무 조회하는 RFC를 호출하는 Method
+     * @return java.util.Vector
+     * @exception GeneralException
+     */
+//    public CommonRFCReturnData getMRLicenseListCheck(String I_PERNR, String I_CFORM) throws GeneralException {
+//        
+//        JCO.Client mConnection = null;
+//        CommonRFCReturnData result = null;
+//        
+//        try{
+//            mConnection = getClient();
+//            JCO.Function function = createFunction(functionName) ;
+//
+//            setInput(function, I_PERNR, I_CFORM);
+//            excute(mConnection, function);
+//            CommonRFCReturnData resultData = getStructor(CommonRFCReturnData.class, function, "E_RETURN", null);
+//
+//
+//            return resultData; resultData = getStructor(CommonRFCReturnData.class, function, "E_RETURN", null); 
+//            
+//        } catch(Exception ex) {
+//            Logger.sap.println(this, "SAPException : "+ex.toString());
+//            throw new GeneralException(ex);
+//        } finally {
+//            close(mConnection);
+//        }
+//
+//        return result;
+//    }
+
+    /**
+     * MR자격 LIST 조회하는 RFC를 호출하는 Method
+     * @return java.util.Vector
+     * @exception GeneralException
+     */
+    public Vector getMRLicenseList(String I_PERNR, String I_CFORM) throws GeneralException {
+        
+        JCO.Client mConnection = null;
+        Vector resultList = null;
+        
+        try{
+            mConnection = getClient();
+            JCO.Function function = createFunction(functionName) ;
+
+            setInput(function, I_PERNR, I_CFORM);
+            excute(mConnection, function);
+            resultList = getOutput(function);   
+            
+        } catch(Exception ex) {
+            Logger.sap.println(this, "SAPException : "+ex.toString());
+            throw new GeneralException(ex);
+        } finally {
+            close(mConnection);
+        }
+
+        return resultList;
+    }
+    
+    private void setInput(JCO.Function function, String I_PERNR, String I_CFORM) throws GeneralException{
+
+        String fieldName = "I_PERNR";
+        setField(function, fieldName, I_PERNR);
+        String fieldName1 = "I_BEGDA";
+        setField(function, fieldName1, DataUtil.getCurrentYear()+"0101");
+        String fieldName2 = "I_ENDDA";
+        setField(function, fieldName2, DataUtil.getCurrentYear()+"1231");
+		String fieldName3 = "I_CFORM";
+        setField(function, fieldName3, I_CFORM);
+        
+    }
+    
+//    private Vector<CommonRFCReturnData> getOutput(JCO.Function function) throws GeneralException {
+//        Vector <CommonRFCReturnData> ret = new Vector();
+//        CommonRFCReturnData cd = new CommonRFCReturnData();
+//        
+//        String fieldName = "E_RETURN" ;
+//        String E_RETURN    = getField( fieldName, function ) ;
+//
+//        String fieldName1  = "E_FLAG" ;
+//        String E_FLAG   = getField( fieldName1, function ) ;
+//        
+//        cd.setE_RERUTN(E_RETURN);
+//        cd.setE_FLAG(E_FLAG);
+//
+//        ret.addElement(cd);
+//
+//        return ret;
+//    }    
+    
+    private Vector getOutput(JCO.Function function) throws GeneralException {
+    	Vector resultList = new Vector();
+    	Vector<A01SelfDetailMRLicenseData> mrList = null;
+    	mrList = getTable(A01SelfDetailMRLicenseData.class, function, "T_LIST");
+    	
+    	//String E_RETURN   = getField("E_RETURN", function) ;
+    	String E_FLAG  = getField("E_FLAG", function) ;
+    	
+    	resultList.addElement(mrList);
+    	//resultList.addElement(E_RETURN);
+    	resultList.addElement(E_FLAG);
+    	
+        return resultList;
+    }
+
+}
+

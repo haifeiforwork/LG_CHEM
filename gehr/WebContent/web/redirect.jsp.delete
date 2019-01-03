@@ -1,0 +1,37 @@
+<%-- --------------------------------------------------------------------------
+ - Display     : none
+ - File Name   : redirect.jsp
+ - Description : NewLoginSv.java에서 로그인시 returnUrl이 없는 경우 call
+ -               returnUrl: /servlet/hris.NewLoginSV
+ - Include     :  
+ - Submit      : none
+ - Transaction : none
+ - DB          : none
+ - Author      : 민병운
+ - Last Update : 2005/10/17
+-------------------------------------------------------------------------- --%>
+<%@ page import="com.sns.jdf.Logger"%>
+<%@ page import="com.sns.jdf.util.*"%>
+<%
+String returnUrl = (String)request.getParameter("returnUrl");
+
+Logger.debug.println(this, "returnUrl 2  @@@@@@@:===>"+returnUrl);
+Logger.debug.println(this, "[redirect.jsp] returnUrl:==>"+returnUrl.replace('^','&'));
+
+if(returnUrl.indexOf(".jsp") > 0) {
+   Logger.debug.println(this, "returnUrl:1===>"+returnUrl);
+    if (returnUrl.indexOf("web/") <= 0) {
+   Logger.debug.println(this, "returnUrl:2===>"+returnUrl);
+        returnUrl = WebUtil.JspURL +returnUrl;
+        returnUrl = returnUrl.replace("web//","web/");
+    }
+} else {
+    if (returnUrl.indexOf("/web/") > 0) { 
+Logger.debug.println(this, "returnUrl:3===>"+returnUrl);
+        returnUrl = returnUrl.replace("/web/","");
+Logger.debug.println(this, "returnUrl:4===>"+returnUrl);        
+    }
+}
+
+response.sendRedirect(returnUrl.replace('^','&'));
+%>

@@ -1,0 +1,323 @@
+<%/*******************************************************************************/
+/*                                                                               */
+/*   System Name   : e-HR                                                        */
+/*   1Depth Name   : HR 결재                                                     */
+/*   2Depth Name   : 결재 완료 문서                                              */
+/*   Program Name  : 경력증명서신청 결재 완료                                    */
+/*   Program ID    : G065ApprovalFinishCareer.jsp                                */
+/*   Description   : 경력증명서 신청 결재 완료                                   */
+/*   Note          :                                                             */
+/*   Creation      : 2006-04-13  김대영                                          */
+/*   Update        : 2008-05-13  lsa  [CSR ID:1263333] 제증명서 발급 Process 개선*/
+/*   Update        :                                                             */
+/*                                                                               */
+/********************************************************************************/%>
+
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ page errorPage="/web/err/error.jsp"%>
+<%@ include file="/web/common/commonProcess.jsp" %>
+
+<%@ page import="java.util.Vector" %>
+<%@ page import="hris.A.A19Career.*" %>
+<%@ page import="hris.common.rfc.*" %>
+<%@ page import="hris.common.util.*" %>
+<%@ page import="hris.common.*" %>
+<%@ page import="com.sns.jdf.util.*" %>
+
+<%
+    WebUserData      user    = (WebUserData)session.getAttribute("user");
+
+    A19CareerData  a19CareerData  = (A19CareerData)request.getAttribute("a19CareerData");
+    Vector vcBizPlaceCodeEntity  = (Vector)request.getAttribute("vcBizPlaceCodeEntity");
+
+    Vector      vcAppLineData   = (Vector)request.getAttribute("vcAppLineData");
+    String      RequestPageName = (String)request.getAttribute("RequestPageName");
+
+    boolean isCanGoList ;
+    if (RequestPageName == null || RequestPageName.equals("")) {
+        isCanGoList = false;
+    } else {
+        isCanGoList = true;
+    } // end if
+    // 현재 결재자 구분
+    DocumentInfo docinfo = new DocumentInfo(a19CareerData.AINF_SEQN ,user.empNo);
+    int approvalStep = docinfo.getApprovalStep();
+%>
+
+<html>
+<head>
+<title>ESS</title>
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr.css" type="text/css">
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr_style.css" type="text/css">
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr_wsg.css" type="text/css">
+
+<script language="javascript" src="<%= WebUtil.ImageURL %>js/snsscript.js"></script>
+<script language="JavaScript">
+<!--
+
+    function goToList()
+    {
+        var frm = document.form1;
+    <% if (isCanGoList) { %>
+        frm.action = "<%=RequestPageName.replace('|' ,'&')%>";
+    <% } // end if %>
+        frm.jobid.value ="";
+        frm.submit();
+    }
+    //[CSR ID:1263333]
+function go_print() {
+    if("<%= a19CareerData.PRINT_CHK%>" == "1" &&  document.form1.PRINT_END.value == "X" ) {
+        alert("발행은 1회만 인쇄 가능합니다.");
+        return;
+    }
+    if( "<%= a19CareerData.PRINT_CHK%>" == "1" ){//본인
+       msg ="발행은 1회만 인쇄 가능합니다. 인쇄 하시겠습니까?";
+    }else { //담당자
+       msg ="인쇄 하시겠습니까?";
+    }
+
+    if( confirm(msg) ) {
+        window.open('', 'essPrintWindow', "toolbar=0,location=0,directories=0,status=0,menubar=1,resizable=0,width=700,height=650,left=100,top=60");
+        document.form1.jobid.value = "print_certi";
+        if ("<%=a19CareerData.CAREER_TYPE%>"=="2"){
+        document.form1.PRINT_GUBUN.value = "2";
+        } else {
+        document.form1.PRINT_GUBUN.value = "1";
+        }
+        document.form1.target      = "essPrintWindow";
+        document.form1.action      = '<%= WebUtil.ServletURL %>hris.G.G065ApprovalFinishCareerSV';
+        document.form1.method      = "post";
+        document.form1.submit();
+
+        document.form2.target = "ifHidden";
+        document.form2.action = "<%=WebUtil.JspURL%>common/PrintCntUpdate.jsp";
+        document.form2.submit();
+    }
+}
+//-->
+</script>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onLoad="MM_preloadImages('<%= WebUtil.ImageURL %>btn_help_on.gif');">
+<form name="form1" method="post" action="">
+<input type="hidden" name="jobid" value="save">
+<input type="hidden" name="BUKRS" value="<%=user.companyCode%>">
+<input type="hidden" name="PRINT_GUBUN"  value="">
+<input type="hidden" name="PERNR"        value="<%=a19CareerData.PERNR%>">
+<input type="hidden" name="BEGDA"        value="<%=a19CareerData.BEGDA%>">
+<input type="hidden" name="AINF_SEQN"    value="<%=a19CareerData.AINF_SEQN%>">
+<input type="hidden" name="CAREER_TYPE"    value="<%=a19CareerData.CAREER_TYPE%>">
+<input type="hidden" name="APPR_STAT">
+<input type="hidden" name="RequestPageName"   value="<%=RequestPageName%>">
+
+<div class="subWrapper">
+
+    <div class="title"><h1>경력 증명서 결재완료 문서</h1></div>
+
+    <!-- 신청자 기본 정보 시작 -->
+    <%@ include file="/web/common/ApprovalIncludePersInfo.jsp" %>
+    <!--  신청자 기본 정보 끝-->
+
+    <div class="buttonArea">
+        <ul class="btn_crud">
+           <% if (isCanGoList) {  %>
+            <li><a href="javascript:goToList()"><span>목록보기</span></a></li>
+           <% } // end if %>
+        </ul>
+    </div>
+
+    <h2 class="subtitle">신청정보</h2>
+
+    <!--경력증명서 신청정보 테이블 시작-->
+    <div class="tableArea">
+        <div class="table">
+            <table class="tableGeneral">
+                <tr>
+                    <th>신청일자</th>
+                    <td><%= WebUtil.printDate(a19CareerData.BEGDA) %></td>
+                    <td class="align_right" colspan="2">
+<%  //[CSR ID:1263333]
+    if( ( a19CareerData.PRINT_CHK.equals("1") && user.empNo.equals(a19CareerData.PERNR) ) ||
+        ( a19CareerData.PRINT_CHK.equals("2") && (approvalStep == DocumentInfo.DUTY_CHARGER|| approvalStep == DocumentInfo.DUTY_MANGER ) ) ) {
+
+
+%>
+                    <a class="inlineBtn" href="javascript:go_print();"><span>인쇄하기</span></a>&nbsp;
+<%
+    } else {
+%>
+                    &nbsp;
+<%
+    }
+%>
+                    </td>
+                </tr>
+                <tr>
+                    <th><span class="textPink">*</span>구분</th>
+                    <td>
+                         <%= a19CareerData.CAREER_TYPE.equals("1") ? "국문일반" : "" %>
+                        <%= a19CareerData.CAREER_TYPE.equals("2") ? "국문 이동발령포함" : "" %>
+                        <%= a19CareerData.CAREER_TYPE.equals("4") ? "영문" : "" %>
+                    </td>
+                    <th class="th02"><span class="textPink">*</span>발행부수</th>
+                    <td> <%=Integer.parseInt( a19CareerData.PRINT_NUM )%></td>
+                </tr>
+                <tr>
+                    <th>발행방법</th>
+                    <td colspan="3">
+                        <input type="radio" name="PRINT_CHK" value="1" <%= a19CareerData.PRINT_CHK.equals("1") ? "checked" : "" %> disabled>본인발행
+                        <input type="radio" name="PRINT_CHK" value="2" <%= a19CareerData.PRINT_CHK.equals("2") ? "checked" : "" %> disabled>담당부서 요청발행
+                    </td>
+                </tr>
+                <tr>
+                    <th><span class="textPink">*</span>주민등록번호</th>
+                    <td>
+<%        String REGNO_dis = a19CareerData.REGNO.substring(0, 6) + "-*******";
+%>
+                        <%=REGNO_dis%>
+                    </td>
+                    <th class="th02">입사일자</th>
+                    <td> <%= WebUtil.printDate(a19CareerData.ENTR_DATE) %></td>
+                </tr>
+                <tr>
+                  <th>직위</th>
+                  <td colspan="3"><%= a19CareerData.TITEL%></td>
+                </tr>
+                              <% if (a19CareerData.CAREER_TYPE.equals("4")) {  // 영문 %>
+
+                <tr>
+                  <th>직무</th>
+                  <td colspan="3"> <%=a19CareerData.STELLTX%> </td>
+                </tr>
+                <tr>
+                  <th>소속부서</th>
+                  <td colspan="3"><%=a19CareerData.ORGTX_E%><%=a19CareerData.ORGTX_E2.equals("")? "" :"<br>"+a19CareerData.ORGTX_E2 %></td>
+                </tr>
+                               <% }else { %>
+                <tr>
+                  <th>직무</th>
+                  <td> <%=a19CareerData.STELLTX%> </td>
+                  <th class="th02">소속부서</th>
+                  <td> <%=a19CareerData.ORGTX_E%></td>
+                </tr>
+                               <% } %>
+
+                <tr>
+                  <th><span class="textPink">*</span>현주소</th>
+                  <td colspan="3">
+                    <%=a19CareerData.ADDRESS1%><br>
+                    <%=a19CareerData.ADDRESS2%>
+                  </td>
+                </tr>
+                <tr>
+                  <th>전화번호</th>
+                  <td colspan="3"><%=a19CareerData.PHONE_NUM%></td>
+                </tr>
+                <tr>
+                  <th><span class="textPink">*</span>제출처</th>
+                  <td colspan="3"> <%=a19CareerData.SUBMIT_PLACE%></td>
+                </tr>
+                <tr>
+                  <th><span class="textPink">*</span>용도</th>
+                  <td colspan="3"> <%=a19CareerData.USE_PLACE%></td>
+                </tr>
+                <tr>
+                  <th>특기사항</th>
+                  <td colspan="3">
+                    <%=a19CareerData.SPEC_ENTRY1%> <br>
+                    <%=a19CareerData.SPEC_ENTRY2%> <br>
+                    <%=a19CareerData.SPEC_ENTRY3%> <br>
+                    <%=a19CareerData.SPEC_ENTRY4%> <br>
+                    <%=a19CareerData.SPEC_ENTRY5%>
+                  </td>
+                </tr>
+                <tr>
+                    <% if(a19CareerData.CAREER_TYPE.equals("2")) { %>
+                  <th><span class="textPink">*</span>사업장주소</th>
+                  <td>
+                    <%=WebUtil.printOptionText(vcBizPlaceCodeEntity ,a19CareerData.JUSO_CODE)%>
+                  </td>
+                  <th class="th02">이동발령유형</th>
+                    <td>
+                      <%= a19CareerData.ORDER_TYPE.equals("01") ? "직무" : "" %>
+                      <%= a19CareerData.ORDER_TYPE.equals("02") ? "부서" : "" %>
+                      <%= a19CareerData.ORDER_TYPE.equals("03") ? "근무지" : "" %>
+                   </td>
+                  <% } else { %>
+                  <th><span class="textPink">*</span>사업장주소</th>
+                  <td colspan="3">
+                    <%=WebUtil.printOptionText(vcBizPlaceCodeEntity ,a19CareerData.JUSO_CODE)%>
+                  </td>
+                   <% } %>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!--경력증명서 신청정보 테이블 시작-->
+
+<%
+    boolean visible = false;
+    for (int i = 0; i < vcAppLineData.size(); i++) {
+        AppLineData ald = (AppLineData) vcAppLineData.get(i);
+        if (ald.APPL_BIGO_TEXT != null && !ald.APPL_BIGO_TEXT.equals("")) {
+            visible = true;
+            break;
+        } // end if
+    } // end for
+%>
+<%   if (visible) { %>
+
+    <h2 class="subtitle">적요</h2>
+
+    <% for (int i = 0; i < vcAppLineData.size(); i++) { %>
+        <% AppLineData ald = (AppLineData) vcAppLineData.get(i); %>
+        <% if (ald.APPL_BIGO_TEXT != null && !ald.APPL_BIGO_TEXT.equals("")) { %>
+
+    <div class="tableArea">
+        <div class="table">
+            <table class="tableGeneral">
+                <tr>
+                    <th width="100"><%=ald.APPL_ENAME%></th>
+                    <td><%=ald.APPL_BIGO_TEXT%></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+        <% } // end if %>
+    <% } // end for %>
+
+    <% } // end if %>
+
+    <h2 class="subtitle">결재정보</h2>
+
+    <!--결재정보 테이블 시작-->
+    <%= AppUtil.getAppDetail(vcAppLineData) %>
+    <!--결재정보 테이블 끝-->
+
+    <!--버튼 들어가는 테이블 시작 -->
+    <div class="buttonArea">
+        <ul class="btn_crud">
+          <% if (isCanGoList) {  %>
+            <li><a href="javascript:goToList()"><span>목록보기</span></a></li>
+          <% } // end if %>
+        </ul>
+    </div>
+    <!--버튼 들어가는 테이블 끝 -->
+
+
+</div>
+
+  <!--[CSR ID:1263333]-->
+  <input type="hidden" name="PRINT_END"   value="<%= a19CareerData.PRINT_END %>">
+
+</form>
+
+
+<form name="form2" method="post" action="">
+<input type="hidden" name="PERNR"     value="<%=a19CareerData.PERNR%>">
+<input type="hidden" name="AINF_SEQN" value="<%=a19CareerData.AINF_SEQN%>">
+<input type="hidden" name="MENU" value="CAREER">
+</form>
+<iframe name="ifHidden" width="0" height="0" />
+<%@ include file="/web/common/commonEnd.jsp" %>

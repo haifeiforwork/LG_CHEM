@@ -1,0 +1,29 @@
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ include file="/web/common/commonProcess.jsp" %>
+
+<%@ page import="hris.D.D03Vocation.*" %>
+<%@ page import="hris.D.D03Vocation.rfc.*" %>
+
+<%
+    // 잔여휴가일수, 장치교대근무조 체크
+    D03RemainVocationRFC  rfcRemain  = null;
+    D03RemainVocationData dataRemain = new D03RemainVocationData();
+    String PERNR  = request.getParameter("PERNR");                    
+    String APPL_FROM  = request.getParameter("APPL_FROM");
+    
+    rfcRemain  = new D03RemainVocationRFC();
+    dataRemain = (D03RemainVocationData)rfcRemain.getRemainVocation(PERNR, APPL_FROM);
+%>
+
+<SCRIPT>
+
+<%--     parent.document.form1.P_REMAIN.value    = "<%= dataRemain.E_REMAIN.equals("0") ? "0" : WebUtil.printNumFormat(dataRemain.E_REMAIN, 1) %>";      --%>
+<%--     parent.document.form1.REMAIN_DATE.value = "<%= dataRemain.E_REMAIN %>";  --%>
+    
+	parent.document.form1.OCCUR.value    = "<%= (dataRemain.ANZHL_GEN.equals("0") ||  dataRemain.ANZHL_GEN.equals("")) ? "0" : WebUtil.printNumFormat(dataRemain.ANZHL_GEN, 1) %>";     
+	parent.document.form1.ABWTG.value    = "<%= (dataRemain.ANZHL_USE.equals("0") ||  dataRemain.ANZHL_USE.equals("")) ? "0" : WebUtil.printNumFormat(dataRemain.ANZHL_USE, 1) %>";     
+	parent.document.form1.REMAIN_DATE.value = "<%= dataRemain.ANZHL_BAL %>"; 
+	parent.document.form1.REMAINDAYS.value = "${dataRemain.ANZHL_BAL}";
+
+</SCRIPT>
+

@@ -1,0 +1,507 @@
+<%/******************************************************************************/
+/*                                                                              */
+/*   System Name  : MSS                                                         */
+/*   1Depth Name  : MY HR 정보                                                  */
+/*   2Depth Name  : 건강보험 재발급                                             */
+/*   Program Name : 건강보험 재발급/추가발급/기재사항변경 신청 수정             */
+/*   Program ID   : E02MedicareChange.jsp                                       */
+/*   Description  : 건강보험증 변경/재발급 수정 하는 화면                       */
+/*   Note         :                                                             */
+/*   Creation     : 2002-01-29  박영락                                          */
+/*   Update       : 2005-02-28  윤정현                                          */
+/*                                                                              */
+/********************************************************************************/%>
+
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ include file="/web/common/commonProcess.jsp" %>
+
+<%@ page import="java.util.Vector" %>
+<%@ page import="hris.E.E02Medicare.*" %>
+<%@ page import="hris.E.E02Medicare.rfc.*" %>
+
+<%
+    WebUserData user = WebUtil.getSessionUser(request);
+
+    String company            = user.companyCode;
+    Vector E02MedicareData_vt = (Vector)request.getAttribute("E02MedicareData_vt");
+    E02MedicareData data      = (E02MedicareData )E02MedicareData_vt.get(0);
+    E02MedicareTargetNameRFC func          = new E02MedicareTargetNameRFC();
+    Vector                   tergetName_vt = func.getName(data.PERNR);
+
+    PersonData PERNR_Data = (PersonData)request.getAttribute("PersonData");
+    String RequestPageName = (String)request.getAttribute("RequestPageName");
+
+%>
+<html>
+<head>
+<title>ESS</title>
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr.css" type="text/css">
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr_wsg.css" type="text/css">
+
+<script language="javascript" src="<%= WebUtil.ImageURL %>js/snsscript.js"></script>
+<script language="JavaScript">
+<!--
+function doSubmit() {
+    if( check_data() ) {
+        document.form1.jobid.value = "change";
+        document.form1.action = "<%= WebUtil.ServletURL %>hris.E.E02Medicare.E02MedicareChangeSV";
+        document.form1.method = "post";
+        document.form1.submit();
+    //debug();
+    }
+}
+
+function check_data(){
+    var idx = document.form1.APPL_TYPE2.selectedIndex;
+    if( idx==0 ){
+        alert("신청구분을 선택하세요");
+        document.form1.APPL_TYPE2.focus();
+        return false;
+    }
+
+    if( document.form1.ENAME.selectedIndex == 0 ){
+        alert("대상자 성명을 선택하세요");
+        document.form1.ENAME.focus();
+        return false;
+    }
+
+    if( idx == 1 ){
+        if( document.form1.APPL_TYPE3.selectedIndex==0 ){
+            alert("변경항목을 선택하세요");
+            document.form1.APPL_TYPE3.focus();
+            return false;
+        }
+        if( document.form1.CHNG_BEFORE.value == "" ){
+            alert("변경전 Data를 입력하세요 ");
+            document.form1.CHNG_BEFORE.focus();
+            return false;
+        }
+        if( document.form1.CHNG_AFTER.value == "" ){
+            alert("변경후 Data를 입력하세요 ");
+            document.form1.CHNG_AFTER.focus();
+            return false;
+        }
+        // 주민등록번호일때 유효성 체크
+        appl_type = document.form1.APPL_TYPE3[document.form1.APPL_TYPE3.selectedIndex].value;
+        if(appl_type == "02" ){     // 주민등록번호
+            if( ! chkResnoObj_1(document.form1.CHNG_AFTER)){
+                return false;
+            }
+        }
+
+        if( document.form1.APPL_TYPE3.selectedIndex == 4 ){
+            if( document.form1.ETC_TEXT3.value == "" ){
+                alert("변경항목이 기타입니다. 내용을 입력하세요 ");
+                document.form1.ETC_TEXT3.focus();
+                return false;
+            }
+        }
+    } else if( idx == 2 ){
+        if( document.form1.APPL_TYPE4.selectedIndex==0 ){
+            alert("발급사유항목 선택하세요");
+            document.form1.APPL_TYPE4.focus();
+            return false;
+        }
+        if( document.form1.APPL_TYPE4.selectedIndex == 5 ){
+            if( document.form1.ETC_TEXT4.value == "" ){
+                alert("발급사유가 기타입니다. 내용을 입력하세요 ");
+                document.form1.ETC_TEXT4.focus();
+                return false;
+            }
+        }
+    } else if( idx == 3 ){
+        if( document.form1.APPL_TYPE5.selectedIndex==0 ){
+            alert("재발급 신청항목을 선택하세요");
+            document.form1.APPL_TYPE5.focus();
+            return false;
+        }
+        if( document.form1.APPL_TYPE5.selectedIndex == 4 ){
+            if( document.form1.ETC_TEXT5.value == "" ){
+                alert("신청항목이 기타입니다. 내용을 입력하세요 ");
+                document.form1.ETC_TEXT5.focus();
+                return false;
+            }
+        }
+    }
+
+    if ( check_empNo() ){
+        return false;
+    }
+
+    begdate = removePoint(document.form1.BEGDA.value);
+    document.form1.BEGDA.value = begdate;
+    return true;
+}
+
+function change_select(obj){
+    inx = obj[obj.selectedIndex].value;
+
+    if( inx == 1 ){
+      //활성창 변경
+      document.form1.APPL_TYPE3.disabled  =0;
+      document.form1.ETC_TEXT3.disabled   =0;
+      document.form1.CHNG_BEFORE.disabled =0;
+      document.form1.CHNG_AFTER.disabled  =0;
+      document.form1.ENAME.disabled       =0;
+      document.form1.ADD_NUM.disabled     =1;
+      document.form1.ADD_NUM1.disabled    =1;
+
+      document.form1.APPL_TYPE4.disabled  =1;
+      document.form1.ETC_TEXT4.disabled   =1;
+
+      document.form1.APPL_TYPE5.disabled  =1;
+      document.form1.ETC_TEXT5.disabled   =1;
+
+      document.all.ETC_TEXT3.style.visibility="hidden";
+      document.all.ETC_TEXT4.style.visibility="hidden";
+      document.all.ETC_TEXT5.style.visibility="hidden";
+      //초기화
+      document.form1.APPL_TYPE3.selectedIndex = 0;
+      document.form1.ETC_TEXT3.value     = "";
+      document.form1.CHNG_BEFORE.value   = "";
+      document.form1.CHNG_AFTER.value    = "";
+      document.form1.ENAME.selectedIndex = 0;
+
+      document.form1.APPL_TYPE4.selectedIndex = 0;
+      document.form1.ETC_TEXT4.value     = "";
+      document.form1.ADD_NUM.value       = "";
+      document.form1.APPL_TYPE5.selectedIndex = 0;
+      document.form1.ETC_TEXT5.value     = "";
+      document.form1.ADD_NUM1.value      = "";
+    } else if( inx == 2 ){
+      document.form1.APPL_TYPE3.disabled  =1;
+      document.form1.ETC_TEXT3.disabled   =1;
+      document.form1.CHNG_BEFORE.disabled =1;
+      document.form1.CHNG_AFTER.disabled  =1;
+      document.form1.ENAME.disabled       =0;
+      document.form1.ADD_NUM.disabled     =0;
+      document.form1.ADD_NUM1.disabled    =1;
+
+      document.form1.APPL_TYPE4.disabled = 0;
+      document.form1.ETC_TEXT4.disabled  = 0;
+
+      document.form1.APPL_TYPE5.disabled = 1;
+      document.form1.ETC_TEXT5.disabled  = 1;
+
+      document.all.ETC_TEXT3.style.visibility = "hidden";
+      document.all.ETC_TEXT4.style.visibility = "hidden";
+      document.all.ETC_TEXT5.style.visibility = "hidden";
+      //초기화
+      document.form1.APPL_TYPE3.selectedIndex = 0;
+      document.form1.ETC_TEXT3.value          = "";
+      document.form1.CHNG_BEFORE.value        = "";
+      document.form1.CHNG_AFTER.value         = "";
+      document.form1.ENAME.selectedIndex      = 0;
+
+      document.form1.APPL_TYPE4.selectedIndex = 0;
+      document.form1.ETC_TEXT4.value     = "";
+      document.form1.ADD_NUM.value       = "";
+      document.form1.APPL_TYPE5.selectedIndex = 0;
+      document.form1.ETC_TEXT5.value     = "";
+      document.form1.ADD_NUM1.value      = "";
+    } else if( inx == 3 ){
+      document.form1.APPL_TYPE3.disabled  = 1;
+      document.form1.ETC_TEXT3.disabled   = 1;
+      document.form1.CHNG_BEFORE.disabled = 1;
+      document.form1.CHNG_AFTER.disabled  = 1;
+      document.form1.ENAME.disabled       = 0;
+      document.form1.ADD_NUM.disabled     = 1;
+      document.form1.ADD_NUM1.disabled    = 0;
+
+      document.form1.APPL_TYPE4.disabled  = 1;
+      document.form1.ETC_TEXT4.disabled   = 1;
+
+      document.form1.APPL_TYPE5.disabled  = 0;
+      document.form1.ETC_TEXT5.disabled   = 0;
+
+      document.all.ETC_TEXT3.style.visibility = "hidden";
+      document.all.ETC_TEXT4.style.visibility = "hidden";
+      document.all.ETC_TEXT5.style.visibility = "hidden";
+      //초기화
+      document.form1.APPL_TYPE3.selectedIndex = 0;
+      document.form1.ETC_TEXT3.value          = "";
+      document.form1.CHNG_BEFORE.value        = "";
+      document.form1.CHNG_AFTER.value         = "";
+      document.form1.ENAME.selectedIndex      = 0;
+
+      document.form1.APPL_TYPE4.selectedIndex = 0;
+      document.form1.ETC_TEXT4.value     = "";
+      document.form1.ADD_NUM.value       = "";
+      document.form1.APPL_TYPE5.selectedIndex = 0;
+      document.form1.ETC_TEXT5.value     = "";
+      document.form1.ADD_NUM1.value      = "";
+    } else {
+      document.form1.APPL_TYPE3.disabled  =1;
+      document.form1.ETC_TEXT3.disabled   =1;
+      document.form1.CHNG_BEFORE.disabled =1;
+      document.form1.CHNG_AFTER.disabled  =1;
+      document.form1.ENAME.disabled       =0;
+
+      document.form1.APPL_TYPE4.disabled  =1;
+      document.form1.ETC_TEXT4.disabled   =1;
+
+      document.form1.APPL_TYPE5.disabled  =1;
+      document.form1.ETC_TEXT5.disabled   =1;
+
+      document.all.ETC_TEXT3.style.visibility = "hidden";
+      document.all.ETC_TEXT4.style.visibility = "hidden";
+      document.all.ETC_TEXT5.style.visibility = "hidden";
+      //초기화
+      document.form1.APPL_TYPE3.selectedIndex = 0;
+      document.form1.ETC_TEXT3.value          = "";
+      document.form1.CHNG_BEFORE.value        = "";
+      document.form1.CHNG_AFTER.value         = "";
+      document.form1.ENAME.selectedIndex      = 0;
+
+      document.form1.APPL_TYPE4.selectedIndex = 0;
+      document.form1.ETC_TEXT4.value     = "";
+      document.form1.ADD_NUM.value       = "";
+      document.form1.APPL_TYPE5.selectedIndex = 0;
+      document.form1.ETC_TEXT5.value     = "";
+      document.form1.ADD_NUM1.value      = "";
+    }
+}
+
+function check_type1(obj){
+    inx = obj[obj.selectedIndex].value;
+    if( inx == 4 ){
+        document.all.ETC_TEXT3.style.visibility = "visible";
+    } else {
+        document.all.ETC_TEXT3.style.visibility = "hidden";
+        document.form1.ETC_TEXT3.value = "";
+    }
+}
+
+function check_type2(obj){
+    inx = obj[obj.selectedIndex].value;
+    if( inx == 5 ){
+        document.all.ETC_TEXT4.style.visibility = "visible";
+    } else {
+        document.all.ETC_TEXT4.style.visibility = "hidden";
+        document.form1.ETC_TEXT4.value = "";
+    }
+}
+
+function check_type3(obj){
+    inx = obj[obj.selectedIndex].value;
+    if( inx == 4 ){
+        document.all.ETC_TEXT5.style.visibility = "visible";
+    } else {
+        document.all.ETC_TEXT5.style.visibility = "hidden";
+        document.form1.ETC_TEXT5.value = "";
+    }
+}
+
+
+function check_length(obj,leng) {
+    val = obj.value;
+    nam = obj.name;
+    len = checkLength(obj.value);
+    if( len > leng ) {
+        vala = limitKoText(val,leng);
+        obj.blur();
+        obj.value = vala;
+        obj.focus();
+    }
+}
+
+function change_name(obj) {
+  var p_idx = obj.selectedIndex - 1;
+
+  if( p_idx >= 0 ) {
+      eval("document.form1.SUBTY.value = document.form1.SUBTY_name" + p_idx + ".value");
+      eval("document.form1.OBJPS.value = document.form1.OBJPS_name" + p_idx + ".value");
+  } else {
+      document.form1.SUBTY.value = "";
+      document.form1.OBJPS.value = "";
+  }
+}
+//-->
+</script>
+</head>
+
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<form name="form1" method="post">
+
+<div class="subWrapper">
+
+    <div class="title"><h1>건강보험 재발급/추가발급/기재사항변경 신청수정</h1></div>
+
+<%
+    if ("Y".equals(user.e_representative) ) {
+%>
+    <!--   사원검색 보여주는 부분 시작   -->
+    <%@ include file="/web/common/PersonInfo.jsp" %>
+    <!--   사원검색 보여주는 부분  끝    -->
+<%
+    }
+%>
+
+    <!-- 상단 입력 테이블 시작-->
+    <div class="tableArea">
+        <div class="table">
+            <table class="tableGeneral">
+                  <tr>
+                    <th>신청일자</th>
+                    <td>
+                      <input type="text" name="BEGDA" value="<%= WebUtil.printDate( data.BEGDA, "." ) %>" readonly size="16">
+                    </td>
+                    <th class="th02"><span class="textPink">*</span>신청구분</th>
+                    <td>
+                      <select name="APPL_TYPE2" onChange="javascript:change_select(this);">
+                        <option>------------</option>
+                        <%= WebUtil.printOption((new E02MedicareREQRFC()).getRequest(), data.APPL_TYPE2 ) %>
+                      </select>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th><span class="textPink">*</span>대상자 성명</th>
+                    <td colspan="3">
+                      <select name="ENAME" onChange="javascript:change_name(this);">
+                        <option>----------</option>
+                        <option value="<%= PERNR_Data.E_ENAME %>" <%= ( PERNR_Data.E_ENAME ).equals( data.ENAME ) ? "selected" : "" %>><%= PERNR_Data.E_ENAME %></option>
+<%
+    for ( int i = 0 ; i < tergetName_vt.size() ; i++ ) {
+        E02MedicareNameData ndata = (E02MedicareNameData)tergetName_vt.get(i);
+        String full_name = ndata.LNMHG.trim() + " " + ndata.FNMHG.trim();
+%>
+                            <option value ="<%= full_name %>" <%= full_name.equals( data.ENAME ) ? "selected" : "" %> ><%= full_name %></option>
+<%
+    }
+%>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <h2 class="subtitle">기재사항변경</h2>
+
+    <div class="tableArea">
+        <div class="table">
+            <table class="tableGeneral">
+                <tr>
+                  <th><span class="textPink">*</span>변경항목</th>
+                  <td colspan="3">
+                    <select name="APPL_TYPE3" onChange="javascript:check_type1(this);" <%= (data.APPL_TYPE3).equals("") ? "disabled" : ""%>>
+                      <option>----------------</option>
+                      <%= WebUtil.printOption((new E02MedicareEnrollRFC()).getEnroll(), data.APPL_TYPE3) %>
+                    </select>
+                    &nbsp;<span style="visibility:<%= (data.ETC_TEXT3).equals("") ? "hidden" : "visible"%>" > <input type="text" name="ETC_TEXT3" size="60" onKeyUp="check_length(this,60)" value="<%= data.ETC_TEXT3 %>"  <%= (data.APPL_TYPE3).equals("") ? "disabled" : ""%> ></span>
+                  </td>
+                </tr>
+                <tr>
+                  <th><span class="textPink">*</span>변경전</th>
+                  <td>
+                    <input type="text" name="CHNG_BEFORE" size="25" onKeyUp="check_length(this,60)" value="<%= data.CHNG_BEFORE %>"  <%= (data.APPL_TYPE3).equals("") ? "disabled" : ""%>  >
+                  </td>
+                  <th class="th02"><span class="textPink">*</span>변경후Data</td>
+                  <td>
+                    <input type="text" name="CHNG_AFTER" size="25" onKeyUp="check_length(this,60)" value="<%= data.CHNG_AFTER %>"  <%= (data.APPL_TYPE3).equals("") ? "disabled" : ""%> >
+                  </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <h2 class="subtitle">추가발급</h2>
+
+    <div class="tableArea">
+        <div class="table">
+            <table class="tableGeneral">
+                <tr>
+                    <th><span class="textPink">*</span>발급사유</th>
+                    <td>
+                        <select name="APPL_TYPE4" onChange="javascript:check_type2(this);"  <%= (data.APPL_TYPE4).equals("") ? "disabled" : ""%>>
+                          <option>--------</option>
+                          <%= WebUtil.printOption((new E02MedicareIssueRFC()).getIssue(), data.APPL_TYPE4 ) %>
+                        </select>
+                        &nbsp;<span style="visibility:<%= (data.ETC_TEXT4).equals("") ? "hidden" : "visible"%>" > <input type="text" name="ETC_TEXT4" size="60" onKeyUp="check_length(this,60)" value="<%= data.ETC_TEXT4 %>" <%= (data.APPL_TYPE4).equals("") ? "disabled" : ""%>></span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>발행부수</th>
+                    <td>
+                        <input type="text" name="ADD_NUM" size="2" maxlength="3" style="text-align:right" value="<%= data.ADD_NUM.equals("000") || data.ADD_NUM.equals("") ? "" : WebUtil.printNum(data.ADD_NUM) %>" onBlur="onlyNumber(this,'발행부수')" <%= (data.APPL_TYPE4).equals("") ? "disabled" : ""%>>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <h2 class="subtitle"> 재발급</h2>
+
+    <div class="tableArea">
+        <div class="table">
+            <table class="tableGeneral">
+                <tr>
+                  <th><span class="textPink">*</span>신청사유</th>
+                  <td>
+                    <select name="APPL_TYPE5" onChange="javascript:check_type3(this);"  <%= (data.APPL_TYPE5).equals("") ? "disabled" : ""%>>
+                      <option>-------------</option>
+                      <%= WebUtil.printOption( (new E02MedicareReIssueRFC()).getReIssue(), data.APPL_TYPE5 ) %>
+                    </select>
+                    &nbsp;<span style="visibility:<%= (data.ETC_TEXT5).equals("") ? "hidden" : "visible"%>" > <input type="text" name="ETC_TEXT5" size="60" onKeyUp="check_length(this,60)" value="<%= data.ETC_TEXT5 %>"  <%= (data.APPL_TYPE5).equals("") ? "disabled" : ""%> ></span>
+                  </td>
+                </tr>
+                <tr>
+                  <th>발행부수</th>
+                  <td>
+                    <input type="text" name="ADD_NUM1" size="2" maxlength="3" style="text-align:right" value="<%= data.ADD_NUM1.equals("000") || data.ADD_NUM1.equals("") ? "" : WebUtil.printNum(data.ADD_NUM1) %>" onBlur="onlyNumber(this,'발행부수')" <%= (data.APPL_TYPE5).equals("") ? "disabled" : ""%>>
+                  </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!--상단 입력 테이블 끝-->
+
+<%
+    if( user.companyCode.equals("C100") ) {
+%>
+
+    <span class="commentOne">제출서류 : 기재사항변경의 경우 주민등록등본, 건강보험증 각 1부</span>
+
+<%
+    }
+%>
+
+    <span class="commentOne"><span class="textPink">*</span> 는 필수 입력사항입니다(신청구분(기재사항변경/추가발급/재발급)에 따라 필수 입력사항이 변동됩니다).</span>
+
+    <h2 class="subtitle">결재정보</h2>
+
+    <!-- 결재자 입력 테이블 시작-->
+    <%= hris.common.util.AppUtil.getAppChange(data.AINF_SEQN) %>
+    <!-- 결재자 입력 테이블 시작-->
+
+    <div class="buttonArea">
+        <ul class="btn_crud">
+            <li><a class="darken" href="javascript:doSubmit();"><span>저장</span></a></li>
+            <li><a href="javascript:history.back()"><span>취소</span></a></li>
+        </ul>
+    </div>
+
+<!---- hidden --------->
+    <input type="hidden" name="jobid"     value="">
+    <input type="hidden" name="AINF_SEQN" value="<%= data.AINF_SEQN %>">
+    <input type="hidden" name="SUBTY"     value="<%= data.SUBTY %>">
+    <input type="hidden" name="OBJPS"     value="<%= data.OBJPS %>">
+    <input type="hidden" name="RequestPageName" value="<%=RequestPageName%>">
+
+    <input type="hidden" name="SUBTY_name0" value="">
+    <input type="hidden" name="OBJPS_name0" value="">
+<%
+    for(int i = 0 ; i < tergetName_vt.size() ; i++){
+        E02MedicareNameData data_name = (E02MedicareNameData)tergetName_vt.get(i);
+%>
+      <input type="hidden" name="SUBTY_name<%= i+1 %>" value="<%= data_name.SUBTY %>">
+      <input type="hidden" name="OBJPS_name<%= i+1 %>" value="<%= data_name.OBJPS %>">
+<%
+    }
+%>
+
+<!---- hidden --------->
+</div>
+</form>
+<%@ include file="/web/common/commonEnd.jsp" %>

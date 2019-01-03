@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soapenv:Body>
+        <WAT_RESPONSE xmlns="http://ws.approval.lgchem.com">
+            <apprItem xmlns="">
+                <returnDesc></returnDesc>
+                <returnCode><![CDATA[0]]></returnCode>
+                <apprSystemID><![CDATA[EHR]]></apprSystemID>
+                <apprDocID><![CDATA[0003816808]]></apprDocID>
+                <apprRequestEmpNo><![CDATA[00207045]]></apprRequestEmpNo>
+                <apprRequestEmpName><![CDATA[유승열]]></apprRequestEmpName>
+                <apprRequestEmpDept><![CDATA[00000000]]></apprRequestEmpDept>
+                <apprRequestEmpTitle><![CDATA[대리]]></apprRequestEmpTitle>
+                <apprRequestEmpEmail></apprRequestEmpEmail>
+                <apprRequestEmpOffice><![CDATA[82-2-3773-7474]]></apprRequestEmpOffice>
+                <apprRequestEmpMobile></apprRequestEmpMobile>
+                <apprRequestCompanyKorName><![CDATA[LG Chem]]></apprRequestCompanyKorName>
+                <apprRequestDate><![CDATA[2016-11-23]]></apprRequestDate>
+                <apprSummary><![CDATA[◎신청일:2016-11-23
+◎초과근무일:2017-01-01
+◎전일근태에포함:불포함
+◎시간:09:00~18:00(8.00시간)
+◎신청사유:초과근로신청합니다.
+◎휴게시간1시작:12:00
+◎휴게시간1종료:13:00
+◎휴게시간1무급:1
+◎휴게시간1유급:
+◎휴게시간2시작:
+◎휴게시간2종료:
+◎휴게시간2무급:
+◎휴게시간2유급:]]></apprSummary>
+                <apprDelFlag></apprDelFlag>
+                <approver>
+                    <apprCurFlag><![CDATA[T]]></apprCurFlag>
+                    <apprApproveEmpNo><![CDATA[00205027]]></apprApproveEmpNo>
+                    <apprApproveEmpName><![CDATA[정옥연]]></apprApproveEmpName>
+                    <apprApproveEmpDept><![CDATA[결재]]></apprApproveEmpDept>
+                    <apprApproveEmpTitle><![CDATA[부장]]></apprApproveEmpTitle>
+                    <apprApproveEmpEmail></apprApproveEmpEmail>
+                    <apprApproveEmpOffice><![CDATA[82-2-3773-6770]]></apprApproveEmpOffice>
+                    <apprApproveEmpMobile></apprApproveEmpMobile>
+                    <apprApproveCompanyKorName><![CDATA[LG Chem]]></apprApproveCompanyKorName>
+                    <apprApproveDate></apprApproveDate>
+                    <apprApproveType><![CDATA[APPROVAL]]></apprApproveType>
+                    <apprComment></apprComment>
+                    <apprType><![CDATA[미결]]></apprType>
+                </approver>
+                <apprLinkDocUrls>
+                    <apprLinkDocName><![CDATA[초과근무]]></apprLinkDocName>
+                    <apprLinkDocUrl>
+                        <![CDATA[http://ehr.lgchem.com/servlet/servlet.hris.MobilePassSV?AINF_SEQN=0003816808&isNotApp=false]]></apprLinkDocUrl>
+                </apprLinkDocUrls>
+            </apprItem>
+        </WAT_RESPONSE>
+    </soapenv:Body>
+</soapenv:Envelope>
+

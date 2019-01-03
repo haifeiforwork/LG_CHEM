@@ -1,0 +1,450 @@
+<%/******************************************************************************/
+/*                                                                              */
+/*   System Name  : ESS                                                         */
+/*   1Depth Name  : 신청                                                        */
+/*   2Depth Name  : 근태                                                        */
+/*   Program Name : 교육,출장신청수정                                           */
+/*   Program ID   : D19EduTripChange.jsp                                        */
+/*   Description  : 교육,출장신청                                               */
+/*   Note         : 없음                                                        */
+/*   Creation     : 2010-03-08  lsa                                             */
+/*   Update       : [CSR ID:2803878] 초과근무 신청 Process 변경 요청                                                            */
+/*                                                                              */
+/********************************************************************************/%>
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ include file="/web/common/commonProcess.jsp" %>
+
+<%@ page import="java.util.Vector" %>
+<%@ page import="hris.D.D19EduTrip.*" %>
+<%@ page import="hris.D.D19EduTrip.rfc.*" %>
+<%@ page import="hris.D.D03Vocation.*" %>
+<%@ page import="hris.D.D03Vocation.rfc.*" %>
+
+<%@ page import="hris.common.rfc.*" %>
+<%@ page import="hris.D.*" %>
+<%@ page import="hris.D.rfc.*" %>
+<jsp:include page="/include/header.jsp" />
+
+<%
+  WebUserData user    = (WebUserData)session.getAttribute("user");
+  String      message = (String)request.getAttribute("message");
+
+
+  /* 교육,출장신청 */
+  Vector  D19EduTripData_vt = (Vector)request.getAttribute("D19EduTripData_vt");
+  D19EduTripData       data = (D19EduTripData)D19EduTripData_vt.get(0);
+
+  if( message == null ){
+    message = "";
+  }
+
+    String RequestPageName = (String)request.getAttribute("RequestPageName");
+    PersonData PERNR_Data = (PersonData)request.getAttribute("PersonData");
+  Logger.debug.println(this, "D19EduTripData : "+ data.toString() );
+
+  /* 결제정보를 vector로 받는다 */
+  Vector      AppLineData_vt = (Vector)request.getAttribute("AppLineData_vt");
+
+  //근태유형추가
+  Vector D03VocationAReason0010_vt  = (new D03VocationAReasonRFC()).getSubtyCode(user.companyCode, data.PERNR, "0010",DataUtil.getCurrentDate());
+  Vector D03VocationAReason0020_vt  = (new D03VocationAReasonRFC()).getSubtyCode(user.companyCode, data.PERNR, "0020",DataUtil.getCurrentDate());
+
+  Vector D03OvertimeCodeData0010_vt  = new Vector();
+  for( int i = 0 ; i < D03VocationAReason0010_vt.size() ; i++ ){
+      D03VocationReasonData old_data = (D03VocationReasonData)D03VocationAReason0010_vt.get(i);
+      CodeEntity code_data = new CodeEntity();
+      code_data.code = old_data.SCODE ;
+      code_data.value = old_data.STEXT ;
+      D03OvertimeCodeData0010_vt.addElement(code_data);
+  }
+
+  Vector D03OvertimeCodeData0020_vt  = new Vector();
+  for( int i = 0 ; i < D03VocationAReason0020_vt.size() ; i++ ){
+      D03VocationReasonData old_data = (D03VocationReasonData)D03VocationAReason0020_vt.get(i);
+      CodeEntity code_data = new CodeEntity();
+      code_data.code = old_data.SCODE ;
+      code_data.value = old_data.STEXT ;
+      D03OvertimeCodeData0020_vt.addElement(code_data);
+  }
+%>
+
+<script language="JavaScript">
+<!--
+//msg 를 보여준다.
+function msg(){
+<%
+    if( !message.equals("") ){
+%>
+     alert("<%= message %>");
+<%
+    }
+%>
+}
+
+// 달력 사용
+function fn_openCal(Objectname){
+  var lastDate;
+  lastDate = eval("document.form1." + Objectname + ".value");
+  small_window=window.open("<%=WebUtil.JspURL%>common/calendar.jsp?formname=form1&fieldname="+Objectname+"&curDate="+lastDate+"&iflag=0","essCalendar","toolbar=0,location=0,directories=0,status=0,menubar=0,resizable=0,width=300,height=300");
+  small_window.focus();
+}
+
+// 시간 선택
+function fn_openTime(Objectname){
+    small_window=window.open("<%=WebUtil.JspURL%>common/time.jsp?formname=form1&fieldname="+Objectname, "essTime","toolbar=0,location=0,directories=0,status=0,menubar=0,resizable=0,width=270,height=150");
+    small_window.focus();
+}
+
+// 휴가구분 체크 변경에 따른 작업 변경
+function click_radio(obj) {
+
+    document.form1.AWART.value = obj.value;
+
+    OVTM_change();
+
+}
+function OVTM_change() {
+    var inx=0;
+
+    if (document.form1.AWART.value  == "0010" ) {
+<%
+       for( int i = 0 ; i < D03VocationAReason0010_vt.size() ; i++ ) {
+              D03VocationReasonData ck = (D03VocationReasonData)D03VocationAReason0010_vt.get(i);
+%>            if ( inx == 0 ) {
+                  inx = inx +1;
+                  document.form1.OVTM_CODE.length = inx;
+                  document.form1.OVTM_CODE[inx-1].value = "";
+                  document.form1.OVTM_CODE[inx-1].text  = "-------------";
+              }
+              inx = inx +1;
+              document.form1.OVTM_CODE.length = inx;
+              document.form1.OVTM_CODE[inx-1].value = "<%=ck.SCODE%>";
+              document.form1.OVTM_CODE[inx-1].text  = "<%=ck.STEXT%>";
+
+<%     }
+%>
+     }else if (document.form1.AWART.value  == "0020") {
+
+<%
+       for( int i = 0 ; i < D03VocationAReason0020_vt.size() ; i++ ) {
+              D03VocationReasonData ck = (D03VocationReasonData)D03VocationAReason0020_vt.get(i);
+%>            if ( inx == 0 ) {
+                  inx = inx +1;
+                  document.form1.OVTM_CODE.length = inx;
+                  document.form1.OVTM_CODE[inx-1].value = "";
+                  document.form1.OVTM_CODE[inx-1].text  = "-------------";
+              }
+              inx = inx +1;
+              document.form1.OVTM_CODE.length = inx;
+              document.form1.OVTM_CODE[inx-1].value = "<%=ck.SCODE%>";
+              document.form1.OVTM_CODE[inx-1].text  = "<%=ck.STEXT%>";
+
+<%     }
+%>
+     }
+}
+// 수정..
+function do_change(){
+  if( check_data() ){
+    document.form1.jobid.value = "change";
+    document.form1.AINF_SEQN.value = "<%= data.AINF_SEQN %>";
+
+    document.form1.action = "<%= WebUtil.ServletURL %>hris.D.D19EduTrip.D19EduTripChangeSV";
+    document.form1.method = "post";
+    document.form1.submit();
+  }
+}
+
+// 취소..
+function do_back(){
+  document.form1.jobid.value = "first";
+  document.form1.AINF_SEQN.value = "<%= data.AINF_SEQN %>";
+
+  document.form1.action = "<%= WebUtil.ServletURL %>hris.D.D19EduTrip.D19EduTripDetailSV";
+  document.form1.method = "post";
+  document.form1.submit();
+}
+
+// data check..
+function check_data(){
+  if( document.form1.OVTM_CODE.value == "" ){//@v1.2휴가구분
+	     // alert("구분은 필수 입력사항입니다.");
+	  alert("<%=g.getMessage("MSG.D.D19.0001")%>");
+      document.form1.OVTM_CODE.focus();
+      return false;
+  }
+
+  // if( checkNull(document.form1.REASON, "신청사유를") == false ) {
+  if( checkNull(document.form1.REASON, "<%=g.getMessage("MSG.D.D19.0002")%>") == false ) {
+    return false;
+  }
+  // 신청사유-80 입력시 길이 제한
+  x_obj = document.form1.REASON;
+  xx_value = x_obj.value;
+  if( xx_value != "" && checkLength(xx_value) > 80 ){
+      x_obj.value = limitKoText(xx_value, 80);
+      //alert("신청사유는 한글 40자, 영문 80자 이내여야 합니다.");
+      alert("<%=g.getMessage("MSG.D.D19.0003")%>");
+      x_obj.focus();
+      x_obj.select();
+      return false;
+  }
+
+  // if( checkNull(document.form1.APPL_FROM, "신청기간을") == false ) {
+  if( checkNull(document.form1.APPL_FROM, "<%=g.getMessage("MSG.D.D19.0004")%>") == false ) {
+    return false;
+  }
+  // if( checkNull(document.form1.APPL_FROM, "신청기간을") == false ) {
+  if( checkNull(document.form1.APPL_FROM, "<%=g.getMessage("MSG.D.D19.0004")%>") == false ) {
+    return false;
+  }
+  date_from  = removePoint(document.form1.APPL_FROM.value);
+  date_to    = removePoint(document.form1.APPL_TO.value);
+
+  if( date_from > date_to ) {
+	    //alert("신청시작일이 신청종료일보다 큽니다.");
+	    alert("<%=g.getMessage("MSG.D.D19.0005")%>");
+    return false;
+  }
+  beguz  = removeColon(document.form1.BEGUZ.value);
+  enduz  = removeColon(document.form1.ENDUZ.value);
+  if( (date_from != date_to )&& (beguz != "" ||enduz!= "" )) {
+	   //alert("시간은 당일만 입력 가능합니다.");
+	   alert("<%=g.getMessage("MSG.D.D19.0006")%>");
+    document.form1.BEGUZ.value = "";
+    document.form1.ENDUZ.value = "";
+
+    return false;
+  }
+  else {
+	    //  if( beguz != "" && checkNull(document.form1.ENDUZ, "신청시간을") == false ) {
+      if( beguz != "" && checkNull(document.form1.ENDUZ, "<%=g.getMessage("MSG.D.D19.0004")%>") == false ) {
+        return false;
+      }
+      if( beguz > enduz ) {
+          //alert("신청시작시간이 신청종료시간보다 큽니다.");
+          alert("<%=g.getMessage("MSG.D.D19.0007")%>");
+        return false;
+      }
+  }
+
+  //[CSR ID:2803878] 근태 3개월 이상 벌어지면 Alert
+	var today = <%= WebUtil.printDate(DataUtil.getCurrentDate(),"") %>;
+	 	 today = today+"";
+	var today_3month = getAfterMonth(addSlash(today),3);
+	var from_num = Number(removePoint(document.form1.APPL_FROM.value));
+	if ( from_num>today_3month ){
+        //alert("교육/출장일을 다시 확인하시기 바랍니다.");
+        alert("<%=g.getMessage("MSG.D.D19.0008")%>");
+        document.form1.APPL_FROM.focus();
+        document.form1.APPL_FROM.select();
+        return false;
+    }
+
+  // 신청관련 단위 모듈에서 필히 넣어야할 항목...
+  if ( check_empNo() ){
+    return false;
+  }
+  // 신청관련 단위 모듈에서 필히 넣어야할 항목...
+
+  // default값 setting..
+  document.form1.BEGDA.value       = removePoint(document.form1.BEGDA.value);
+  document.form1.APPL_FROM.value   = date_from;
+  document.form1.APPL_TO.value     = date_to;
+  if (beguz =="") {
+      document.form1.BEGUZ.value       = "";
+      document.form1.ENDUZ.value       = "";
+  }
+  else {
+      document.form1.BEGUZ.value       = beguz+"00";
+      document.form1.ENDUZ.value       = enduz+"00";
+  }
+  return true;
+}
+
+//시간입력시 호출하는 펑션 - 꼭 필요함.
+function check_Time(){
+
+}
+
+//2002.12.20. - 잔여휴가일수 다시 계산에서 보여주기
+function after_remainSetting(){
+  remainSetting(document.form1.APPL_FROM);
+}
+
+function remainSetting(obj) {
+  if( obj.value != "" && dateFormat(obj) ) {
+    document.form3.APPL_FROM.value = removePoint(obj.value);
+    date_n = Number(document.form3.APPL_FROM.value);
+  }
+}
+//-->
+</script>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onLoad="javascript:msg();MM_preloadImages('<%= WebUtil.ImageURL %>btn_help_on.gif');">
+<form name="form1" method="post" action="">
+
+<table width="796" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="16">&nbsp;</td>
+    <td> <table width="780" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td><table width="780" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td height="5" colspan="2"></td>
+              </tr>
+              <tr>
+                  <td class="subhead"><h2><%=g.getMessage("LABEL.D.D19.0013")%> <!-- 교육/출장 신청 수정 --></h2></td>
+              </tr>
+            </table></td>
+        </tr>
+
+        <tr>
+          <td height="10">&nbsp;</td>
+        </tr>
+<%
+    if ("Y".equals(user.e_representative) ) {
+%>
+          <!--   사원검색 보여주는 부분 시작   -->
+          <%@ include file="/web/common/PersonInfo.jsp" %>
+          <!--   사원검색 보여주는 부분  끝    -->
+          <tr>
+            <td height="10">&nbsp;</td>
+          </tr>
+<%
+    }
+%>
+		<tr>
+			<td>
+	           	<div class="buttonArea">
+	           		<ul class="btn_crud" id="sc_button">
+	           			<li><a class="darken" href="javascript:do_change();"><span><%=g.getMessage("LABEL.D.D19.0014")%> <!--수정 --></span></a></li>
+	           			<li><a href="javascript:do_back();"><span><%=g.getMessage("LABEL.D.D19.0015")%> <!--삭제 --></span></a></li>
+	           		</ul>
+	           	</div>
+			</td>
+		</tr>
+        <tr>
+          <td>
+			<div class="tableArea">
+              <table class="tableGeneral">
+                <tr>
+                  <th width="100"><%=g.getMessage("LABEL.D.D19.0002")%> <!-- 신청일 --></th>
+                  <td width="260">
+                    <input type="text" name="BEGDA" value="<%= data.BEGDA.equals("0000-00-00") ? "" : WebUtil.printDate(data.BEGDA) %>" size="20" readonly>
+                  </td>
+                  <th class="th02" width="100"><%=g.getMessage("LABEL.D.D19.0016")%> <!-- 휴가구분 -->&nbsp;<font color="#0000FF"><b>*</b></font></th>
+                  <td>
+                    <input type="radio" name="awart" value="0010" onClick="javascript:click_radio(this);" <%= data.AWART.equals("0010") ? "checked" : "" %>>
+                    <%=g.getMessage("LABEL.D.D19.0022")%> <!-- 교육 -->
+                    <input type="radio" name="awart" value="0020" onClick="javascript:click_radio(this);" <%= data.AWART.equals("0020") ? "checked" : "" %>>
+                    <%=g.getMessage("LABEL.D.D19.0023")%> <!-- 출장 -->
+                    </td>
+                </tr>
+                <!--@v1.2-->
+                <tr id="gntaegubun">
+                  <th><%=g.getMessage("LABEL.D.D19.0004")%> <!-- 구분 -->&nbsp;<font color="#0000FF"><b>*</b></font></th>
+                  <td colspan="3">
+                    <select  name="OVTM_CODE">
+                      <option value="">-------------</option>
+                        <%= data.AWART.equals("0010") ?  WebUtil.printOption( D03OvertimeCodeData0010_vt,data.OVTM_CODE) : WebUtil.printOption( D03OvertimeCodeData0020_vt,data.OVTM_CODE)%>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <th><%=g.getMessage("LABEL.D.D19.0005")%> <!-- 신청사유 -->&nbsp;<font color="#0000FF"><b>*</b></font></th>
+                  <td colspan="3">
+                    <input type="text" name="REASON" value="<%= data.REASON %>" size="65" maxlength="80" style="ime-mode:active">
+                  </td>
+                </tr>
+                <tr>
+                  <th><%=g.getMessage("LABEL.D.D19.0006")%> <!-- 대근자 --></th>
+                  <td>
+                    <input type="text" name="OVTM_NAME" value="<%= data.OVTM_NAME %>" size="10" maxlength="10" style="ime-mode:active">
+                  </td>
+                  <th class="th02"><%=g.getMessage("LABEL.D.D19.0007")%> <!-- 신청기간 -->&nbsp;<font color="#0000FF"><b>*</b></font></td>
+                  <td>
+                    <input type="text" name="APPL_FROM" value="<%= data.APPL_FROM.equals("0000-00-00") ? "" : WebUtil.printDate(data.APPL_FROM) %>" size="10" onBlur="javascript:remainSetting(this);">
+                    <a href="javascript:fn_openCal('APPL_FROM','after_remainSetting()')">
+                      <img src="<%= WebUtil.ImageURL %>sshr/ico_calendar.gif" align="absmiddle" border="0" alt="<%=g.getMessage("LABEL.D.D19.0017")%>"></a>
+                    <%=g.getMessage("LABEL.D.D19.0024")%> <!-- 부터 -->
+                    <input type="text" name="APPL_TO"   value="<%= data.APPL_TO.equals("0000-00-00")   ? "" : WebUtil.printDate(data.APPL_TO)   %>" size="10" onBlur="javascript:dateFormat(this);">
+                    <a href="javascript:fn_openCal('APPL_TO')">
+                      <img src="<%= WebUtil.ImageURL %>sshr/ico_calendar.gif" align="absmiddle" border="0" alt="<%=g.getMessage("LABEL.D.D19.0017")%>"></a>
+                    <%=g.getMessage("LABEL.D.D19.0025")%> <!-- 까지 -->
+                  </td>
+                </tr>
+<!--
+                <tr>
+                  <td class="td01" width="95">신청시간</td>
+                  <td class="td09">
+                    <input type="text" name="BEGUZ" value="<%= data.BEGUZ.equals("") ? "" : WebUtil.printTime(data.BEGUZ) %>" size="20" onBlur="timeFormat(this);" <%= data.AWART.equals("0120") || data.AWART.equals("0121") || data.AWART.equals("0180") || data.AWART.equals("0370") ? "class=\"input03\" " : "readonly class=\"input04\" " %>>
+                    <a href="javascript:fn_openTime('BEGUZ')">
+                      <img src="<%= WebUtil.ImageURL %>btn_serch.gif" align="absmiddle" border="0" alt="시간검색"></a>
+                    부터
+                    <input type="text" name="ENDUZ" value="<%= data.ENDUZ.equals("") ? "" : WebUtil.printTime(data.ENDUZ) %>" size="20" onBlur="timeFormat(this);" <%= data.AWART.equals("0120") || data.AWART.equals("0121") || data.AWART.equals("0180") || data.AWART.equals("0370") ? "class=\"input03\"" : "readonly class=\"input04\"" %>>
+                    <a href="javascript:fn_openTime('ENDUZ')">
+                      <img src="<%= WebUtil.ImageURL %>btn_serch.gif" align="absmiddle" border="0" alt="시간검색"></a>
+                    까지
+                  </td>
+                </tr>
+-->
+                <input type="hidden" name="BEGUZ" value="<%=  data.BEGUZ  %>">
+                <input type="hidden" name="ENDUZ" value="<%=  data.ENDUZ  %>">
+
+              </table>
+				<div class="commentImportant">
+              	<p><%=g.getMessage("LABEL.D.D19.0008")%> <!-- ※ *는 필수 입력사항입니다. --></p>
+              	<p><%=g.getMessage("LABEL.D.D19.0009")%> <!-- ※ OFF시 교육의 경우도 교육으로 신청하시기 바랍니다. (O/T 자동 발생 안됨) --></p>
+              	<p><%=g.getMessage("LABEL.D.D19.0010")%> <!-- ※ 교대근무자의 경우 심야수당은 자동으로 발생되지 않습니다. --></p>
+              	<p><%=g.getMessage("LABEL.D.D19.0011")%> <!-- ※ 전일 교육 및 출장의 경우 근태 신청 바랍니다. --></p>
+				</div>
+			</div>
+        <!-- 상단 입력 테이블 끝-->
+      </td>
+    </tr>
+
+        <tr>
+          <td><h2 class="subtitle"><%=g.getMessage("LABEL.D.D19.0012")%> <!-- 결재정보 --></h2></td>
+        </tr>
+        <tr>
+          <td>
+            <!-- 결재자 입력 테이블 시작-->
+            <%= hris.common.util.AppUtil.getAppChange(AppLineData_vt,data.PERNR) %>
+            <!-- 결재자 입력 테이블 시작-->
+          </td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+        </tr>
+
+          <tr>
+            <td>
+	           	<div class="buttonArea">
+	           		<ul class="btn_crud" id="sc_button">
+	           			<li><a class="darken" href="javascript:do_change();"><span><%=g.getMessage("LABEL.D.D19.0018")%><!-- 수정 --></span></a></li>
+	           			<li><a href="javascript:do_back();"><span><%=g.getMessage("LABEL.D.D19.0019")%><!-- 삭제 --></span></a></li>
+	           		</ul>
+	           	</div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+</table>
+<!-- HIDDEN  처리해야할 부분 시작 (default = 전일휴가) -->
+      <input type="hidden" name="jobid"       value="">
+      <input type="hidden" name="AINF_SEQN"   value="<%= data.AINF_SEQN %>">
+      <input type="hidden" name="timeopen"    value="<%= data.AWART.equals("0120") || data.AWART.equals("0121") || data.AWART.equals("0180") || data.AWART.equals("0370") ? "T" : "F" %>">
+      <input type="hidden" name="AWART"       value="<%= data.AWART %>">
+      <input type="hidden" name="REMAIN_DATE" value="">
+      <input type="hidden" name="DEDUCT_DATE" value="">
+      <input type="hidden" name="RequestPageName" value="<%= RequestPageName %>">
+<!-- HIDDEN  처리해야할 부분 끝   -->
+</form>
+<form name="form3" method="post">
+      <input type="hidden" name="APPL_FROM" value="">
+</form>
+<jsp:include page="/include/body-footer.jsp" />
+<jsp:include page="/include/footer.jsp" />

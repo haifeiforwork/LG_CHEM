@@ -1,0 +1,55 @@
+<%@ page import="java.io.*" %>
+<%@ page import="java.util.*" %>
+<%@ page import="hris.A.A18Deduct.rfc.*" %>
+<%@ page import="hris.A.A18Deduct.rfc.A18DeductPrintGunroSodukBinaryRFC" %>
+<%@ page import="hris.A.A18Deduct.rfc.A18DeductPrintGabgnseBinaryRFC" %>
+<%@ page contentType="text/html; charset=utf-8" %>
+<!-- ************************** 원천징수영수증PDF. jsp  ************************-->
+<!------------------------------------------------------------------------------>
+<!-- System Name  : ESS                                                       -->
+<!-- 1Depth Name  : 제증명서                                                                                                       -->
+<!-- 2Depth Name  : 제증명서 신청                                                                                                -->
+<!-- Program Name : 제증명서 신청                                                                                                -->
+<!-- Program ID   : A18DeductPrintFormEmbedGunrosoduk.jsp                     -->
+<!-- Description  : 원천징수 영수증 출력화면 RFC 직접호출                                                        -->
+<!-- Note         : 없음                                                                                                             -->
+<!-- Creation     :                                                           -->
+<!-- Update       : 2010-04-09  지민재                                                                                  -->
+<!-- --------------------------------------------------------------------------->
+<!-- DATE      AUTHOR                 DESCRIPTION                             -->
+<!-- ------------------------------------------------------------------------ -->   
+<!-- 2010.04.09 지민재  [CSR ID:1639484] ESS 원천징수 영수증 출력 PDF 변환                        -->                      
+<!------------------------------------------------------------------------------>      
+ dddddddddddddddddd
+ <%
+// Get Parameter from Request
+String sPerNR      = (String) request.getParameter("sPerNR");
+String sTargetYear = (String) request.getParameter("sTargetYear");
+String sAinfSeqn   = (String) request.getParameter("sAinfSeqn");
+ 
+ sPerNR="00031390";
+ sTargetYear="2010";
+ sAinfSeqn="0000010249";
+ 
+ 
+ out.println("ddd");
+// Call RFC
+//A18DeductPrintGunroSodukBinaryRFC  rfc = new A18DeductPrintGunroSodukBinaryRFC();
+//Vector result = new Vector();
+//result = rfc.getData(sPerNR, sAinfSeqn, sAinfSeqn);
+
+
+
+     try { 
+     
+         A18DeductPrintGabgnseBinaryRFC  rfc = new A18DeductPrintGabgnseBinaryRFC();
+         Vector result = new Vector();
+
+         result = rfc.getData(sPerNR, sAinfSeqn );
+ 
+      } catch(Exception ex) {
+          
+          out.println("rtrt"+ex.toString());
+      }
+    
+%>

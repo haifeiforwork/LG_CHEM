@@ -1,0 +1,775 @@
+/***********************    SAP 신규서버 추가시 테스트용   ***********************/
+ehr.properties에 추가
+Server.java 에 간단 서버명 추가
+SAPType.java 에 ehr.proties의 prefix 명 정의
+
+EmpListRFC.java 수정
+public boolean setSapType(HttpServletRequest request, WebUserData user, Server server, Vector<EmpData> empList) throws GeneralException {
+        //sap연결 정보 셋팅
+        EmpData empData = findEmpData(empList, user.empNo) ;
+        Logger.debug("------ empList --------- : " + empList );
+        if(empData != null) {
+            SAPType sapType;
+            if("1".equals(empData.PFLAG)) {
+                if(server == Server.DEV) sapType = SAPType.DEVLOCAL;
+                else if(server == Server.QAS) sapType = SAPType.QASLOCAL;
+                else if(server == Server.PRD) sapType = SAPType.PRDLOCAL;
+                else if(server == Server.QASN) sapType = SAPType.QASNLOCAL;
+                else if(server == Server.QASN1) sapType = SAPType.QASN1LOCAL;
+                else if(server == Server.QASN2) sapType = SAPType.QASN2LOCAL;
+                else if(server == Server.QASN3) sapType = SAPType.QASN3LOCAL;
+                else if(server == Server.QASN4) sapType = SAPType.QASN4LOCAL;
+                else sapType = SAPType.LOCAL;
+            } else {
+                if(server == Server.DEV) sapType = SAPType.DEVGLOBAL;
+                else if(server == Server.QAS) sapType = SAPType.QASGLOBAL;
+                else if(server == Server.PRD) sapType = SAPType.PRDGLOBAL;
+                else if(server == Server.QASN) sapType = SAPType.QASNGLOBAL;
+                else if(server == Server.QASN1) sapType = SAPType.QASN1GLOBAL;
+                else if(server == Server.QASN2) sapType = SAPType.QASN2GLOBAL;
+                else if(server == Server.QASN3) sapType = SAPType.QASN3GLOBAL;
+                else if(server == Server.QASN4) sapType = SAPType.QASN4GLOBAL;
+                else sapType = SAPType.GLOBAL;
+            }
+            user.sapType = sapType;
+            return true;
+        }
+
+        return false;
+    }
+
+
+/***********************    배포 참고  ***********************/
+1) gehr_war_exploded.zip 압축
+2) /sorc001/gehr/upload 업로드 (운영 : /sorc001/gehr/upload)
+3) /sorc001/gehr/upload 에서 sh upload.sh 실행
+4) 서버리스타트
+
+
+운영 서버 리스타트
+소스업로드는 gehr 계정으로
+사용 요청 계정 및 패스워드 : hrwas : !lgchem1234, wtbadm : !lgchem1234
+로 putty 접속
+ja 실행
+conlist 실행 후 lchhrd02_new_gehr or lchhrd01_new_gehr 확인
+
+ downcon lchhrd01_new_gehr (or lchhrd02_new_gehr)   실행(서버다운)
+ startcon lchhrd01_new_gehr (or lchhrd02_new_gehr)  실행(서버실행)
+
+/***********************    jsp 찾기/바꾸기 정규식  ***********************/
+CTRL + F 에서 정규식(Regex) 선택 후
+	jsp -> EL
+		<%=\s*data.(.*)\s*%>
+		\${resultData.$1}
+	<td> -> <th>
+		<td[^>]*class="td01"[^>]*>(.*)</td>
+		<th>$1</th>
+	필수값 스타일 변경
+		<th>(.*)<font color="#006699"><b>\*</b></font></th>
+		<th><span class="textPink">*</span>$1</th>
+
+/***********************    input 관련  ***********************/
+1) 달력표시
+    기존 달력 관련 script 및 아이콘이미지 삭제
+    class 에 date 추가
+    jquery ui datepicker 이므로 관련 API 사용 가능
+
+2) validation 추가
+    jquery.validation 추가함 (사용방법은  http://docs.jquery.com/Plugins/Validation 참고)
+        input class 에 required, email, date, number, digits등을 추가
+        (accep, maxlength, minlength, rangelength, range, max, min attribute일 거임 자세사항은 api 참고)
+        placeholder에 항목명 등록
+    등을 추가
+    기존 validation 로직 삭제
+
+    ex)
+        <input type="text" id="LICN_NAME" name="LICN_NAME" size="20" class="required" placeholder="자격증" readonly>
+        if(!isValid(--form id--)) return;  //form submit 전에 추가
+
+3) 로딩바 관련
+    파일링크 등 로딩바가 표시되지 말아야 할 a tag 등에 class="unloading" 추가
+
+4) dialog
+    dialog.js include 후
+
+    sample -
+
+    $("#-accept-dialog").openDialog();
+    $("#-accept-dialog").closeDialog();
+
+    <div id="-accept-dialog" class="-ui-dialog" data-width="600" data-height="400" style="display: none;">
+        <div id="-accept-info">
+        </div>
+        <div class="popWindow">
+            <div class="popTop">
+                <div class="popHeader">
+                    <p>승인의견</p>
+                    <a href="#" class="-close-dialog"><img src="${g.image}sshr/btn_popup_close.png" /></a>
+                </div>
+            </div>
+            <div class="popCenter">
+                <textarea name="acceptCommentText" id="acceptCommentText" style="width: 100%; height: 230px;" style="display:none;"></textarea>
+                <ul class="btn_crud">
+                    <li><a id="-accept-button" class="darken" herf="javascript:;"><span>승인</span></a></li>
+                    <li><a herf="javascript:;" class="-close-dialog"><span>취소</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+/***********************    다국어 및 통합 관련  ***********************/
+1) 다국어 표현 방식
+    /src/resources/messages/message-패키지명.properties
+    에 message key = messag text 등록
+    <%=g.getMessage("MSG.A.A01.0012") %> 또는
+    <spring:message code="MSG.A.A01.0023" />
+    번역 대상은 문장으로 입력해야 함
+        ex) ? + "을 입력하세요" -> MSG.A.A01.0002 = {0}을 입력하세요
+
+2) 지역코드(MOLGA) 관련
+    Area area = WebUtil.getSessionUser(request).area;
+    if(area == Area.KR) { ... }
+    <c:if area == 'KR'></if>
+
+3) 언어(language) 및 sap연결(국내, 해외서버접속) 관련
+    g -> Global.java
+    g.getLocale(), g.getSapType()
+
+4) 금액 관련 - 특화 부분이 아닌경우는 아래와 같이 변경 해야 함
+
+    Double.toString(Double.parseDouble(src) * 100.0 -> DataUtil.changeLocalAmount(amt, user.area) 변경
+    Double.toString(Double.parseDouble(src) / 100.0 -> DataUtil.changeGlobalAmount(amt, user.area) 변경
+
+    DataUtil.changeLocalAmount(amt, user.area) : 해당 지역의 금액으로 변경 - 한국 = sap저장된데이타 * 100
+    DataUtil.changeGlobalAmount(amt, user.area) : 해당지역의 금액을 sap으로 저장시 - 한국 = sap저장된데이타 / 100
+
+5) 페이지 분기
+    RFC 통합으로 특별한 경우를 제외하고는 servlet은 한개로
+    servlet 내에서 jsp 호출시
+    printJspPage(req, res, WebUtil.JspURL+"A/A13Address/A13AddressBuild_" + user.area +".jsp");
+    만약 한개국가 외 공통일 경우
+        A13AddressBuild_KR, A13AddressBuild_GLOBAL 로 사용
+
+/***********************    jsp layout 정의   ***********************/
+1) jsp include - ( pop-up layout : pop-body-header.jsp , pop-body-footer.jsp )
+    <!-- header 부 선언 html js, css, header 부 선언 -->
+    <jsp:include page="/include/header.jsp">
+        <jsp:param name="css" value="xxx.css" />    <!-- 추가로 css 필요할 경우 필요한만큼 파라메터 선언 -->
+        <jsp:param name="script" value="abc.js" />  <!-- 추가로 js 파일이 필요할 경우 필요한만큼 파라메터 선언-->
+    </jsp:include>
+
+    <!-- body header 부 title 및 body 시작 부 선언 -->
+    <jsp:include page="/include/body-header.jsp">
+        <jsp:param name="title" value="MSG.A.A13.002"/> 
+        <jsp:param name="help" value="A13Address.html"/>   
+    </jsp:include>
+
+    <!-- 내용부 선언 -->
+    ex)
+        <script>
+            function test() {
+                ....
+            }
+        </script>
+         <div class="tableArea">
+                <!-- 개인 인적사항 조회 -->
+        		<div class="table">
+        	        <table border="0" cellspacing="0" cellpadding="0" class="tableGeneral">
+        	            <tr>
+        	                <td width="140" rowspan="8" align="center">
+        	                    <img class="idPic" name="photo1" border="0" src="<%= data.PHOTO %>" width="120" height="140">
+        	                    <p><%=g.getMessage("MSG.A.A01.0005") %> : <%= data.PERNR %>
+        	                    </p>
+        	                </td>
+        	                <th class="th02"><%=g.getMessage("MSG.A.A01.0006") %><%--소속--%></th>
+        	                <td colspan="3"><%= data.ORGTX %>&nbsp;</td>
+        	            </tr>
+        	            <tr>
+        	                <th class="th02"><%=g.getMessage("MSG.A.A01.0002") %><%--성명--%></th>
+        	                <td><%= data.CNAME1 %></td>
+        	                <th class="th02"><%=g.getMessage("MSG.A.A01.0004") %><%--성명(영어)--%></th>
+        	                <td><%= data.CNAME2 %></td>
+        	            </tr>
+        	            <tr>
+        	                <th class="th02"><%=g.getMessage("MSG.A.A01.0012") %><%--입사구분--%></th>
+        	                <td><%= data.MGTXT %>&nbsp;</td>
+        	                <th class="th02"><%=g.getMessage("MSG.A.A01.0015") %><%--입사시학력--%></th>
+        	                <td><%= data.SLABS %>&nbsp;</td>
+        	            </tr>
+        	        </table>
+        	    </div>
+         </div>
+
+    <jsp:include page="/include/body-footer.jsp" /> <!-- body footer 부분 -->
+    <jsp:include page="/include/footer.jsp"/>       <!-- html footer 부분 -->
+
+2) tag layout
+    A01SelfDetailNeoExtra.jsp --- 참조
+
+    .....
+    <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    <%@ taglib prefix="f" uri="http://www.lgchemhr.com/taglibs/functions" %>
+    <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+
+    <c:set var="user" value="<%=WebUtil.getSessionUser(request) %>" />
+    <!-- 필요할 경우  css, script, title, help  정의 -->
+    <tags:layout css="xxx.css" script="aaa.js" title="MSG.A.A13.002" help="A13Address.html" >
+        <!-- script 정의 - 필요한 경우 여러곳에 정의 -->
+        <tags:script>
+		    <script>
+                function test() {
+                    ....
+                }
+            </script>
+	    </tags:script>
+
+    	<h2 class="subtitle"><spring:message code="MSG.A.A01.0023" /><%--추가개인데이터--%></h2>
+
+    	<!-- 상세 형태 table -->
+    	<div class="tableArea">
+    		<div class="table">
+    			<table class="tableGeneral" cellspacing="0">
+    				<tr>
+    					<th><spring:message code="MSG.A.A01.0024" /><%--국적--%></th>
+    					<td>${extraData.LANDX} </td>
+    					<th><spring:message code="MSG.A.A01.0025" /><%--출생지--%></th>
+    					<td colspan="3">${extraData.GBORT}</td>
+    				</tr>
+    			<c:if test="${user.area == 'CN'}">
+    				<tr>
+    					<th><spring:message code="MSG.A.A01.0032" /><%--민족--%></th>
+    					<td>${extraData.LTEXT} </td>
+    					<th><spring:message code="MSG.A.A01.0033" /><%--정치성향--%></th>
+    					<td>${extraData.PTEXT}</td>
+    					<th><spring:message code="MSG.A.A01.0034" /><%--계약만료일--%></th>
+    					<td>${extraData.CTEDTX}</td>
+    				</tr>
+    			</c:if>
+    			</table>
+    		</div>
+    	</div>
+
+    	<h2 class="subtitle"><spring:message code="MSG.A.A01.0035" /><%--학력사항--%></h2>
+    	<!-- 리스트 형 -->
+        <div class="listArea">
+            <div class="table">
+                <table class="listTable" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th><spring:message code="MSG.A.A01.0036" /><%--기간--%></th>
+                        <th><spring:message code="MSG.A.A01.0037" /><%--학교명--%></th>
+                        <th><spring:message code="MSG.A.A01.0038" /><%--전공--%></th>
+                        <th><spring:message code="MSG.A.A01.0039" /><%--졸업구분--%></th>
+                        <th><spring:message code="MSG.A.A01.0040" /><%--소재지--%></th>
+                        <th class="lastCol"><spring:message code="MSG.A.A01.0041" /><%--입사시 학력--%></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <%--@elvariable id="schoolList" type="java.util.Vector<hris.A.A02SchoolData>"--%>
+                    <c:forEach var="row" items="${schoolList}" varStatus="status">
+                        <tr class="${status.index % 2 == 0 ? 'oddRow' : ''}" align="center">
+                            <td>${row.PERIOD}</td>
+                            <td>${row.SCHTX}</td>
+                            <td>${row.SLTP1X}</td>
+                            <td>${row.SLATX}</td><%-- ${row.SLTXT} 학력?--%>
+                            <td>${row.SOJAE}</td>
+                            <td class="lastCol">${row.EMARK == 'N' ? '' : row.EMARK}</td>
+                        </tr>
+                    </c:forEach>
+<!-- 데이타가 없습니다 표시 -->
+                    <tags:table-row-nodata list="${schoolList}" col="6" />
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+    </tags:layout>
+
+/***********************    RFC 호출 부분 수정 시  ***********************/
+호출 수정시 결과 데이타 직접 호출 로 변경해주세요
+기존처럼 메소드 추가 호출 하는 로직 넣지 마세요.
+Entity값으로 String class 선언부 넣는 부분은 사용금지요
+    ex)
+        ---- 변경전 ----
+        String entityName = "hris.A.A13Address.A13AddressListData";  <--------------- 절대 사용 금지
+        String tableName = "ITAB";
+        return getTable(entityName, function, tableName);
+        ---- 변경후 ----
+        return getTable(A13AddressListData.class, function, "ITAB");
+
+    ex)
+public Vector getAddressList(Box box) throws GeneralException {
+
+        JCO.Client mConnection = null;
+        Vector<A13AddressListData> resultList = null;
+
+        try{
+            mConnection = getClient();
+            JCO.Function function = createFunction(functionName) ;
+
+            setFieldForLData(function, box);
+            setField(function, "I_GTYPE", "1");
+            setField(function, "I_SUBTY", "");
+
+            excute(mConnection, function);
+
+            /** 기존 **/
+            /*
+            Vector ret = getOutput(function);
+            */
+            /** 변경 **/
+            resultList = getTable(A13AddressListData.class, function, "T_LIST");
+        } catch(Exception ex){
+            Logger.sap.println(this, "SAPException : "+ex.toString());
+            throw new GeneralException(ex);
+        } finally {
+            close(mConnection);
+        }
+
+        return resultList;
+    }
+
+    /** 아래 부분 삭제 **/
+     private Vector getOutput(JCO.Function function) throws GeneralException {
+           String entityName = "hris.A.A13Address.A13AddressListData";  <--------------- 절대 사용 금지
+           		String tableName = "ITAB";
+           		return getTable(entityName, function, tableName);
+        }
+
+/***********************    Servlet 단 공통화 부분  ***********************/
+1) 대리신청
+    -- 기존
+    PERNR = box.get("PERNR");
+//          @웹보안진단 20151124
+            String reSabunCk = user.e_representative;
+            if (PERNR.equals("") || !reSabunCk.equals("Y")) {
+                PERNR = user.empNo;
+            }
+    -- 변경
+    String PERNR = WebUtil.getRepresentative(req);
+
+2) 웹보안진단 관련
+    -- 기존
+    if ( user.e_authorization.equals("E")) {
+        Logger.debug.println(this, "E Authorization!!");
+        String msg = "msg015";
+        req.setAttribute("msg", msg);
+        dest = WebUtil.JspURL+"common/";
+        printJspPage(req, res, dest);
+    }
+
+    -- 변경
+    if(!checkAuthorization(req, res)) return;
+
+/***********************    기타 에러 발생 유도 부분 변경  ***********************/
+1) Vector에 특정 index값 호출 부분
+    Vector vector = testRfc.getList();
+    vector.get(0);  // Exception 발생 가능
+    -- 변경후
+    Utils.indexOf(vector, 0) --> 없을 경우 return null
+    Utils.indexOf(vector, 0, A13AddressListData.class) --> 없을 경우 A13AddressListData 빈 객체
+
+    -- Vector에서 size 가져오기
+    Utils.getSize(vector)
+
+2) 비교문 선언시
+    기존 : subView.equals("Y") //Exception 발생 또는 상단에서 초기화 작없 해야 함
+    변경 : "Y".equals(subView)
+           또는
+           StringUtils.equals(subView, "Y")
+
+3) String 기본값, box에서 기본값 설정
+    -- 기존
+    String jobid  = "" ;
+    jobid = box.get("jobid");
+    if( jobid.equals("") ){
+        jobid = "wait";
+    }
+    -- 변경
+    String jobid = box.get("jobid", "wait");
+    또는
+    String jobid = StringUtils.defaultIfEmpty(box.get("jobid"));
+
+
+
+/***********************   결재 신청화면  ***********************/
+결재 참고
+    결재라인을 동적을 변환해야 할 경우
+    <tags-approval:request-layout enableChangeApprovalLine="true">
+     changeApprovalLine(파라메터json or null); 호출 // 파라메터 PERNR은 제외 UPMU_TYPE 은 input hidden id=UPMU_TYPE 으로 선언되어 있어야 함
+
+     ex) changeApprovalLine({I_AWART : $("#APPL_TYPE").val()});
+
+ /**
+     * 부서장이 결재 가능 여부
+     * 부서장 결재시 추가 입력시 사용
+     * @return
+     */
+    public boolean isDepartManager() { return "X".equals(ACCPFL) && "X".equals(PMANFL); }
+
+    /**
+     * 담당 부서장이 결재 가능 여부
+     * 담당 부서장 결재시 추가 입력시 사용
+     * @return
+     */
+    public boolean isChargeManager() { return "X".equals(ACCPFL) && "02".equals(DMANFL); }
+
+    /**
+     * 담당자 결재 가능 여부
+     * 담당자 결재시 추가 입력시 사용
+     * @return
+     */
+    public boolean isCharger() { return "X".equals(ACCPFL) && "01".equals(DMANFL); }
+
+    <c:if test=${approvalHeader.charger}>
+        <%-- 담당자 결재 시 추가 입력사항 --%>
+    </c:if>
+
+
+공통 부분 변경시 메소드명 파일명에 1,2,3, A,B,C 붙이지 말아주세요
+파라메터나 오버로딩 으로 해결 하시구 특정 페이지등에 특화면 파일명을 분리(기존로직이 어느정도 비슷하면 상속 후 오버라이딩 하시길)하시기 바랍니다.
+
+1) 필요 파일
+
+    A17LicenceBuildSV   - 신청화면 및 신청 Servlet
+    A17LicenceChangeSV  - 수정화면 및 수정 Servlet
+    A17LicenceDetailSV  - 상세조회 및 삭제(취소) Servlet
+    G024ApprovalLicenceSV   - 승인 및 반려 Servlet
+
+    G025ApprovalFinishLicenceSV -   사용안함
+    G024ApprovalIngLicenceSV    -   사용안함
+
+    A17LicenceBuild.jsp     - 신청 + 수정 화면
+    A17LicenceDetail.jsp    - 상세조회 + 결재 화면
+
+    A17LicenceChange.jsp    - 사용안함 - 수정화면을 분리해야 하는 경우 작성
+    G024ApprovalIngLicence.jsp      - 사용안함
+    G024ApprovalLicence.jsp         - 사용안함
+    G025ApprovalFinishLicence.jsp   - 사용안함
+
+2) 자격신청 샘플
+
+    <%-- Detail에 적용  --%>
+     <%-- 결재 승인 및 반려시 의견 입력시 화면에 정보성으로 보여줄 내용 --%>
+
+                        $("#-accept-info").text("결재 승인 창 상단에 보여줄 텍스트 입력하세요.");
+
+                /* 반려 부 */
+
+                        $("#-reject-info").text("결재 승인 창 상단에 보여줄 텍스트 입력하세요.");
+
+
+    ------------------------- A17LicenceBuildSV 참고      -------------------------
+        ApprovalBaseServlet 상속 받아야 함
+         jobid first - 신청화면 load시
+                //결재라인, 결재 헤더 정보 조회
+                getApprovalInfo(req, PERNR);    <-- 반드시 추가
+
+         jobid create 신청 고정
+
+                 requestApproval - 신청 메소드 호출
+                    parameter 중 RequestFunction 전달 시에 구현 부에 리턴값은 결재번호 임  신청 실패시 NULL 리턴
+
+                 dest = requestApproval(req, box, A17LicenceData.class, new RequestFunction<A17LicenceData>() {
+                                     public String porcess(A17LicenceData inputData) throws GeneralException {
+
+                                /* 체크 로직 필요한 경우 */
+                                if(checkDup(user, inputData))
+                                    throw new GeneralException("이미 중복된 신청건이 있습니다.");
+
+                                         /* 결재 신청 RFC 호출 */
+                                         A17LicenceRFC a17LicenceRFC = new A17LicenceRFC();
+                                         a17LicenceRFC.setRequestInput(user.empNo, UPMU_TYPE);
+                                         String AINF_SEQN = a17LicenceRFC.build(Utils.asVector(inputData), box, req);
+
+                                         if(!a17LicenceRFC.getReturn().isSuccess()) {
+                                             throw new GeneralException(a17LicenceRFC.getReturn().MSGTX);
+                                         }
+
+                                         /* 신청 후 msg 처리 후 이동 페이지 지정 */
+                                         String url = "location.href = '" + WebUtil.ServletURL + "hris.A.A17Licence.A17LicenceDetailSV?AINF_SEQN=" + AINF_SEQN + "';";
+                                         req.setAttribute("url", url);
+
+                                         return AINF_SEQN;
+                                         /* 개발자 작성 부분 끝 */
+                                     }
+                                 });
+
+
+    -------------------------  A17LicenceBuild.jsp 참고 -------------------------
+<%-- 버튼이 필요한경우
+<c:set var="buttonBody" value="${g.bodyContainer}" />
+
+<tags:body-container bodyContainer="${buttonBody}">
+    <c:if test="${resultData.DPTID == 'X'}">
+        <li><a href="javascript:;" onclick="go_print();" ><span>부양가족 신청서</span></a></li>
+    </c:if>
+</tags:body-container>
+--%>
+
+<tags:layout css="ui_library_approval.css"  >
+    titlePrefix 에는 업무명 입력
+	<tags-approval:request-layout  titlePrefix="MSG.A.A17.001" button="${buttonBody}">
+		<tags:script>
+			<script>
+			    /* 해당 업무에서 사용되는 script */
+
+			    <%-- 기본 validation 은 jquery validation 사용 --%>
+				<%-- 신청 버튼 이전에 실행 될 로직 - 필요시 주석 해제 후 사용--%>
+				<%-- return 값 진행 여부
+                function beforeSubmit() {
+                    return true;
+                }
+                --%>
+
+			</script>
+		</tags:script>
+		<!-- 상단 입력 테이블 시작-->
+		<div class="tableArea">
+			<div class="table">
+				<table class="tableGeneral tableApproval">
+					<tr>
+						<th class="th02"><span class="textPink">*</span>취득일</th>
+						<td>
+							<input type="text" class="date" id="OBN_DATE" name="OBN_DATE" class="required" size="20" placeholder="취득일"
+								   value="${f:printDate(resultData.OBN_DATE)}">
+								<%--<a href="javascript:fn_openCal('OBN_DATE')"><img src="${g.image}/sshr/ico_magnify.png" alt="검색"></a>--%>
+						</td>
+						<th><span class="textPink">*</span>발행처</th>
+						<td>
+							<input type="text" name="PUBL_ORGH" size="30" class="required" value="${resultData.PUBL_ORGH}" placeholder="발행처">
+						</td>
+					</tr>
+				</table>
+			</div>
+			<span class="inlineComment">*는 필수 입력사항입니다.</span>
+			<!-- 상단 입력 테이블 끝-->
+		</div>
+
+	</tags-approval:request-layout>
+
+	<%-- 하단 추가 부분 - 필요시 --%>
+	<div class="commentsMoreThan2">
+		<div>자격증 종류가 미등록된 경우는 인사부</div>
+		<div>자격증 사본은 해당 주관부서로 제출하시기 바랍니다.</div>
+	</div>
+
+</tags:layout>
+    -------------------------  A17LicenceDetailSV 참고 -------------------------
+    final A17LicenceRFC a17LicenceRFC = new A17LicenceRFC();
+    a17LicenceRFC.setDetailInput(user.empNo, I_APGUB, box.get("AINF_SEQN"));
+    Vector<A17LicenceData> resultList = a17LicenceRFC.getLicence(); //결과 데이타
+
+    if (jobid.equals("first")) {           //상세 조회 부
+
+        req.setAttribute("resultData", Utils.indexOf(resultList, 0));
+
+        /* 조회 권한 체크 및 결재 헤더 및 결재라인 */
+        if (!detailApporval(req, res, a17LicenceRFC, WebUtil.ServletURL + "hris.A.A17Licence.A17LicenceBuildSV"))
+            return;
+
+        printJspPage(req, res, WebUtil.JspURL + "A/A17Licence/A17LicenceDetail.jsp");
+
+    } else if (jobid.equals("delete")) {           // 삭제 시
+
+        String dest = deleteApproval(req, box, a17LicenceRFC, new DeleteFunction() {
+            public boolean porcess() throws GeneralException {
+
+                /* 삭제 RFC 호출 등 업무별 처리 해야 할 사항 */
+                A17LicenceRFC deleteRFC = new A17LicenceRFC();
+                deleteRFC.setDeleteInput(user.empNo, UPMU_TYPE, a17LicenceRFC.getApprovalHeader().AINF_SEQN);
+
+                RFCReturnEntity returnEntity = deleteRFC.delete();
+
+                if(!returnEntity.isSuccess()) {
+                    req.setAttribute("msg", "삭제에 실패 하였습니다.");   //실패 메세지 처리 - 임시
+                    return false;
+                }
+
+                /* 삭제 후 msg 처리 후 이동 페이지 지정 */
+                String url = "location.href = '" + g.getRequestPageName(req, WebUtil.ServletURL + "hris.A.A17Licence.A17LicenceBuildSV") + "';";
+                req.setAttribute("url", url);
+
+                return true;
+            }
+        });
+
+        printJspPage(req, res, dest);
+
+    }
+
+
+    -------------------------  A17LicenceDetail.jsp 참고 -------------------------
+
+<tags:layout css="ui_library_approval.css" script="${script}" >
+
+    <%-- form1, AINF_SEQN, jobid 선언되어 잇음 --%>
+    <tags-approval:detail-layout titlePrefix="MSG.A.A17.001" updateUrl="${g.servlet}hris.A.A17Licence.A17LicenceChangeSV">
+
+        <%-- 신청 내역 조회 부분 --%>
+        <div class="tableArea">
+            <div class="table">
+                <table class="tableGeneral tableApproval">
+                    <tr>
+                        <th ><span class="textPink">*</span>자격증</th>
+                        <td>${resultData.LICN_NAME}</td>
+                        <th ><span class="textPink">*</span>취득일</th>
+                        <td>${f:printDate(resultData.OBN_DATE)}</td>
+                    </tr>
+                </table>
+            </div>
+            <!-- 상단 입력 테이블 끝-->
+        </div>
+
+        <%-- 결재자가 등록 해야 하는 부분  --%>
+        <%-- 결재자이거나 결재가 진행된 상태 일 경우 보여준다  --%>
+        <c:if test="${approvalHeader.showManagerArea}">
+        <h2 class="subtitle">담당자입력정보</h2>
+
+        <div class="tableArea">
+            <div class="table">
+                <table class="tableGeneral tableApproval">
+
+                <c:choose>
+                    <%-- 최초 결재자 여부 - 모든 결재자가 수정 가능 할 경우 --%>
+                    <c:when test="${approvalHeader.editManagerArea}">
+                        <tags:script>
+                            <script>
+                                ....
+                                <%-- 승인 버튼 눌렀을 떄 체크로직 - 필요시 작성 return : 진행여부 --%>
+                                function beforeAccept() {
+                                    if(frm.GIVE_RATE1.value == "d") {
+                                        alert("지급율을  선택하세요");
+                                        frm.GIVE_RATE1.focus();
+                                        return false;
+                                    } // end if
+
+                                    if(frm.LICN_AMNT.value == "" && frm.GIVE_RATE1.value != "") {
+                                        alert("자격수당을 입력하세요");
+                                        frm.LICN_AMNT.focus();
+                                        return false
+                                    } // end if
+
+                                    return true;
+                                }
+
+                                <%-- 반려시 이전 행위 필요시 작성
+                                function beforeReject() {
+                                    return true;
+                                }
+                                --%>
+                            </script>
+                        </tags:script>
+                        ...
+                        <tr>
+                            <th>지급율</th>
+                            <td>
+                                <select id="GIVE_RATE1" name="GIVE_RATE1" onChange="javascript:changeToZero(this);">
+                                    <option value = "d">------</option>
+                                    <option value = "50">50</option>
+                                    <option value = "100">100</option>
+                                    <option value = "">이력입력용</option>
+                                </select>
+                            </td>
+                            <th >적용일자</th>
+                            <td>
+                                <input type="text" name="PAY_DATE" class="date required" size="10" maxlength="10" placeholder="적용일자">
+                            </td>
+                        </tr>
+                        ...
+                    </c:when>
+                    <c:otherwise>
+                            ...
+                            <tr>
+                                <th>지급율</th>
+                                <td> ${empty resultData.GIVE_RATE1 ? "이력입력용": resultData.GIVE_RATE1}</td>
+                                <th >적용일자</td>
+                                <td>${f:printDate(a17LicenceData.PAY_DATE)}</td>
+                            </tr>
+                            ...
+                    </c:otherwise>
+                </c:choose>
+                </table>
+            </div>
+        </div>
+        </c:if>
+    </tags-approval:detail-layout>
+</tags:layout>
+
+    -------------------------  A17LicenceChangeSV 참고 -------------------------
+            if( jobid.equals("first") ) {  //제일처음 수정 화면에 들어온경우.
+                req.setAttribute("resultData", resultData); //상세 데이타
+
+                //자격등급
+                req.setAttribute("gradeList", (new A17LicenceGradeRFC()).getLicenceGrade());
+
+                req.setAttribute("isUpdate", true); //등록 수정 여부   <- 수정쪽에는 반드시 필요함
+
+                detailApporval(req, res, a17LicenceRFC, WebUtil.ServletURL + "hris.A.A17Licence.A17LicenceBuildSV");
+
+                printJspPage(req, res, WebUtil.JspURL + "A/A17Licence/A17LicenceBuild.jsp");
+
+            } else if( jobid.equals("change") ) {
+
+                /* 실제 수정 부분 */
+                dest = changeApproval(req, box, A17LicenceData.class, a17LicenceRFC, new ChangeFunction<A17LicenceData>(){
+
+                    public String porcess(A17LicenceData inputData, ApprovalHeader approvalHeader, Vector<ApprovalLineData> approvalLineDatas) throws GeneralException {
+                        /* 결재 신청 RFC 호출 */
+                        A17LicenceRFC changeRFC = new A17LicenceRFC();
+                        changeRFC.setChangeInput(user.empNo, UPMU_TYPE, approvalHeader.AINF_SEQN);
+
+                        Logger.debug("-------- AINF_SEQN " + inputData.AINF_SEQN);
+
+                        changeRFC.build(Utils.asVector(inputData), box, req);
+
+                        if(!changeRFC.getReturn().isSuccess()) {
+                            req.setAttribute("msg", "수정에 실패 하였습니다.");   //실패 메세지 처리 - 임시
+                            return null;
+                        }
+
+                        return inputData.AINF_SEQN;
+                        /* 개발자 작성 부분 끝 */
+                    }
+                });
+
+    -------------------------  G024ApprovalLicenceSV 참고 -------------------------
+
+            /* 승인 시 */
+            if("A".equals(jobid)) {
+
+                final A17LicenceRFC a17LicenceRFC = new A17LicenceRFC();
+                a17LicenceRFC.setDetailInput(user.empNo, "1", AINF_SEQN);
+                A17LicenceData licenceData = Utils.indexOf(a17LicenceRFC.getLicence(), 0); //결과 데이타
+
+                /* 개발자 영역 끝 */
+                dest = accept(req, box, "T_ZHRA018T", licenceData, a17LicenceRFC, new ApprovalFunction<A17LicenceData>() {
+                    public boolean porcess(A17LicenceData inputData, ApprovalHeader approvalHeader, Vector<ApprovalLineData> approvalLineDatas) throws GeneralException {
+
+                        /* 개발자 영역 시작 inputData <- licenceData 와 동일 licenceData final 처리 후 사용해도 무관  */
+                        if(approvalHeader.isEditManagerArea()) {
+                            box.copyToEntity(inputData);  //사용자가 입력한 데이타로 업데이트
+                            if (inputData.WAERS.equals("KRW")) {
+                                inputData.LICN_AMNT = DataUtil.changeGlobalAmount(inputData.LICN_AMNT, "KRW") ;  // 자격 수당 sap에 저장될 데이타 /100 부분
+                            } // end if
+
+                            inputData.UNAME     = user.empNo;
+                            inputData.AEDTM     = DataUtil.getCurrentDate();
+                        }
+
+                        return true;
+                    }
+                });
+
+            /* 반려시 */
+            } else if("R".equals(jobid)) {
+                final A17LicenceRFC a17LicenceRFC = new A17LicenceRFC();
+                a17LicenceRFC.setDetailInput(user.empNo, "1", AINF_SEQN);
+                final A17LicenceData licenceData = Utils.indexOf(a17LicenceRFC.getLicence(), 0); //결과 데이타
+
+                dest = reject(req, box, null, licenceData, a17LicenceRFC, null);
+            }

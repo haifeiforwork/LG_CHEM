@@ -1,0 +1,45 @@
+package servlet.hris.B ;
+
+import java.io.*;
+import java.sql.*;
+import java.util.Random;
+import java.util.Vector;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+import com.sns.jdf.*;
+import com.sns.jdf.db.*;
+import com.sns.jdf.util.*;
+import com.sns.jdf.servlet.*;
+
+import hris.common.*;
+import hris.B.*;
+import hris.B.rfc.*;
+import hris.B.db.*;
+
+/**
+ * B01ValuateDetailSV.java
+ *  사원의 평가 사항을 조회할 수 있도록 하는 Class
+ *
+ * @author 한성덕
+ * @version 1.0, 2002/01/14
+ */
+public class B01ValuateDetailSV_test extends EHRBaseServlet {
+
+    protected void performTask( HttpServletRequest req, HttpServletResponse res ) throws GeneralException {
+
+        try {
+            Box         box     = WebUtil.getBox(req);
+            String      filename = box.get("filename");
+
+            B01ValuateDetailDB valuateDetailDB     = new B01ValuateDetailDB();
+                       
+            valuateDetailDB.FileUpload( filename );
+        } catch( Exception e ) {
+            throw new GeneralException( e ) ;
+        } finally {
+        }
+
+    }
+
+}

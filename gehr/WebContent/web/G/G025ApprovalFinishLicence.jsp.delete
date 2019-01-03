@@ -1,0 +1,275 @@
+<%/******************************************************************************/
+/*                                                                              */
+/*   System Name  : e-HR                                                        */
+/*   1Depth Name  : HR 결재                                                     */
+/*   2Depth Name  : 결재 완료 문서                                              */
+/*   Program Name : 자격면허등록 결재 완료                                      */
+/*   Program ID   : G025ApprovalFinishLicence.jsp                               */
+/*   Description  : 자격면허등록 결재 완료                                      */
+/*   Note         : 없음                                                        */
+/*   Creation     : 2003-03-26  이승희                                          */
+/*   Update       : 2003-03-26  이승희                                          */
+/*                                                                              */
+/*                                                                              */
+/********************************************************************************/%>
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ page errorPage="/web/err/error.jsp"%>
+<%@ include file="/web/common/commonProcess.jsp" %>
+
+<%@ page import="java.util.Vector" %>
+<%@ page import="hris.A.A17Licence.*" %>
+<%@ page import="hris.common.rfc.*" %>
+<%@ page import="hris.common.util.*" %>
+<%@ page import="hris.common.*" %>
+<%@ page import="com.sns.jdf.util.*" %>
+<%
+    WebUserData      user    = (WebUserData)session.getAttribute("user");
+
+    A17LicenceData  a17LicenceData  = (A17LicenceData)request.getAttribute("a17LicenceData");
+
+    Vector      vcAppLineData     = (Vector)request.getAttribute("vcAppLineData");
+    String      RequestPageName     = (String)request.getAttribute("RequestPageName");
+
+    boolean isCanGoList ;
+    if (RequestPageName == null || RequestPageName.equals("")) {
+        isCanGoList = false;
+    } else {
+        isCanGoList = true;
+    } // end if
+
+%>
+<html>
+<head>
+<title>ESS</title>
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr.css" type="text/css">
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr_style.css" type="text/css">
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr_wsg.css" type="text/css">
+
+<script language="javascript" src="<%= WebUtil.ImageURL %>js/snsscript.js"></script>
+
+<script language="JavaScript">
+<!--
+    function goToList()
+    {
+        var frm = document.form1;
+    <% if (isCanGoList) { %>
+        frm.action = "<%=RequestPageName.replace('|' ,'&')%>";
+    <% } // end if %>
+        frm.jobid.value ="";
+        frm.submit();
+    }
+
+
+//-->
+</script>
+</head>
+<body bgcolor="#FFFFFF" text="#000000" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onLoad="MM_preloadImages('<%= WebUtil.ImageURL %>btn_help_on.gif');">
+<form name="form1" method="post" action="">
+<input type="hidden" name="jobid" value="save">
+<input type="hidden" name="BUKRS" value="<%=user.companyCode%>">
+
+<input type="hidden" name="APPR_STAT">
+<input type="hidden" name="RequestPageName"   value="<%=RequestPageName%>">
+  <table width="796" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="16">&nbsp;</td>
+      <td><table width="780" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td><table width="780" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td height="5" colspan="2"></td>
+                </tr>
+                <tr>
+                  <td class="subhead"><h2>자격면허 결재완료 문서</h2> </td>
+                </tr>
+              </table></td>
+          </tr>
+          <tr>
+            <td height="10">&nbsp;</td>
+          </tr>
+          <tr>
+            <td height="10">
+                 <!-- 신청자 기본 정보 시작 -->
+                 <%@ include file="/web/common/ApprovalIncludePersInfo.jsp" %>
+                 <!--  신청자 기본 정보 끝-->
+            </td>
+          </tr>
+          <tr>
+            <td height="10">&nbsp;</td>
+          </tr>
+          <tr>
+          	<td>
+               	<div class="buttonArea">
+               		<ul class="btn_crud">
+                       <% if (isCanGoList) {  %>
+               			<li><a href="javascript:goToList()"><span>목록보기</span></a></li>
+                       <% } // end if %>
+               		</ul>
+               	</div>
+          	</td>
+          </tr>
+          <tr>
+            <td>
+              <!-- 상단 입력 테이블 시작-->
+                        <div class="tableArea">
+	                        <table class="tableGeneral">
+	                            <tr>
+	                              <th width="100" >신청일자</th>
+	                              <td colspan="3"><%= WebUtil.printDate(a17LicenceData.BEGDA) %></td>
+	                            </tr>
+	                            <tr>
+	                              <th>자격증구분</th>
+	                              <td width="260"><%= a17LicenceData.GUBN_NAME %></td>
+	                              <th class="th02" width="100">분야</th>
+	                              <td><%= a17LicenceData.FILD_NAME %></td>
+	                            </tr>
+	                            <tr>
+	                              <th>자격증</th>
+	                              <td><%= a17LicenceData.LICN_NAME %></td>
+	                              <th class="th02">자격등급</th>
+	                              <td><%= a17LicenceData.GRAD_NAME %></td>
+	                            </tr>
+	                            <tr>
+	                              <th>발행처</th>
+	                              <td colspan="3"><%= a17LicenceData.PUBL_ORGH %></td>
+	                            </tr>
+	                            <tr>
+	                              <th>자격증번호</th>
+	                              <td><%= a17LicenceData.LICN_NUMB %></td>
+	                              <th class="th02">취득일</th>
+	                              <td><%= WebUtil.printDate(a17LicenceData.OBN_DATE) %></td>
+	                            </tr>
+	                          </table>
+						</div>
+              <!--신청사항 테이블 끝-->
+            </td>
+          </tr>
+       <%
+          int j = 0;
+          for (int i = 0; i < vcAppLineData.size(); i++) {
+              AppLineData ald = (AppLineData) vcAppLineData.get(i);
+              if (ald.APPL_APPR_STAT.equals("R")) j++;
+          }
+          if(j==0) {
+       %>
+          <tr>
+            <td><h2 class="subtitle">담당자입력정보</h2></td>
+          </tr>
+          <tr>
+            <td>
+              <!--담당자입력정보 테이블 시작-->
+					<div class="tableArea">
+                        <table class="tableGeneral">
+                            <tr>
+                              <th width="100">자격관리부서</th>
+                              <td width="260"><%=a17LicenceData.ORGTX %></td>
+                                <input type="hidden" name="authClsf" value="H">
+                                <input type="hidden" name="ORGEH">
+                              <th class="th02" width="100">증빙접수일</th>
+                              <td> <%= WebUtil.printDate(a17LicenceData.CERT_DATE) %></td>
+                            </tr>
+                            <tr>
+                              <th>지급율</th>
+                              <td> <%= a17LicenceData.GIVE_RATE1.equals("") ? "이력입력용": a17LicenceData.GIVE_RATE1 %></td>
+                              <th class="th02">적용일자</td>
+                              <td><%= WebUtil.printDate(a17LicenceData.PAY_DATE) %></td>
+                            </tr>
+                            <tr>
+                              <th>자격수당</th>
+                              <td colspan="3">
+								<%=WebUtil.printNumFormat(Double.parseDouble(a17LicenceData.LICN_AMNT)*100)%> <%= a17LicenceData.WAERS %>
+                              </td>
+                            </tr>
+                          </table>
+					</div>
+
+              <!--담당자입력정보 테이블 끝-->
+              <!-- 상단 입력 테이블 끝-->
+            </td>
+          </tr>
+
+        <%
+          }
+        %>
+        <%
+            boolean visible = false;
+            for (int i = 0; i < vcAppLineData.size(); i++) {
+                AppLineData ald = (AppLineData) vcAppLineData.get(i);
+                if (ald.APPL_BIGO_TEXT != null && !ald.APPL_BIGO_TEXT.equals("")) {
+                    visible = true;
+                    break;
+                } // end if
+            } // end for
+        %>
+        <%   if (visible) { %>
+          <tr>
+            <td><h2 class="subtitle">적요</h2></td>
+          </tr>
+          <tr>
+            <td>
+                <table width="780" border="0" cellpadding="0" cellspacing="1">
+                <% for (int i = 0; i < vcAppLineData.size(); i++) { %>
+                    <% AppLineData ald = (AppLineData) vcAppLineData.get(i); %>
+                    <% if (ald.APPL_BIGO_TEXT != null && !ald.APPL_BIGO_TEXT.equals("")) { %>
+                    <tr>
+                    	<td>
+	                    	<div class="tableArea">
+	                    		<table class="tableGeneral">
+	                    			<tr>
+	                    				<th width="100"><%=ald.APPL_ENAME%></th>
+	                    				<td><%=ald.APPL_BIGO_TEXT%></td>
+	                    			</tr>
+	                    		</table>
+	                    	</div>
+                    	</td>
+                    </tr>
+                    <% } // end if %>
+                <% } // end for %>
+                </table>
+            </td>
+          </tr>
+        <% } // end if %>
+          <tr>
+            <td>
+              <table width="780" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td><h2 class="subtitle">결재정보</h2></td>
+                </tr>
+                <tr>
+                  <td><table width="780" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td>
+                          <!--결재정보 테이블 시작-->
+                          <%= AppUtil.getAppDetail(vcAppLineData) %>
+                          <!--결재정보 테이블 끝-->
+                        </td>
+                      </tr>
+                    </table></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td>
+                </tr>
+                <tr>
+                  <td align="center">
+                  <!--버튼 들어가는 테이블 시작 -->
+                  	<div class="buttonArea">
+                  		<ul class="btn_crud">
+                          <% if (isCanGoList) {  %>
+                  			<li><a href="javascript:goToList()"><span>목록보기</span></a></li>
+                          <% } // end if %>
+                  		</ul>
+                  	</div>
+                  <!--버튼 들어가는 테이블 끝 -->
+                  </td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td>
+                </tr>
+              </table></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>
+<%@ include file="/web/common/commonEnd.jsp" %>

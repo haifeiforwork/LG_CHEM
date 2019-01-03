@@ -1,0 +1,120 @@
+<SCRIPT LANGUAGE='JavaScript'>
+	function goMSS(tmpurl)
+	{
+
+		//var url = tmpurl + '&SServer=' + serverName + '&SSNO=' + DBpath;
+		var url = tmpurl + '&SServer=gportal.lgchem.com' +  '&SSNO=<mail:to_empNo/>';
+		// var url = tmpurl + '&SServer=' + serverName + '&SSNO=<mail:to_empNo/>';
+        //top.location.href = url;
+
+        fn_Forward(url);
+
+    }
+
+    function fn_Forward(sUrl) {
+
+        var strMailBox = "";
+        var strExchange = "";
+        var strDomain, strMailUrl, strFolderID;
+        var szUserID = "";
+
+        try {
+            var strDomain = document.location.host;
+            strRtnUrl = strDomain + parent.fn_GetHtmlObjectValue("hhdMailListUrl");
+            //var strTemp = "&ReturnUrl=http://" + strDomain +"/eW/eGW/Mail/MailList/GetMailList.aspx?foldertype=" + strMailUrl + "%uBC1B%uC740%20%uD3B8%uC9C0%uD568/&folderID=AQQAAAAE7oq6AAAAAAAAAAAAAAAA";
+            // "&loginId=" + szUserID 인장관리 필요에 의해 파람 추가 (2015.05.15)
+            strTemp = sUrl + "&strRtnUrl=" + encodeURIComponent(strRtnUrl);
+            strTemp = "http://" + strDomain + "/ew/eWM/Mail/List/EmptyPage.aspx?appurl=" + encodeURIComponent(strTemp);
+            window.parent.document.location.href = strTemp
+            //window.frameElement.parentElement.document.location.href = sUrl + "&MailBox=" + strMailBox + "&Exchange=" + strExchange + "&MailDomain=" + strDomain + "&folderID=" + strFolderID + "&loginId=" + szUserID;
+        }
+        catch (exception) {
+
+        }
+    }
+</SCRIPT>
+<style type="text/css">
+* {font-size: 12px;font-family:'맑은고딕', Malgun Gothic, '돋움', dotum, Arial, Helvetica,sans-serif;}
+</style>
+<table cellspacing="1" cellpadding="1" width="660" bgcolor="#c6c6c4" border="0" >
+<tbody>
+<tr>
+<td bgcolor="#ffffff">
+	<table cellspacing="0" cellpadding="0" width="100%" border="0">
+	<tbody>
+	<tr valign="top">
+	  <td  style="background: #f0f0f0;border-bottom: 3px solid #c8284a;height: 47px;padding-top: 12px;padding-left: 14px"> <font style="font-weight: bold;font-size: 14px;">HR</font></td>
+	</tr>
+	<tr>
+	<td bgcolor="#ffffff" align="center">
+		<table cellspacing="0" cellpadding="0" width="582" border="0">
+		<tbody>
+		<tr>
+			<td style="height: 30px"> </td>
+		</tr>
+		<tr>
+			<td style="height: 30px"><strong>[HR] Notice of approval completion</strong></td>
+		</tr>
+		<tr>
+			<td> </td>
+		</tr>
+		<tr>
+			<td style="height: 70px">
+				<p>Hello,<br><br>
+
+				Please check the document details that have been completed below.</p>
+			</td>
+		</tr>
+		<tr>
+			<td> </td>
+		</tr>
+		<tr>
+		<td>
+			<table cellspacing="0" cellpadding="0" width="100%" border="0">
+			<tbody>
+			<tr>
+				<td style="height: 20px">- Document name : <mail:UPMU_NAME/>     </td>
+			</tr>
+			<tr>
+				<td style="height: 20px">- Applicant   : <mail:ename/> (Employee number  : <mail:empno/>)     </td>
+			</tr>
+				<td> </td>
+			</tr>
+			<tr>
+				<td style="height: 30px"><a href="javascript:goMSS('http://<mail:ResponseURL/>/servlet/servlet.hris.MailAutoLoginSV?AINF_SEQN=<mail:AINF_SEQN/>') ">View the approval document from the PC shortcut</a> </td>
+			</tr>
+			<tr>
+				<td> </td>
+			</tr>
+			</tbody>
+			</table>
+		</td>
+		</tr>
+		<tr>
+			<td> </td>
+		</tr>
+		<tr>
+			<td style="height: 30px"><font color="blue">(This message is sent only and can not be received when you reply.)</font></td>
+		</tr>
+
+		<tr>
+			<td height="40"> </td>
+		</tr>
+		</tbody>
+		</table>
+	</td>
+	</tr>
+	<tr>
+		<td  height="20" align="right"></td>
+	</tr>
+	</tbody>
+	</table>
+</td>
+</tr>
+</tbody>
+</table>
+<form name="form1" method="post" action="http://<mail:ResponseURL/>/servlet/hris.MailAutoLoginSV">
+	<input type="hidden" name="AINF_SEQN" value="<mail:AINF_SEQN/>X<mail:to_empNo/>">
+	<input type="hidden" name="SServer" value="">
+	<input type="hidden" name="SSNO" value="">
+</form>

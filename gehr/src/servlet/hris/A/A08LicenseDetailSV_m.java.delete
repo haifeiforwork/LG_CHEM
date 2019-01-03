@@ -1,0 +1,91 @@
+package	servlet.hris.A;
+
+import java.io.*;
+import java.sql.*;
+import java.util.Vector;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+import com.sns.jdf.*;
+import com.sns.jdf.util.*;
+import com.sns.jdf.servlet.*;
+
+import hris.common.WebUserData;
+import hris.A.*;
+import hris.A.rfc.*;
+
+/**
+ * A08LicenseDetailSV_m.java
+ * 자격증정보를 jsp로 넘겨주는 class 
+ * @author 최영호   
+ * @version 1.0, 2001/12/19
+ */
+public class A08LicenseDetailSV_m extends EHRBaseServlet_m {
+    
+    protected void performTask(HttpServletRequest req, HttpServletResponse res) throws GeneralException
+    {
+        try{
+
+            HttpSession session = req.getSession(false);
+            WebUserData user_m = WebUtil.getSessionMSSUser(req);
+
+			      String jobid     = "";
+            String dest      = "";
+            String licn_code = "";
+            
+            WebUserData user = WebUtil.getSessionUser(req);
+//          @웹취약성 추가
+            if ( user.e_authorization.equals("E")) {
+                Logger.debug.println(this, "E Authorization!!");
+                String msg = "msg015";
+                req.setAttribute("msg", msg);
+                dest = WebUtil.JspURL+"common/caution.jsp";
+                printJspPage(req, res, dest);
+            }
+
+            Box box = WebUtil.getBox(req);
+            jobid     = box.get("jobid");
+            licn_code = box.get("licn_code");
+            
+            if( jobid.equals("") ){
+                jobid = "first";
+            }
+            Logger.debug.println(this, "[jobid] = "+jobid + " [user_m] : "+user_m.toString());
+
+            if( jobid.equals("first") ) {           //제일처음 신청 화면에 들어온경우.
+                //자격증 리스트
+                A08LicenseDetailRFC func1               = new A08LicenseDetailRFC();
+                Vector              A08LicenseDetail_vt = func1.getLicenseDetail(user_m.empNo);
+            
+	              Logger.debug.println(this, "A08LicenseDetail_vt : "+ A08LicenseDetail_vt.toString());
+      	        req.setAttribute("A08LicenseDetail_vt", A08LicenseDetail_vt);
+                dest = WebUtil.JspURL+"A/A08LicenseDetail_m.jsp";
+
+            } else if( jobid.equals("pop") ) {
+
+                //법정선임 Detail 리스트
+                A08LicenseDetailAlloRFC func2                   = new A08LicenseDetailAlloRFC();
+                Vector                  A08LicenseDetailAllo_vt = new Vector();
+                Vector                  temp_vt                 = func2.getLicenseDetailAllo(user_m.empNo);
+                
+                for( int i = 0 ; i < temp_vt.size() ; i++ ) {
+                    A08LicenseDetailAlloData data = (A08LicenseDetailAlloData)temp_vt.get(i);
+                    if( data.LICN_CODE.equals(licn_code) ) {
+                        A08LicenseDetailAllo_vt.addElement(data);
+                    }
+                }
+                
+      			    Logger.debug.println(this, "A08LicenseDetailAllo_vt : "+ A08LicenseDetailAllo_vt.toString());
+                req.setAttribute("A08LicenseDetailAllo_vt", A08LicenseDetailAllo_vt);
+                dest = WebUtil.JspURL+"A/A08LicensePop_m.jsp";
+
+            } else {
+                throw new BusinessException(g.getMessage("MSG.COMMON.0016"));
+            }
+            Logger.debug.println(this, " destributed = " + dest);
+            printJspPage(req, res, dest);
+        } catch (Exception e) {
+            throw new GeneralException(e);
+        }
+    }
+}

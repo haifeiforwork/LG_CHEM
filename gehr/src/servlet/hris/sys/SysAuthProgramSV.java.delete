@@ -1,0 +1,133 @@
+/*
+ * ÀÛ¼ºµÈ ³¯Â¥: 2005. 1. 21.
+ *
+ */
+package servlet.hris.sys;
+
+import hris.sys.AuthProgramCode;
+import hris.sys.MenuCodeData;
+import hris.sys.db.MenuCodeDB;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.sns.jdf.GeneralException;
+import com.sns.jdf.Logger;
+import com.sns.jdf.db.DBUtil;
+import com.sns.jdf.servlet.Box;
+import com.sns.jdf.servlet.EHRBaseServlet;
+import com.sns.jdf.util.WebUtil;
+import hris.sys.db.MenuCodeDB;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.sns.jdf.GeneralException;
+import com.sns.jdf.Logger;
+import com.sns.jdf.db.DBUtil;
+import com.sns.jdf.servlet.Box;
+import com.sns.jdf.servlet.EHRBaseServlet;
+import com.sns.jdf.util.WebUtil;
+
+/**
+ * @author ÀÌ½ÂÈñ
+ *
+ */
+public class SysAuthProgramSV extends EHRBaseServlet {
+
+    /* (ºñJavadoc)
+     * @see com.sns.jdf.servlet.EHRBaseServlet#performTask(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
+    protected void performTask(HttpServletRequest req, HttpServletResponse res) 
+        throws GeneralException 
+    {
+        String dest  = "";
+        
+        Vector vcMenuCodeData = null;
+        Vector vcAuthProgramCode = null;
+        
+        boolean isCommit = false;
+        Connection conn = null;
+
+        Box box = WebUtil.getBox(req);
+        String jobid = box.get("jobid");
+        int   rowNum  = box.getInt("rowNum");
+        
+        try {
+            conn = DBUtil.getTransaction("HRIS");
+            MenuCodeDB  mcdb = new MenuCodeDB(conn);
+            String userGroup = "";
+            userGroup = box.get("userGroup");
+            
+            Logger.debug.println("jobid = [" + jobid + "]");
+            if (jobid == null || jobid.equals("") || jobid.equals("view")) {
+                
+                if (userGroup != null && !userGroup.equals("")) {
+                    vcMenuCodeData = mcdb.getMenuList();
+                    vcAuthProgramCode = mcdb.getAuthProgramCodeList(userGroup);
+                    for (int i = 0; i < vcAuthProgramCode.size(); i++) {
+                        AuthProgramCode authProgramCode = (AuthProgramCode)vcAuthProgramCode.get(i);
+                        authProgramCode.upFullMenuName = setUpFullMenuName( authProgramCode.upMenuCode ,vcMenuCodeData);
+                    } // end for
+                } else {
+                    vcAuthProgramCode = new Vector();
+                } // end if
+                req.setAttribute("vcAuthProgramCode" ,vcAuthProgramCode);
+                dest = WebUtil.JspURL+"sys/sysAuthProgram.jsp";
+            } else if (jobid.equals("save")) {
+                vcAuthProgramCode = new Vector();
+                if (userGroup != null && !userGroup.equals("")) {
+                    for (int i = 0; i < rowNum; i++) {
+                        AuthProgramCode authProgramCode = new AuthProgramCode();
+                        box.copyToEntity(authProgramCode ,i);
+                        Logger.debug.println(this ,"I[" + i + "] =" + authProgramCode.authKind);
+                        vcAuthProgramCode.add(authProgramCode);
+                    } // end for
+                    mcdb.saveAuthProgramCode(vcAuthProgramCode ,userGroup);
+                } // end if
+                String msg = "msg002";
+                String url = "location.href = '" + WebUtil.ServletURL+ 
+                    "hris.sys.SysAuthProgramSV?userGroup=" + userGroup + "'";
+                req.setAttribute("msg", msg);
+                req.setAttribute("url", url);
+                dest = WebUtil.JspURL+"common/msg.jsp";
+            } // end if
+            isCommit = true;
+        } catch (GeneralException e) {
+            Logger.err.println(e);
+            throw e;
+        } catch (SQLException e) {
+            Logger.err.println(e);
+            throw new GeneralException(e);
+        } finally {
+            DBUtil.close(conn ,isCommit);  
+        } // end try
+        Logger.debug.println(this ,dest);
+        printJspPage(req, res, dest);
+    }
+    
+    
+    protected String setUpFullMenuName(String  upMenuCode ,Vector vcMenuCodeData)
+    {
+        StringBuffer sb = new StringBuffer(512);
+        for (int i = 0; i < vcMenuCodeData.size(); i++) {
+            MenuCodeData mcd = (MenuCodeData) vcMenuCodeData.get(i);
+            if (upMenuCode.equals(mcd.menuCode)) {
+                if (!mcd.upMenuCode.equals("1000")) {
+                    sb.append(setUpFullMenuName(mcd.upMenuCode ,vcMenuCodeData));
+                } // end if
+                sb.append(mcd.menuName +"/");
+            } // end if            
+        } // end for
+        return sb.toString();
+    }
+
+}

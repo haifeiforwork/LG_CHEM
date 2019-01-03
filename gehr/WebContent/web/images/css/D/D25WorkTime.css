@@ -1,0 +1,177 @@
+@charset "UTF-8";
+
+/* 2018-05-04 [WorkTime52] 유정우 */
+
+.subWrapper {margin-bottom:0; padding-bottom:0}
+.winPop .header {height:auto; padding-bottom:18px}
+.blockMsg {font-size:12px}
+.title h1 {margin-top:0}
+.tabArea ul.tab {height:32px}
+.tabArea ul.tab li button.download-guide {vertical-align:middle}
+.listArea {margin:0}
+.listArea .listTop .listCnt {font-size:12px}
+iframe#listFrame {margin:0; padding:0; width:100%; border:0}
+
+div.calendar-navigation {position:relative; margin-left:20px; height:31px}
+div.calendar-navigation div {float:left}
+div.calendar-navigation div button {margin-top:2px}
+div.calendar-navigation div.year-month {min-width:150px; font-size:20px; font-weight:600; line-height:25px; text-align:center; display:inline-block}
+
+table tr.multi-line th,
+table tr.multi-line td {padding-top:7px; padding-bottom:7px}
+
+table tr.lastRow th, table tr.lastRow td {border-bottom:solid 1px #cdcdcd}
+table tr.borderRow.lastRow th, table tr.borderRow.lastRow td {border-bottom:solid 1px #cdcdcd}
+
+div.tableInquiry {margin-bottom:5px}
+div.tableInquiry table {width:100%}
+div.tableInquiry table th, div.tableInquiry table td {font-size:12px}
+div.tableInquiry table th {padding:0; text-align:center; line-height:20px}
+div.tableInquiry table th.align-left {text-align:left}
+div.tableInquiry table th div {display:inline-block}
+div.tableInquiry table th div.vertical-radio {display:block}
+div.tableInquiry table th div.vertical-radio label {margin-bottom:0}
+div.tableInquiry table th label {font-weight:normal; vertical-align:middle}
+div.tableInquiry table th label.bold {margin:0 8px 0 0; font-weight:bold}
+div.tableInquiry table th label + select {margin-left:5px}
+div.tableInquiry table th label.for-radio + label.for-radio {margin-left:7px}
+div.tableInquiry table th input[type="text"] {height:21px; line-height:16px; font-size:12px}
+div.tableInquiry table th input[type="radio"] {vertical-align:text-bottom}
+div.tableInquiry table .searchTitle {margin-right:0}
+div.tableInquiry table .searchIcon {margin-right:5px}
+div.tableInquiry table .tableBtnSearch {margin-left:3px}
+div.tableInquiry table .tableBtnSearch a.search {margin-right:37px}
+div.tableInquiry table .tableBtnSearch a.search span {left:37px; margin-right:0; padding:0 15px 0 0}
+
+table.listTable th {text-align:center}
+table.listTable th, table.listTable td {font-size:12px}
+table.listTable a {vertical-align:middle}
+table.listTable td.ellipsis {overflow:hidden; white-space:nowrap; text-overflow:ellipsis}
+table.listTable td.ellipsis.emp-name {max-width:90px}
+table.listTable td.ellipsis.org-name {max-width:185px}
+table.listTable td.ellipsis.duty-name {max-width:90px}
+
+table.tableGeneral th, table.tableGeneral td {font-size:12px}
+
+table.summary {position:relative; width:100%; border-collapse:separate; border-spacing:0px}
+table.summary th {border-right:1px solid #dddddd; border-bottom:1px solid #dddddd; padding:7px 8px; vertical-align:middle; font-size:12px; font-weight:bold; text-align:center}
+table.summary td {position:relative; border-right:1px solid #dddddd; border-bottom:1px solid #dddddd; padding:7px 8px; vertical-align:middle; font-size:12px; text-align:center}
+table.summary .lastCol {border-right:0}
+table.summary .align-left {text-align:left}
+/* table.summary td:hover {background-color:#e1e1e1} */
+
+table.worktime tr.holiday, table.worktime th.holiday, table.worktime td.holiday {background-color:#fff3f3}
+table.worktime tr.weekend, table.worktime th.weekend, table.worktime td.weekend {background-color:#f6f6f6}
+table.worktime tr.today, table.worktime th.today, table.worktime td.today {background-color:#e9ffd2}
+table.worktime tr.exceed, table.worktime th.exceed, table.worktime td.exceed {background-color:#ffc8c8}
+table.worktime tr.picked, table.worktime th.picked, table.worktime td.picked {background-color:#e9ffd2}
+table.worktime .non-this-month * {color:#aaaaaa !important}
+
+.table {margin-bottom:0}
+.scroll-table {border-bottom:solid 1px #cdcdcd; overflow-x:hidden; overflow-y:scroll}
+.scroll-table table {table-layout:fixed; margin-bottom:0; border-bottom:0}
+.scroll-table th {border-bottom:0; text-align:center}
+.scroll-table th, .scroll-table td {font-size:12px}
+.scroll-table td {height:40px; padding:1px 0}
+.scroll-table .icon {margin:0 auto; padding-left:25px; width:120px}
+.scroll-table .icon.done {background:url(../../icon_saved.png) no-repeat left center}
+.scroll-table .icon.required {background:url(../../icon_required.png) no-repeat left center}
+.scroll-table select, .scroll-table label {vertical-align:middle}
+.scroll-table select, .scroll-table input[type="text"] {min-width:45px; max-width:60%}
+.scroll-table select.time {min-width:45px; width:45px}
+.scroll-table a.icon-popup {position:relative; top:-1px}
+.scroll-table a.icon-popup.invisible {visibility:hidden}
+.scroll-table a.non-background {margin:0 0 3px 0; color:#0000ff; background:none; cursor:pointer}
+.scroll-table div.readonly-look {margin-right:3px; width:60%; height:22px; line-height:22px; display:inline-block; background-color:#f3f3f3}
+.scroll-head {scrollbar-face-color:#ffffff; scrollbar-shadow-color:#ffffff; scrollbar-highlight-color:#ffffff; scrollbar-3dlight-color:#ffffff; scrollbar-darkshadow-color:#ffffff; scrollbar-track-color:#ffffff; scrollbar-arrow-color:#ffffff}
+.scroll-body {margin-bottom:5px; min-height:40px; max-height:240px}
+.scroll-body tbody tr:hover {background-color:#e1e1e1}
+
+div#breaktimeList.readonly .hide-on-readonly, div#extratimeList.readonly .hide-on-readonly {display:none}
+
+.breaktime-table th {height:31px; text-align:center}
+.breaktime-table th, .listTable td {font-size:12px}
+.breaktime-table tbody td {height:40px}
+.breaktime-table tfoot td {height:31px; border-top:1px solid #dddddd}
+.breaktime-table button.icon-button {width:20px; height:20px; padding:0; text-align:center; vertical-align:middle; font-size:15px; font-weight:600; line-height:18px}
+.breaktime-table input[type="checkbox"], .breaktime-table select {vertical-align:middle}
+.breaktime-table input[type="text"][readonly] {width:50px; text-align:center}
+.breaktime-table input[type="text"][maxlength] {width:96%; text-align:left}
+.breaktime-table select.time {min-width:45px; width:45px}
+.breaktime-table td.minutes-sum {text-align:center}
+
+table.calendar {position:relative; margin-bottom:16px; width:100%; border-collapse:separate; border-spacing:0px}
+table.calendar th {border-right: 1px solid #dddddd; border-bottom: 1px solid #dddddd; padding:5px; height:40px; vertical-align:middle; font-size:12px; font-weight:bold; text-align:center}
+table.calendar td {position:relative; border-right:1px solid #dddddd; border-bottom: 1px solid #dddddd; height:100px; font-size:12px; cursor:pointer}
+table.calendar tr[data-not-found] td {position:relative; height:40px; padding:1px 0; font-size:12px; text-align:center; vertical-align:middle; background-color:#f5f5f5; cursor:default}
+table.calendar tr[data-not-found] td:hover {background-color:#e1e1e1}
+table.calendar .lastCol {border-right:0}
+table.calendar td.isoweek {background-color:#fbf7e2}
+table.calendar td div {width:100%; padding:3px 0; text-align:center}
+table.calendar td div.holiday {background-color:#fff3f3}
+table.calendar td img {width:20px; height:20px}
+table.calendar td.isoweek div.week-number {text-align:left}
+table.calendar td.weekday div.date-number,
+table.calendar td.weekend div.date-number {text-align:right}
+table.calendar td:hover {background-color:#e1e1e1}
+
+/* div.date-spread {float:left; position:relative} */
+div.date-spread {position:absolute; top:0}
+div.date-spread table {margin-bottom:0}
+/* div.date-spread tbody td {line-height:22px} */
+div.date-spread th, div.date-spread td {height:26px}
+div.date-spread tr.multi-line th {height:48px}
+div.date-spread tr.hover td {background-color:#e1e1e1}
+div.date-spread tr:hover td {background-color:#e1e1e1}
+div.date-spread.fixed-row-height td {line-height:26px}
+div.date-spread.frozen th.lastCol, div.date-spread.frozen td.lastCol {border-right:solid 1px #777777}
+div.date-spread.scroll {overflow-x:auto}
+div.date-spread.scroll {overflow-x:auto}
+div.date-spread.scroll table {table-layout:fixed}
+div.date-spread.scroll th, div.date-spread.scroll td {min-width:50px; max-width:50px; width:50px}
+div.date-spread.not-found-data {top:49px; width:100%; height:26px; border-bottom:solid 1px #dddddd; font-size:12px; line-height:26px; text-align:center; vertical-align:middle; background-color:#f5f5f5}
+
+a span {font-size:12px}
+
+.worktime-sum {background-color:#faf6e1}
+.listTable tbody tr:hover .worktime-sum {background-color:#e1e1e1}
+.listTable tbody tr:hover .worktime-sum.hover {background-color:#e1e1e1}
+.traffic-light {font-size:15px; font-weight:bold}
+.traffic-light.glass {color:transparent}
+.traffic-light.green {color:#40c057}
+.traffic-light.yellow {color:#fab005}
+.traffic-light.red {color:#fa5252}
+div.commentImportant .traffic-light {padding-right:10px}
+
+div.buttonArea div.notice {position:absolute; top:0; left:0; font-size:12px; font-weight:600; color:#ff0000}
+div.commentImportant {margin-top:20px; font-size:12px}
+div.commentImportant p {margin-left:20px}
+div.commentImportant p + p {margin-top:7px}
+div.commentImportant p span.comment-title {margin-left:-20px; padding-left:20px; font-size:13px; font-weight:bold; background:url('/web/images/eloffice/images/ico/ico_important.gif') no-repeat left center}
+div.commentImportant p span.bold {margin-left:-20px; padding-left:20px; font-size:13px; background:url('/web/images/eloffice/images/ico/ico_important.gif') no-repeat left center}
+div.commentImportant p span.indent1 {padding-left:93px}
+div.commentImportant p span.indent2 {padding-left:78px}
+
+div.commentImportant.notation {float:left; margin:0 0 5px 0; padding-top:4px; padding-bottom:4px; text-align:left; font-size:12px}
+div.commentImportant.notation p {margin-bottom:0}
+div.commentImportant.notation p span.bold {margin-bottom:0}
+
+div.commentOne {margin-top:5px; padding-bottom:6px; font-size:12px; display:inline-block}
+
+.date + img {margin-left:5px; vertical-align:middle}
+
+.float-left {float:left}
+.float-right {float:right}
+.align-left {text-align:left}
+.align-center {text-align:center}
+.align-right {text-align:right}
+.align-top {vertical-align:top}
+.align-middle {vertical-align:middle}
+.align-bottom {vertical-align:bottom}
+.font-normal {font-weight:normal}
+.font-bold {font-weight:bold}
+.inline-block {display:inline-block}
+:-ms-input-placeholder {color:#aaaaaa} /* Internet Explorer 10-11 */
+::-ms-input-placeholder {color:#aaaaaa} /* Microsoft Edge */
+
+textarea.log-box {position:absolute; top:15%; left:15%; width:70%; height:70%}

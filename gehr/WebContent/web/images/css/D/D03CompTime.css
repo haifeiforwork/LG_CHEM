@@ -1,0 +1,88 @@
+@charset "UTF-8";
+
+/* 2018-07-25 [WorkTime52] 유정우 */
+
+.subWrapper {margin-bottom:0; padding-bottom:0}
+.blockMsg {font-size:12px}
+
+table tr.multi-line th,
+table tr.multi-line td {padding-top:7px; padding-bottom:7px}
+
+table tr.lastRow th, table tr.lastRow td {border-bottom:solid 1px #cdcdcd}
+table tr.borderRow.lastRow th, table tr.borderRow.lastRow td {border-bottom:solid 1px #cdcdcd}
+
+div.tableInquiry {margin-bottom:0}
+div.tableInquiry table {width:100%}
+div.tableInquiry table th, div.tableInquiry table td {font-size:12px}
+div.tableInquiry table th {padding:0 0 0 20px; text-align:left; line-height:20px}
+div.tableInquiry table th.align_center {padding:0}
+div.tableInquiry table th div {display:inline-block}
+div.tableInquiry table th label {margin-bottom:0; font-weight:normal; vertical-align:middle}
+div.tableInquiry table th label.bold {margin:0 8px 0 0; font-weight:bold}
+div.tableInquiry table th input[type="checkbox"] {margin:3px 30px 0 0}
+div.tableInquiry table .searchTitle {margin-right:0}
+div.tableInquiry table .searchIcon {margin-right:5px}
+div.tableInquiry table .tableBtnSearch {margin-left:3px}
+div.tableInquiry table .tableBtnSearch a.search {margin-right:37px}
+div.tableInquiry table .tableBtnSearch a.search span {left:37px; margin-right:0; padding:0 15px 0 0}
+
+div.commentOne + div.tableArea {margin-top:30px}
+
+table.listTable th {text-align:center}
+table.listTable th, table.listTable td {font-size:12px}
+table.listTable a {vertical-align:middle}
+
+table.summary {position:relative; width:100%; border-collapse:separate; border-spacing:0px}
+table.summary th {border-right:1px solid #dddddd; border-bottom:1px solid #dddddd; padding:7px 8px; vertical-align:middle; font-size:12px; font-weight:bold; text-align:center}
+table.summary td {position:relative; border-right:1px solid #dddddd; border-bottom:1px solid #dddddd; padding:7px 8px; vertical-align:middle; font-size:12px; text-align:center}
+table.summary .lastCol {border-right:0}
+table.summary .align-left {text-align:left}
+
+table.worktime tr.weekend, table.worktime th.weekend, table.worktime td.weekend {background-color:#f6f6f6}
+
+.table {margin-bottom:0}
+.scroll-table {overflow-x:hidden; overflow-y:scroll}
+.scroll-table table {table-layout:fixed; margin-bottom:0; border-bottom:0}
+.scroll-table th {text-align:center}
+.scroll-table th, .scroll-table td {font-size:12px}
+.scroll-table td {height:40px; padding:1px 0}
+.scroll-table a.icon-popup {position:relative; top:-1px}
+.scroll-table a.icon-popup.invisible {visibility:hidden}
+.scroll-table div.readonly-look {margin-right:3px; width:60%; height:22px; line-height:22px; display:inline-block; background-color:#f3f3f3}
+.scroll-head {scrollbar-face-color:#ffffff; scrollbar-shadow-color:#ffffff; scrollbar-highlight-color:#ffffff; scrollbar-3dlight-color:#ffffff; scrollbar-darkshadow-color:#ffffff; scrollbar-track-color:#ffffff; scrollbar-arrow-color:#ffffff}
+.scroll-body {margin-bottom:5px; border-bottom:1px solid #dddddd; min-height:41px; max-height:282px}
+.scroll-body tbody tr:hover {background-color:#e1e1e1}
+
+.breaktime-table th {height:31px; text-align:center}
+.breaktime-table th, .listTable td {font-size:12px}
+.breaktime-table tbody td {height:40px}
+.breaktime-table tfoot td {height:31px; border-top:1px solid #dddddd}
+.breaktime-table button.icon-button {width:20px; height:20px; padding:0; text-align:center; vertical-align:middle; font-size:15px; font-weight:600; line-height:18px}
+.breaktime-table input[type="checkbox"], .breaktime-table select {vertical-align:middle}
+.breaktime-table input[type="text"][readonly] {width:50px; text-align:center}
+.breaktime-table input[type="text"][maxlength] {width:96%; text-align:left}
+.breaktime-table select.time {min-width:45px; width:45px}
+.breaktime-table td.minutes-sum {text-align:center}
+
+a span {font-size:12px}
+
+.worktime-sum {background-color:#faf6e1}
+
+div.commentOne {margin-top:5px; padding-bottom:6px; font-size:12px; display:inline-block}
+div.commentRFC {margin-top:5px; margin-left:10px; font-size:12px; line-height:22px; color:#666666}
+div.commentRFC div {font-size:12px; line-height:22px; color:#666666; display:block}
+div.commentRFC img {vertical-align:middle}
+
+.float-left {float:left !important}
+.float-right {float:right !important}
+.align-left {text-align:left !important}
+.align-center {text-align:center !important}
+.align-right {text-align:right !important}
+.align-top {vertical-align:top !important}
+.align-middle {vertical-align:middle !important}
+.align-bottom {vertical-align:bottom !important}
+.font-normal {font-weight:normal !important}
+.font-bold {font-weight:bold !important}
+.inline-block {display:inline-block !important}
+:-ms-input-placeholder {color:#aaaaaa} /* Internet Explorer 10-11 */
+::-ms-input-placeholder {color:#aaaaaa} /* Microsoft Edge */

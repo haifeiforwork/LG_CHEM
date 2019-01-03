@@ -1,0 +1,152 @@
+/********************************************************************************/
+/*                                                                              */
+/*   System Name  : MSS                                                         */
+/*   1Depth Name  : Manaer's Desk                                               */
+/*   2Depth Name  : 인사정보조회                                                */
+/*   Program Name : 인사정보조회                                                */
+/*   Program ID   : A01SelfDetailSV_m                                           */
+/*   Description  : 사원의 인사정보 조회하는 class                              */
+/*   Note         :                                                             */
+/*   Creation     : 2001-12-17  김성일                                          */
+/*   Update       : 2005-01-11  윤정현                                          */
+/*                                                                              */
+/********************************************************************************/
+
+package	servlet.hris.A;
+
+import com.sns.jdf.BusinessException;
+import com.sns.jdf.GeneralException;
+import com.sns.jdf.Logger;
+import com.sns.jdf.servlet.Box;
+import com.sns.jdf.servlet.EHRBaseServlet;
+import com.sns.jdf.util.WebUtil;
+import hris.A.A08LicenseDetailAlloData;
+import hris.A.rfc.*;
+import hris.common.WebUserData;
+import hris.common.rfc.GetPhotoURLRFC;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.Vector;
+
+public class A01SelfDetailSV_m extends EHRBaseServlet {
+
+	protected void performTask(HttpServletRequest req, HttpServletResponse res) throws GeneralException
+    {
+        //Connection con = null;
+
+        try{
+            HttpSession session = req.getSession(false);
+            WebUserData user_m = WebUtil.getSessionMSSUser(req);
+            WebUserData user = WebUtil.getSessionUser(req);
+
+            Box box = WebUtil.getBox(req, user_m);
+            
+            String dest  = "";
+            String jobid2 = "";
+            String licn_code = "";
+            
+//          @웹취약성 추가
+            if ( user.e_authorization.equals("E")) {
+                Logger.debug.println(this, "E Authorization!!");
+                String msg = "msg015";
+                req.setAttribute("msg", msg);
+                dest = WebUtil.JspURL+"common/caution.jsp";
+                printJspPage(req, res, dest);
+            }
+
+            jobid2     = box.get("jobid2");
+            
+            if( jobid2.equals("") ){
+                jobid2 = "first";
+            }
+            Logger.debug.println(this, "[jobid2] = "+jobid2);            
+
+            String imgUrl ="";
+            GetPhotoURLRFC      photofunc = null;  // 사진
+            A01SelfDetailRFC    selffunc  = null;  // 개인사항
+            A08LicenseDetailRFC licenfunc = null;  // 자격사항
+            A02SchoolDetailRFC  scholfunc = null;  // 학력사항
+            A04FamilyDetailRFC  familfunc = null;  // 가족사항
+            Vector a01SelfDetailData_vt   = new Vector();
+            Vector a08LicenseDetail_vt    = new Vector();
+            Vector a02SchoolData_vt       = new Vector(); 
+            Vector a04FamilyDetailData_vt = new Vector(); 
+            
+            if ( user_m != null ) {
+                
+                if( jobid2.equals("first") ) { 
+                    
+                    // 사진링크
+                    photofunc = new GetPhotoURLRFC();
+                    imgUrl = photofunc.getPhotoURL( user_m.empNo ); 
+                    
+                    // A01SelfDetailRFC 개인인적사항 조회
+                    selffunc = new A01SelfDetailRFC();
+                    a01SelfDetailData_vt = selffunc.getPersInfo(user_m.empNo, user.area.getMolga());
+                    Logger.debug.println(this, "a01SelfDetailData_vt : "+ a01SelfDetailData_vt.toString());
+                    
+                    // 자격증 리스트
+                    licenfunc  = new A08LicenseDetailRFC();
+                    a08LicenseDetail_vt = licenfunc.getLicenseDetail(user_m.empNo);
+                    Logger.debug.println(this, "a08LicenseDetail_vt : "+ a08LicenseDetail_vt.toString());
+
+                    // 학력사항
+                    scholfunc = new A02SchoolDetailRFC();
+                    a02SchoolData_vt = scholfunc.getSchoolDetail(user_m.empNo, user.area.getMolga());
+                    Logger.debug.println(this, "a02SchoolData_vt : "+ a02SchoolData_vt.toString());
+                    
+                    // 가족사항
+                    familfunc = new A04FamilyDetailRFC();
+
+                    a04FamilyDetailData_vt = familfunc.getFamilyDetail(box) ;
+                    Logger.debug.println(this, "a04FamilyDetailData_vt : "+ a04FamilyDetailData_vt.toString());
+                    
+                    req.setAttribute("imgUrl", imgUrl);
+                    req.setAttribute("a01SelfDetailData_vt", a01SelfDetailData_vt);
+                    req.setAttribute("a08LicenseDetail_vt", a08LicenseDetail_vt);
+                    req.setAttribute("a02SchoolData_vt", a02SchoolData_vt);
+                    req.setAttribute("a04FamilyDetailData_vt", a04FamilyDetailData_vt);
+                    
+                    dest = WebUtil.JspURL+"A/A01SelfDetail_m.jsp";
+                    
+                } else if ( jobid2.equals("license_pop") ) { 
+                    
+                    licn_code = box.get("licn_code");
+                    //법정선임 Detail 리스트
+                    A08LicenseDetailAlloRFC func2                   = new A08LicenseDetailAlloRFC();
+                    Vector                  A08LicenseDetailAllo_vt = new Vector();
+                    Vector                  temp_vt                 = func2.getLicenseDetailAllo(user_m.empNo);
+                    
+                    for( int i = 0 ; i < temp_vt.size() ; i++ ) {
+                        A08LicenseDetailAlloData data = (A08LicenseDetailAlloData)temp_vt.get(i);
+                        if( data.LICN_CODE.equals(licn_code) ) {
+                            A08LicenseDetailAllo_vt.addElement(data);
+                        }
+                    }
+                    
+                    Logger.debug.println(this, "A08LicenseDetailAllo_vt : "+ A08LicenseDetailAllo_vt.toString());
+                    req.setAttribute("A08LicenseDetailAllo_vt", A08LicenseDetailAllo_vt);
+                    dest = WebUtil.JspURL+"A/A08LicensePop_m.jsp";                    
+                } else {
+                    throw new BusinessException(g.getMessage("MSG.COMMON.0016"));
+                }
+            } else {
+                req.setAttribute("imgUrl", imgUrl);
+                req.setAttribute("a01SelfDetailData_vt", a01SelfDetailData_vt);
+                req.setAttribute("a08LicenseDetail_vt", a08LicenseDetail_vt);
+                req.setAttribute("a02SchoolData_vt", a02SchoolData_vt);
+                req.setAttribute("a04FamilyDetailData_vt", a04FamilyDetailData_vt);
+                dest = WebUtil.JspURL+"A/A01SelfDetail_m.jsp";                
+            }
+            
+            Logger.debug.println(this, " destributed = " + dest);
+            printJspPage(req, res, dest);
+
+        } catch(Exception e) {
+            throw new GeneralException(e);
+        } finally {
+        }
+	}
+}

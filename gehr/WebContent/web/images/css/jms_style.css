@@ -1,0 +1,82 @@
+/* Job Management System CSS : Designed & UI Development By 박수현 */
+
+/* Default Setting */
+body, td {font-family: arial, helvetica, verdana, dotum; font-size: 9pt; color : #333333;}
+
+/* Form Setting */
+  input, select, textarea, p {font-family: arial, helvetica, verdana, dotum; font-size: 9pt; color : #333333; border:1 solid #cccccc;}
+  .formset1  { background-color:#E7F3F7; border: #C4C9C2 solid 1px;}
+  .formset2  { border: #efefef solid 0px;}
+
+/* JMS 타이틀 텍스트가 사용하는 클래스 */
+  .title01 { font-family: arial, helvetica, verdana,  dotum; font-size: 13pt; color : #333333; font-weight: bold; }
+  .subt01 { font-family: arial, helvetica, verdana,  dotum; font-size: 9pt; color : #666666; font-weight: bold; }
+
+/* Job Matrix 하단 Decoration txt */
+.bot01 { color : #ffffff; font-weight: bold; }
+
+/* 좌측 GetMember table */
+.c01 { padding-top: 3px; }
+
+/*  표 :  제목 */
+.ct {padding-top: 3px; padding-left: 5px; padding-bottom: 3px; padding-right: 5px; line-height: 140%;font-weight: bold; background-color : #C0EBEC; }
+/*  표 :  서브 제목 */
+.ct1 {padding-top: 3px; padding-left: 5px; padding-bottom: 3px; padding-right: 5px; line-height: 140%;font-weight: bold; background-color : #efefef; }
+/*  표 :  내용 */
+.cc {padding-top: 3px; padding-left: 5px; padding-bottom: 3px; padding-right: 5px; line-height: 140%; background-color : #ffffff; }
+
+
+/* showhideLayer submenu */
+.sl { border:1 solid #666666; padding-top:2px; }
+
+/*  기본 링크 */
+a:link {font-family: dotum; font-size: 9pt; color : #1B59B1; text-decoration : none;}
+a:visited {font-family: dotum; font-size: 9pt; color : #1B59B1; text-decoration : none;}
+a:hover {font-family: dotum; font-size: 9pt; color : #000000; text-decoration : none;}
+
+/* GetPersons 링크 */
+a.bas:link {font-family: dotum; font-size: 9pt; color : #1B59B1; text-decoration : none;}
+a.bas:visited {font-family: dotum; font-size: 9pt; color : #1B59B1; text-decoration : none;}
+a.bas:hover {font-family: dotum; font-size: 9pt; color : #000000; text-decoration : none;}
+
+/*  Job Matrix 선택된 링크, 활성화된 링크 */
+a.ms:link {font-family: dotum; font-size: 9pt; color : #CC0000; text-decoration : none; font-weight: bold;   }
+a.ms:visited {font-family: dotum; font-size: 9pt; color : #CC0000; text-decoration : none;  font-weight: bold; }
+a.ms:hover {font-family: dotum; font-size: 9pt; color : #CC0000; text-decoration : none;  font-weight: bold;  }
+
+/*  Job Matrix 일반링크 */
+a.m1:link {font-family: dotum; font-size: 9pt; color : #333333; text-decoration : none; font-weight: bold;  }
+a.m1:visited {font-family: dotum; font-size: 9pt; color : #333333; text-decoration : none;  font-weight: bold; }
+a.m1:hover {font-family: dotum; font-size: 9pt; color : #CC0000; text-decoration : none;  font-weight: bold; }
+
+/*  Job Matrix 하단링크 */
+a.m2:link {font-family: dotum; font-size: 9pt; color : #ffffff; text-decoration : underline; font-weight: bold; }
+a.m2:visited {font-family: dotum; font-size: 9pt; color : #ffffff; text-decoration : underline; font-weight: bold;  }
+a.m2:hover {font-family: dotum; font-size: 9pt; color : #ccffff; text-decoration : underline; font-weight: bold;  }
+
+
+/*  showhideLayer submenu */
+a.l01:link { color : #666666; text-decoration : none;  padding-top: 4px; padding-left: 5px; padding-right: 5px;  padding-bottom: 4px; font-size: 11px; }
+a.l01:visited { color : #666666; text-decoration : none;  padding-top: 4px; padding-left: 5px; padding-right: 5px; padding-bottom: 4px; font-size: 11px; }
+a.l01:hover { color : #666666; text-decoration : none;  padding-top: 4px; padding-left: 5px; padding-right: 5px; padding-bottom: 4px; font-size: 11px; }
+
+
+
+
+
+/*  page navigation txt */
+a.nv:link { color : #666666; text-decoration : none; font-family: arial, helvetica, verdana, dotum; padding:1px;}
+a.nv:visited { color : #666666; text-decoration : none;  font-family: arial, helvetica, verdana, dotum; padding:1px; }
+a.nv:hover { color : #339999; text-decoration : none;  font-family: arial, helvetica, verdana, dotum; padding:1px; }
+
+
+  /* 제목 */
+
+  .title02, .title01 {  font-family: "Malgun Gothic"; color:#333; font-size: 15px; word-spacing: -1;   font-weight: bold; height:40px;line-height: 25px;vertical-align: top;background:url('../ehr/title_underbar.gif') repeat-x  left bottom;}
+  .titleRight {height:40px;background:url('../ehr/title_underbar.gif') repeat-x  left bottom;text-align:right;}
+  .title02 img {margin:0 10px 0 0;vertical-align:middle;}
+	/* .titleLine {background:url('../ehr/title_underbar.gif') repeat-x left bottom;height:15px;} */
+
+  /* 소제목 */
+
+  .f01 { color: #4A69E7; font-weight: bold; word-spacing: -1; }

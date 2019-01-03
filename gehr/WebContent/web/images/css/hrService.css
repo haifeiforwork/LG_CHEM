@@ -1,0 +1,50 @@
+@CHARSET "UTF-8";
+/*Copyright ©2013 LG CNS, All Rights Reserved.*/
+/*본문서의 내용을 변경할 경우에는 반드시 포탈 WSG 담당자와의 협의를 거쳐 진행하도록 함*/
+
+/* HTML Elements
+ ---------------------------------------------------------*/
+* { margin: 0; padding: 0; }
+body { font: 12px/1.5em 'Malgun Gothic', Arial, Helvetica, sans-serif; color: #000000; background: #fff; overflow: hidden; -webkit-text-size-adjust: none; -webkit-user-select: none; -webkit-appearance: none; }
+ul { list-style: none; }
+a { text-decoration: none; cursor: pointer; }
+a:link, a:visited { color:#000000; }
+a:hover, a:active { color:#c73159; }
+img { border: none; vertical-align: middle; }
+table { border-collapse: collapse; width: 100%; }
+*:focus { outline: none }
+/* Main Elements
+ ---------------------------------------------------------*/
+.HR_wrapper1 { padding: 30px; }
+.HR_wrapper { padding: 30px;;  }
+.HR_img { height: 269px; background:url(/web/images/HR_img.png) no-repeat; position:relative; }
+.HR_vacationBox { display:inline-block; }
+.HR_private { margin:137px 0 0 20px; }
+.HR_group { margin:0 0 0 10px; }
+.HR_vacationBox_title { font-size:18px; font-weight:bold; margin:0 0 12px 0; }
+.HR_vacationBox_title span { color:#ca3442; font-size:15px; margin:0 0 0 5px; }
+.HR_vacationBox_detail { background:#f9f8f6; padding:22px 10px 10px; }
+.HR_vacationBox_detail ul li { display:inline-block; text-align:center; margin:0 10px; }
+.HR_vacationBox_detail ul li span { color:#ca3442; font-size:34px; font-family:"arial"; }
+.HR_vacationBox_detail ul li span.HR_vacationBox_left { color:#ffffff; background:#ca3442; padding:0 8px; }
+.HR_vacationBox_detail ul li h3 { margin:8px 0 0 0; font-size:14px; color:#666666; }
+.HR_bottomC { margin:20px 0 0 0; }
+.HR_bottomC h4 { font-size:18px; margin:0 0 20px 0; }
+.HR_bottomC h5 { font-size:14px; color:#ca3442; margin:0 0 20px 1px; }
+.HR_bottomC_board { float:left; width:100%; }
+.HR_bottomC_board table { table-layout:fixed; width:90%; }
+.HR_bottomC_board table th { text-align:left; height:24px; line-height:24px; font-weight:100; white-space:nowrap; overflow:hidden; text-overflow: ellipsis; }
+.HR_bottomC_board table td { color:#666666; }
+.HR_bottomC_link { float:left; width:28%; position:relative; margin:0 0 0 2%; }
+.HR_bottomC_link div { float:left; width:50%; }
+.HR_bottomC_link div li { height:24px; line-height:24px; }
+.HR_bottomC_banner { float:left; width:30%; }
+.HR_bottomC_banner ul { float:left; width:49%; margin:8px 0 0 0; }
+.HR_bottomC_banner ul li a { display:block; text-align:center; border:1px solid #cccccc; background:#f9f9f9; border-radius: 3px; height:30px; line-height:29px; margin:10px 0 0 0; }
+.HR_bottomC_banner ul li a:hover { background:#f2e0e0; }
+
+
+.HR_bottomC_board h4 { font-size:18px; margin:0 0 20px 0; }
+.HR_bottomC_board h5 { font-size:14px; color:#ca3442; margin:0 0 20px 1px; }
+
+.HR_bottomC_board span b{color:#c73159;}

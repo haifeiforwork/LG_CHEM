@@ -1,0 +1,153 @@
+<%/******************************************************************************/
+/*                                                                              */
+/*   System Name  : MSS                                                         */
+/*   1Depth Name  : MY HR 정보                                                  */
+/*   2Depth Name  : 교육이력                                                    */
+/*   Program Name : 교육이력                                                    */
+/*   Program ID   : C03LearnDetailWait.jsp                                      */
+/*   Description  : 교육 이력 조회                                              */
+/*   Note         : 없음                                                        */
+/*   Creation     :                                                             */
+/*   Update       : 2005-01-21  윤정현                                          */
+/*                  2008-09-19  lsa [CSR ID:1331138]                            */
+/*                                                                              */
+/********************************************************************************/%>
+
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ include file="/web/common/commonProcess.jsp" %>
+<%@ page import="com.sns.jdf.util.*" %>
+<%@ page import="java.util.Vector" %>
+<%  //[CSR ID:1331138]
+    String IM_SORTKEY = (String)request.getParameter("IM_SORTKEY"); 
+    String IM_SORTDIR = (String)request.getParameter("IM_SORTDIR"); 
+%>
+<html>
+<head>
+<title>ESS</title>
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr.css" type="text/css">
+
+<script language="JavaScript" src="<%= WebUtil.ImageURL %>js/snsscript.js"></script>
+<script language="javascript">
+<!--
+function doSubmit(){
+	document.form1.action = "<%= WebUtil.ServletURL %>hris.C.C03LearnDetailSV";
+    document.form1.submit();
+}
+//-->
+</script>
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onLoad="javascript:doSubmit()">
+<form name="form1" method="post">
+  <table width="796" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="16">&nbsp;</td>
+      <td>
+        <table width="780" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td width="780">
+              <table width="780" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td height="5" colspan="2"></td>
+                </tr>
+                <tr>
+                  <td class="title02"><img src="<%= WebUtil.ImageURL %>ehr/title01.gif">교육이력 조회</td>
+                  <td align="right"></td>
+                </tr>
+              </table></td>
+          </tr>
+          <tr>
+            <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="titleLine"><img src="<%= WebUtil.ImageURL %>ehr/space.gif"></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td height="10">&nbsp;</td>
+          </tr>
+
+<%
+	 //날짜 검색 추가 2015-08-12
+	String curDate = DataUtil.getCurrentDate();
+	String startDate = DataUtil.getAfterYear(curDate, -3);
+		
+%>
+
+	
+ 
+<tr>
+      	  <td>
+      	  		<style type="text/css">
+      	  			.topBox1 {width:780px;height:47px;background:url(<%= WebUtil.ImageURL %>ehr_common/topbox_bg.jpg) no-repeat;vertical-align:middle;color:#767676;margin-bottom:10px;}
+      	  			.topBox1 .inner {padding:9px 0 0 30px;}
+      	  			.topBox1 img, .topBox1 input {vertical-align:middle}
+      	  			.topBox1 input {border:solid 1px #d2d2d2;margin:0 1px 0 7px;width:87px;line-height:19px;height:23px;padding:0;font-size:12px;font-family:malgun gothic;text-align:center}
+      	  			.strCol {color:#ff1654;}      	  			
+      	  		</style>
+      	  	<div class="topBox1" >
+      	  		<div  class="inner">
+      	  			조회기간 <b class="strCol">*</b>
+      	  			<input type="text" name="APPL_FROM" value="<%=WebUtil.printDate(startDate) %>" size="20" class="input031" onBlur="javascript:dateFormat(this);">
+		          <a href="javascript:fn_openCal('APPL_FROM','after_remainSetting()')">
+		          <img src="<%= WebUtil.ImageURL %>icon_diary.gif" align="absmiddle" border="0" alt="날짜검색"></a>
+		          &nbsp; ~
+		          <input type="text" name="APPL_TO"   value="<%= WebUtil.printDate(curDate)%>" size="20" class="input031" onBlur="javascript:dateFormat(this);">
+		          <a href="javascript:fn_openCal('APPL_TO','after_remainSetting1()')"> <img src="<%= WebUtil.ImageURL %>icon_diary.gif" align="absmiddle" border="0" alt="날짜검색"></a>
+		         &nbsp;&nbsp;(예 : 2005.01.28)  
+		          &nbsp;&nbsp;
+		          <a href="javascript:doSearch();"><img src="<%= WebUtil.ImageURL %>btn_serch02.gif" align="absmiddle" border="0">
+		          </div>
+		        </div>
+		        </td>  
+    </tr>
+
+    <tr> 
+      <td> 
+        <!--교육이수현황 리스트 테이블 시작-->
+        <table width="780" border="0" cellspacing="0" cellpadding="0">
+          <tr> 
+            <td class="td02" align="right"><font color="#006699">※ Y : 이수, N : 미이수&nbsp;</font></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr> 
+      <td> 
+        <!--교육이수현황 리스트 테이블 시작 -->
+        <table width="780" border="0" cellspacing="1" cellpadding="2" class="table02">
+          <tr> 
+<!--[CSR ID:1331138]-->
+            <td class="td03" width="">과정명</td>
+            <td class="td03" width="130">교육기간</td>
+            <td class="td03" width="140">주관부서</td>
+            <td class="td03" width="40">이수</td>
+            <td class="td03" width="40">평가</td>
+            <td class="td03" width="60">필수과정</td>
+            <td class="td03" width="60">교육형태</td>                  
+            
+          </tr>
+        </table>
+        <!--교육이수현황 리스트 테이블 끝-->
+      </td>
+    </tr>
+    <tr> 
+      <td>
+        <table width="780" border="0" cellspacing="1" cellpadding="2">
+          <tr><td>&nbsp;</td></tr>
+          <tr><td>&nbsp;</td></tr>
+          <tr><td>&nbsp;</td></tr>
+          <tr> 
+            <td class="td04" align="center"><font color="#006699">조회중입니다. 잠시만 기다려주십시오.</font></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <input type="hidden" name="jobid" value="detail"> 
+<!--[CSR ID:1331138]-->  
+<input type="hidden" name="IM_SORTKEY" value="<%=IM_SORTKEY%>">
+<input type="hidden" name="IM_SORTDIR" value="<%=IM_SORTDIR%>">  
+</form>
+<%@ include file="/web/common/commonEnd.jsp" %>

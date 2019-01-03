@@ -1,0 +1,68 @@
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="f" uri="http://www.lgchemhr.com/taglibs/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ include file="/include/includeCommon.jsp"%>
+
+<!-- header 부 선언 html js, css, header 부 선언 -->
+<jsp:include page="/include/header.jsp" />
+<%
+    String msg = (String)request.getAttribute("msg");
+    String msg2 = (String)request.getAttribute("msg2");
+    String url = (String)request.getAttribute("url");
+    String message = "";
+    if (msg != null) {
+	    msg = msg.toLowerCase();
+	    if(msg.length() > 3){
+		    if ( msg.substring(0,3).equals("msg") ) {
+		        if( msg.equals("msg001") ) {
+		            message = g.getMessage("MSG.COMMON.0001"); //신청 되었습니다.
+		        } else if( msg.equals("msg002") ) {
+		            message = g.getMessage("MSG.COMMON.0002"); //수정 되었습니다.
+		        } else if( msg.equals("msg003") ) {
+		            message = g.getMessage("MSG.COMMON.0003"); //삭제 되었습니다.
+		        } else if( msg.equals("msg004") ) {
+		            message = g.getMessage("MSG.COMMON.0004"); //해당하는 데이타가 존재하지 않습니다.
+		        } else if( msg.equals("msg005") ) {
+		            message = g.getMessage("MSG.COMMON.0005"); //결재가 진행중 입니다.
+		        } else if( msg.equals("msg006") ) {
+		            message = g.getMessage("MSG.COMMON.0006"); //계좌번호가 등록되지 있지 않습니다.
+		        } else if( msg.equals("msg007") ) {
+		            message = g.getMessage("MSG.COMMON.0007"); //입력 되었습니다.
+		        } else if( msg.equals("msg008") ) {
+		            message = g.getMessage("MSG.COMMON.0008"); //저장 되었습니다.
+		        } else if( msg.equals("msg009") ) {
+		            message = g.getMessage("MSG.COMMON.0009"); //결재 되었습니다.
+		        } else if( msg.equals("msg010") ) {
+		            message = g.getMessage("MSG.COMMON.0010"); //반려 되었습니다.
+		        } else if( msg.equals("msg011") ) {
+	                message = g.getMessage("MSG.COMMON.0011"); //결재 취소 되었습니다.
+		        } else if( msg.equals("msg012") ) {
+	                message = g.getMessage("MSG.COMMON.0012"); //확정 처리되었습니다.
+		        } else if( msg.equals("msg013") ) {
+	                message = g.getMessage("MSG.COMMON.0013"); //확정 실패입니다.
+	            } else if( msg.equals("msg014") ) {
+	                message = g.getMessage("MSG.COMMON.0014"); //확정 실패입니다. //"부서구분 번호가 없습니다. 인사담당자에게 문의하시기 바랍니다.";//@2014 연말정산 추가(송현우K 요청)
+	            } // end if
+		    } else {
+		      message = msg;
+		    } // end if
+	    }
+    } // end if
+
+    if (msg2 != null && !msg2.equals("")) {
+         message = message + "\\n" +msg2;
+    } // end if
+
+%>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+    <% if (message != null && !message.equals("")) {%>
+        alert('<%= message.replace("'","\"" )%>');
+    <% } // end if %>
+
+    <%= url %>
+//-->
+</SCRIPT>
+<jsp:include page="/include/footer.jsp" />

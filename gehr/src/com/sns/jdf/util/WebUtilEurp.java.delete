@@ -1,0 +1,1019 @@
+/******************************************************************************/
+/*   System Name  	: g-HR                                                 		
+/*   1Depth Name  	:                                                         
+/*   2Depth Name  	:                                                 			
+/*   Program Name 	:                                             			
+/*   Program ID  		: WebUtilEurp.java                 
+/*   Description  		: 공통유틸[유럽용] WebUtil.java를 복사하여 유럽용으로 따로 관리
+/*							  - HR Approval Box 결제관련한 내용 수정  
+/*   Note         		: 없음                                                                      
+/*   Creation     		: 2010-07-29 yji
+/*   Update				: 2010-10-20 jungin @v1.0 미국법인 결재문서 URL 추가
+/******************************************************************************/
+
+package com.sns.jdf.util;
+
+import hris.common.util.DocumentInfo;
+
+import java.util.Enumeration;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.sns.jdf.Logger;
+import com.sns.jdf.servlet.Box;
+
+public final class WebUtilEurp {
+
+    public static String JspPath;
+    public static String ServletPath;
+    public static String JspURL;
+    public static String ServletURL;
+    public static String ImageURL;
+    public static String DefaultPage;
+    public static String ErrorPage;
+    
+    private static int     DEFAULT_DECIMALSIZE;
+    private static String DEFAULT_NUMBER_FORMAT;
+    private static String DEFAULT_CURRENCY_FORMAT;
+    private static String DEFAULT_DATE_FORMAT;
+    private static String DEFAULT_SEPARATER;
+
+    private static final String PERSA_LGCEWR = "2900";	//인사영역코드: LGCE WR (Poland)
+    private static final String PERSA_LGCEG = "2600";   	//인사영역코드: LGCEG (Germany)
+    
+    private static final String PERSA_LGCPI = "4000"; 		//인사영역코드: LG CPI (USA)
+    private static final String PERSA_LGCAI = "3400";   	//인사영역코드: LG CAI (USA)
+    
+    private WebUtilEurp() {}
+
+    /*************************여기서부터 URLUtil********************************/
+    static {
+        try {
+            com.sns.jdf.Config conf = new com.sns.jdf.Configuration();
+
+            JspPath = conf.get("com.sns.jdf.JspPath");
+            ServletPath = conf.get("com.sns.jdf.ServletPath");
+            JspURL = conf.get("com.sns.jdf.JspURL");
+            ServletURL = conf.get("com.sns.jdf.ServletURL");
+            ImageURL = conf.get("com.sns.jdf.ImageURL");
+            DefaultPage = conf.get("com.sns.jdf.DefaultPage");
+            ErrorPage = conf.get("com.sns.jdf.ErrorPage");
+            
+            DEFAULT_DECIMALSIZE = Integer.parseInt(conf.get("com.sns.jdf.DEFAULT_DECIMALSIZE"));
+            DEFAULT_NUMBER_FORMAT = conf.get("com.sns.jdf.DEFAULT_NUMBER_FORMAT");
+            DEFAULT_CURRENCY_FORMAT = conf.get("com.sns.jdf.DEFAULT_CURRENCY_FORMAT");
+            DEFAULT_DATE_FORMAT = conf.get("com.sns.jdf.DEFAULT_DATE_FORMAT");
+            DEFAULT_SEPARATER =conf.get("com.sns.jdf.DEFAULT_SEPARATER");
+        } catch(Exception e) {
+            Logger.err.println("WebUtil Exception. Failed create Configuration Object! " + DataUtil.getStackTrace(e));
+        }
+    }
+    
+    public static String makePath(String s) throws com.sns.jdf.GeneralException {
+
+        com.sns.jdf.Logger.debug.println( s.substring(s.length() - 4));
+        if ( s.length() >= 4 && s.substring(s.length() - 4).equals(".jsp") ) {
+            return (JspPath + s);
+        } else {
+            return (ServletPath + s);
+        }
+    }
+
+    /**********************************************************************
+    *
+    * Http Util
+    *
+    **********************************************************************/ 
+    
+    /**
+     * Decode a string from <code>x-www-form-urlencoded</code> format.
+     *
+     * @param   s   an encoded <code>String</code> to be translated.
+     * @return  the original <code>String</code>.
+     * @see     java.net.URLEncoder#encode(java.lang.String)
+     */
+    public static String decode(String s) {
+        return java.net.URLEncoder.encode(s);
+    }
+
+    /**
+     * Translates a string into <code>x-www-form-urlencoded</code> format.
+     *
+     * @param   s   <code>String</code> to be translated.
+     * @return  the translated <code>String</code>.
+     * @see     java.net.URLEncoder#encode(java.lang.String)
+     */
+    public static String encode(String s) {
+        return java.net.URLEncoder.encode(s);
+    }
+
+    /**
+     * @param req javax.servlet.http.HttpServletRequest
+     * @param name box name for this SessionBox
+     */
+    public static Box getBox(HttpServletRequest req) {
+        Box box = new Box("requestbox");
+
+        Enumeration e = req.getParameterNames();
+        while(e.hasMoreElements()){
+            String key = (String)e.nextElement();
+            String values[] = req.getParameterValues(key);
+            if (values != null) {
+                for (int i = 0; i < values.length; i++) {
+                    values[i] = fromWeb(values[i]);
+                }
+            }
+            box.put(key, values);
+        }
+        return box;
+    }
+
+    /**
+     *
+     * @return boolean
+     * @param req HttpServletRequest
+     */
+    public static boolean isOverIE50(HttpServletRequest req) {
+        String user_agent = (String) req.getHeader("user-agent");
+
+        if ( user_agent == null ) return false;
+
+        int index = user_agent.indexOf("MSIE");
+        if ( index == -1 ) return false;
+
+        int version = 0;
+        try {
+            version = Integer.parseInt(user_agent.substring(index+5, index+5+1));
+        }
+        catch(Exception e){}
+        if ( version < 5 ) return false;
+
+        return true;
+    }
+    
+    private static String fromWeb(String data) {
+        try {
+            com.sns.jdf.Config conf = new com.sns.jdf.Configuration();
+            if ( conf.getBoolean("com.sns.jdf.util.WebConversion") ) {
+                return new String( data.getBytes("8859_1") );
+            } else {
+                return data;
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+            return data;
+        }
+    }
+
+    private static String toWeb(String data) {           // 한글로 컨버팅
+        try {
+            com.sns.jdf.Config conf = new com.sns.jdf.Configuration();
+            if ( conf.getBoolean("com.sns.jdf.util.WebConversion") ) {
+                //return DataUtil.E2K(data);
+                return new String( data.getBytes("KSC5601") );
+            } else { 
+                return data;
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+            return data;
+        }
+    }
+    
+
+    /**********************************************************************
+    *
+    * Jsp Util
+    *
+    **********************************************************************/
+
+    /*************************************
+     * 
+     *  printString( String str )
+     *  
+     *************************************/
+    public static String printString( String str ) {
+        // str==null 이면 html page에서 table이 깨어지지 않토록 &nbsp; 값을 넣는다.
+        if (str==null)  {
+            str = "&nbsp;";
+        } else {
+
+            // 한글 컨버젼
+            str.trim();
+            if(str.equals("")) return "&nbsp;";
+
+            str = toWeb( str );
+
+            /*  특수 문자 변환
+             * & --> &amp;
+             * < --> &lt;
+             * > --> &gt;
+             * " --> &quot;
+             * ' --> &#039;
+             * _ --> &nbsp;
+             * \n--> ?????
+             */
+
+            str = translate(str);
+        }
+        return str;
+    }
+
+    /*************************************
+     *
+     *  printNumber(int num)
+     *
+     *************************************/
+    
+    public static String printNumFormat(int num) {
+        return printNumFormat( num, DEFAULT_DECIMALSIZE );
+    }
+    
+    public static String printNumFormat(float num) {
+        return printNumFormat( num, DEFAULT_DECIMALSIZE );
+    }
+    
+    public static String printNumFormat(double num) {
+        return printNumFormat( num, DEFAULT_DECIMALSIZE );
+    }
+    
+    public static String printNumFormat(long num) {
+        return printNumFormat( num, DEFAULT_DECIMALSIZE );
+    }
+    
+    public static String printNumFormat(String num) {
+        return printNumFormat( num, DEFAULT_DECIMALSIZE );
+    }
+
+    public static String printNumFormat(int num, int decimalSize) {
+        double _num = (new Integer(num)).doubleValue() ;
+        return printNumFormat( _num,decimalSize );
+    }
+
+    public static String printNumFormat(float num, int decimalSize) {
+        double _num = (new Float(num)).doubleValue() ;
+        return printNumFormat( _num, decimalSize);
+    }
+
+    public static String printNumFormat(double num, int decimalSize) {
+        String format = "#,##0";
+        for (int i=0; i<decimalSize ; ++i) {
+            if ( i == 0 ) format += ".";
+            format += "0";
+        }
+        return printNumFormat( num, format);
+    }
+
+    public static String printNumFormat(long num, int decimalSize) {
+        double _num = (new Long(num)).doubleValue() ;
+        return printNumFormat( _num, decimalSize);
+    }
+
+    public static String printNumFormat(String num, int decimalSize) {
+        double _num = Double.parseDouble(num) ;
+        return printNumFormat( _num, decimalSize);
+    }
+
+    public static String printNumFormat(double num, String format) {
+        java.text.DecimalFormat df = new java.text.DecimalFormat(format);
+        return df.format(num).toString();
+    }
+
+    public static String printNum( int num ) {
+        double _num = ( new Integer(num) ).doubleValue();
+        return printNum( _num );
+    }
+
+    public static String printNum( float num ) {
+        double _num = ( new Float(num) ).doubleValue() ;
+        return printNum( _num );
+    }
+
+    public static String printNum( long num ) {
+        double _num = ( new Long(num) ).doubleValue() ;
+        return printNum( _num );
+    }
+    public static String printNum( String num ) {
+        double _num = Double.parseDouble(num) ;
+        return printNum( _num );
+    }
+
+    public static String printNum( double num ) {
+        String format = "####.####";
+        return printNum( num, format);
+    }
+
+    public static String printNum(double num, String format) {
+        java.text.DecimalFormat df = new java.text.DecimalFormat(format);
+        return df.format(num).toString();
+    }
+
+    /*************************************
+     *
+     *  printCurrency(int num)
+     *
+     *************************************/
+
+    public static String printCurrency(int num) {
+        return printCurrency( num, DEFAULT_DECIMALSIZE);
+    }
+    
+    public static String printCurrency(float num) {
+        return printCurrency( num, DEFAULT_DECIMALSIZE);
+    }
+    
+    public static String printCurrency(double num) {
+        return printCurrency( num, DEFAULT_DECIMALSIZE);
+    }
+    
+    public static String printCurrency(long num) {
+        return printCurrency( num, DEFAULT_DECIMALSIZE);
+    }
+    
+    public static String printCurrency(String num) {
+        return printCurrency( num, DEFAULT_DECIMALSIZE);
+    }
+
+    public static String printCurrency(int num, int decimalSize) {
+        double _num = (new Integer(num)).doubleValue() ;
+        return printCurrency( _num, decimalSize);
+    }
+
+    public static String printCurrency(float num, int decimalSize) {
+        double _num = (new Float(num)).doubleValue();
+        return printCurrency( _num, decimalSize);
+    }
+
+    public static String printCurrency(double num, int decimalSize) {
+        String format ="#,##0";
+        for (int i=0; i<decimalSize ; ++i){
+            if( i == 0 ) format += ".";
+            format += "0";
+        }
+        return printCurrency(num,format);
+    }
+
+    public static String printCurrency(long num, int decimalSize) {
+        double _num = (new Long(num)).doubleValue() ;
+        return printCurrency( _num, decimalSize);
+    }
+
+    public static String printCurrency(String num, int decimalSize ){
+        double _num = Double.parseDouble(num);
+        return printCurrency(_num, decimalSize);
+    }
+
+    public static String printCurrency(double num, String format) {
+        java.text.DecimalFormat df = new java.text.DecimalFormat(format);
+        return (DEFAULT_CURRENCY_FORMAT+ df.format(num).toString());
+    }
+
+    /*************************************
+     *
+     *  printDate(String date)
+     *
+     *************************************/
+
+    public static String printDate(String date) {
+        return printDate( date, DEFAULT_SEPARATER );
+    }
+
+    public static String printDate(java.util.Date dDate) {
+        return printDate( dDate, DEFAULT_SEPARATER );
+    }
+
+    public static String printDate(String date, String separater) {
+        String ret = date;
+        if (date.length() == 8 ) {
+            ret = date.substring(0,4) + separater + date.substring(4,6) + separater + date.substring(6,8);
+        } else if( date.length() == 10 ) {
+            ret = date.substring(0,4) + separater + date.substring(5,7) + separater + date.substring(8,10);
+        }
+        return ret;
+    }
+
+    public static String printDate2(String date, String separater) {
+        String ret = date;
+        if ( date.length() == 8 ) {
+            ret = date.substring(2,4) + separater + date.substring(4,6) + separater + date.substring(6,8);
+        } else if ( date.length() == 10 ) {
+            ret = date.substring(2,4) + separater + date.substring(5,7) + separater + date.substring(8,10);
+        }
+        return ret;
+    }
+
+    public static String printPeriod(String date, String separater) {
+        String ret = date;
+        if ( date.length() == 21 ) {
+            ret = date.substring(2,4) + separater + date.substring(5,7) + separater + date.substring(8,10) + "~" + date.substring(13,15) + separater + date.substring(16,18) + separater + date.substring(19,21);
+        } else if( date.length() == 17 ) {
+            ret = date.substring(2,4) + separater + date.substring(4,6) + separater + date.substring(6,8) + "~" + date.substring(11,13) + separater + date.substring(13,15) + separater + date.substring(15,17);
+        }
+        return ret;
+    }
+
+    public static String printDate(java.util.Date dDate, String separater ) {
+        String format = "yyyy"+separater+"mm"+separater+"dd";
+        return printDate( dDate,  format, "");
+    }
+
+    /***** String no는 위의 메서드와 차별을 두기위해 편법사용 *******/
+    public static String printDate(java.util.Date dDate, String format, String no) {
+        java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat (format);
+        return formatter.format(dDate);
+    }
+
+    public static String printTime( String time ) {	//시:분:초 가 나오는 값을 시:분 만 리턴
+        String ret = time;
+        if( time.length() == 8 ){
+            ret = time.substring(0,5);
+        } else if( time.length() == 6 ){
+            ret = time.substring(0,2) + ":" +time.substring(2,4);
+        }
+        return ret;
+    }
+    
+    /**********************************************************************
+    *
+    * 기타 Util
+    *
+    **********************************************************************/
+
+    public static String translate(String s) {
+       if ( s == null ) return null;
+
+        StringBuffer buf = new StringBuffer();
+        char[] c = s.toCharArray();
+        int len = c.length;
+        for ( int i=0; i < len; i++) {
+            if      ( c[i] == '&' ) buf.append("&amp;");
+            else if ( c[i] == '<' ) buf.append("&lt;");
+            else if ( c[i] == '>' ) buf.append("&gt;");
+            else if ( c[i] == '"' ) buf.append("&quot;");
+            else if ( c[i] == '\'') buf.append("&#039;");
+            else if ( c[i] == ' ' ) buf.append("&nbsp;");
+            //else if ( c[i] == '\n') buf.append("");
+            else buf.append(c[i]);
+        }
+        return buf.toString();
+    }
+    
+    /**
+     * <pre>String 길이를 뒷부분 혹은 앞부분을  byteSize만큼 (한글은 2 byte) 자른다 </pre>
+     */
+    public static String frontCut(String s, int byteSize) {
+        return com.sns.jdf.util.DataUtil.frontCut( s, byteSize );
+    }
+
+    public static String endCut(String s, int byteSize) {
+        return com.sns.jdf.util.DataUtil.endCut( s, byteSize );
+    }
+
+    /**
+     * <pre> 벡터로 저장된 code/ value 를 html의 select 객체의 option 에 넣어준다 </pre>
+     */
+    public static String printOption ( Vector key ) {	// selected가 필요없을경우
+        StringBuffer tag = new StringBuffer();
+        for ( int i=0 ; i < key.size() ; i++ ) {
+            com.sns.jdf.util.CodeEntity ck = (com.sns.jdf.util.CodeEntity)key.get(i);
+            tag.append( "<option value ='" + ck.code +"' >" + ck.value + "</option>\n" );
+        }
+        return toWeb( tag.toString() );
+    }
+
+    public static String printOption ( Vector key, String option_value ) {	// selected가 필요없을경우
+        StringBuffer tag = new StringBuffer();
+        for ( int i=0 ; i < key.size() ; i++ ) {
+            com.sns.jdf.util.CodeEntity ck = (com.sns.jdf.util.CodeEntity)key.get(i);
+            tag.append( "<option value ='" + ck.code +"' " );
+            if ( option_value.equals( ck.code ) ) {
+                tag.append( "selected" );
+            }
+            tag.append( ">" + ck.value );
+            tag.append( "</option>\n" );
+        }
+        return toWeb( tag.toString() );
+    }
+    
+    public static String printOption1 ( Vector key, String option_value ) {	// selected가 필요없을경우
+
+        StringBuffer tag = new StringBuffer();
+        for ( int i=0 ; i < key.size() ; i++ ) {
+            com.sns.jdf.util.CodeEntity ck = (com.sns.jdf.util.CodeEntity)key.get(i);
+            tag.append( "<option value ='" + ck.value +"' " );
+            if ( option_value.equals( ck.code ) ) {
+                tag.append( "selected" );
+            }
+            tag.append( ">" + ck.code );
+            tag.append( "</option>\n" );
+        }
+        return toWeb( tag.toString() );
+    }
+    
+    public static String printOption2 ( Vector key, String option_value ) {	// selected가 필요없을경우
+
+        StringBuffer tag = new StringBuffer();
+        for ( int i=0 ; i < key.size() ; i++ ) {
+            com.sns.jdf.util.CodeEntity ck = (com.sns.jdf.util.CodeEntity)key.get(i);
+            tag.append( "<option value ='" + ck.code +"' " );
+            if (ck.code.substring(ck.code.length()-1,ck.code.length()).equals("X")) {
+                if ( option_value.equals( ck.code.substring(0, ck.code.length()-1) ) ) {
+                    tag.append( "selected" );
+                }
+            } else {
+                if ( option_value.equals( ck.code ) ) {
+                    tag.append( "selected" );
+                }      	
+            }       
+            tag.append( ">" + ck.value );
+            tag.append( "</option>\n" );
+        }
+        return toWeb( tag.toString() );
+    }
+    
+    /*************************************
+    *
+    *    Leave : 휴가유형에 따른 selectbox 업무코드.(value1)		
+    *    
+    *    2008-02-20 - jungin.
+    *
+    *************************************/
+    public static String printOption3( Vector key, String option_value ) {	
+
+        StringBuffer tag = new StringBuffer();
+        for ( int i=0 ; i < key.size() ; i++ ) {
+            com.sns.jdf.util.CodeEntity ck = (com.sns.jdf.util.CodeEntity)key.get(i);        
+            tag.append("<input type='hidden' name='upmu_code' value="+ck.value1+">");
+        }     
+        return toWeb( tag.toString() );
+    } 
+    
+    /*************************************
+     * ZHRA_RFC_GET_P_GRUP_NUMB를 통하여 조회된, 전체 PERSA인사영역코드, NAME1(법인명)에서
+     * 독일, 폴란드 인사영역(PERSA) 값만 <option>에 추가하도록 처리.
+     *  
+     * 유럽법인용 (폴란드,독일용) 추가.
+     * yji 2010 06 24 
+    *************************************/
+    public static String printOption4Eurp( Vector key, String option_value ) {   
+
+        StringBuffer tag = new StringBuffer();
+        for ( int i=0 ; i < key.size() ; i++ ) {
+            com.sns.jdf.util.CodeEntity ck = (com.sns.jdf.util.CodeEntity)key.get(i);
+            if (ck.code.equals(PERSA_LGCEWR) || ck.code.equals(PERSA_LGCEG)) {
+	            tag.append( "<option value ='" + ck.code +"' " );
+	            if ( option_value.equals( ck.code ) ) {
+	                tag.append( "selected" );
+	            }
+	            tag.append( ">" + ck.value );
+	            tag.append( "</option>\n" );
+            }
+        }
+        return toWeb( tag.toString() );
+    }  
+    
+    public static String printOptionText ( Vector key, String option_value ) {  // 데이타만 그냥 보여줄때
+
+        String tags = new String();
+        for ( int i=0 ; i < key.size() ; i++ ) {
+            com.sns.jdf.util.CodeEntity ck = (com.sns.jdf.util.CodeEntity)key.get(i);
+            if ( option_value.equals( ck.code ) ) {
+                tags =ck.value;
+            }
+        }
+        if ( (tags.trim()).equals("")) {
+            tags = "&nbsp;";
+        }
+
+        return tags;
+    }
+
+    // null 과 ""을 다른 문자로 변환. (유용원0805)
+    public static String nvl(String as_str) throws Exception {
+        String ls_str = "";
+        if (as_str != null)
+            ls_str = as_str.trim();
+        return ls_str;
+    }
+
+    public static String nvl(String as_str, String default_str) throws Exception {
+        String ls_str = null;
+        if (as_str == null) {
+            ls_str = "";
+            as_str = "";
+        } else {
+            ls_str = as_str.trim();
+        }
+
+        if (!as_str.equals("")) {
+            ls_str = ls_str.trim();
+        } else {
+            ls_str = default_str.trim();
+        }
+        return ls_str;
+    }
+    
+    public static String toDateString(String str) {
+    	return str.replaceAll("-",	"");
+    }
+
+    /**
+     * <p>원본 문자열에 지정한 포맷으로 문자열을 삽입.</p>
+     * ex) insertStr("1234567890","/","3-3-4")   ==>   return 123-456-7890
+     * USA Telephone Number Format
+     * 
+     *
+     * @param    전체 문자열.
+     * @param    삽입 문자열.
+     * @param    삽입 포맷.
+     * @return   	변경된 문자열.
+     */
+     public static String insertStr(String orgStr, String insStr, String format) {
+
+     	if (orgStr==null) return "";
+
+     	String convStr = "";
+        StringTokenizer st = new StringTokenizer(format, "-");
+
+         // 모두 공백일 경우 원본 넘김
+         boolean isallSpace = true;
+         for (int i=0 ; i<orgStr.length(); i++) {
+             if (orgStr.charAt(i) != ' ') {
+                 isallSpace = false;
+                 break;
+             }
+         }
+         if (isallSpace) return orgStr;
+
+         int i = 0;
+         try {
+             while (st.hasMoreTokens()) {
+                 int j = Integer.parseInt(st.nextToken());
+                 convStr += orgStr.substring(i, i+j);
+                 i += j;
+                 if (st.hasMoreTokens()) convStr += insStr;
+             }
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
+
+         return convStr;
+     }
+     
+     /**
+      * <p>지정 문자열에서 특정 문자를 제거함.</p>
+      *
+      * @param    찾으려고하는 단어.
+      * @param    제거하고픈 대상 문자열.
+      * @return   	변경된 문자열.
+      */
+     public static String deleteStr(String source, String depStr) {
+
+         int spot = source.length()-1;
+         String returnString;
+         String origSource = new String(source);
+
+         spot = source.indexOf(depStr);
+         if (spot > -1)
+             returnString = "" ;
+         else
+             returnString = source;
+         while (spot > -1) {
+             if (spot == source.length()+1) {
+                 returnString =
+                     returnString.concat(
+                         source.substring(0, source.length() - 1));
+                 source = "";
+             } else if (spot > 0) {
+                 returnString =
+                     returnString.concat(
+                         source.substring(0, spot));
+                 source =
+                     source.substring(spot+depStr.length(), source.length());
+             } else {
+                 source =
+                     source.substring(spot+depStr.length(), source.length());
+             }
+             spot = source.indexOf(depStr);
+         }
+         if (!source.equals(origSource)) {
+             return returnString.concat(source);
+         } else {
+             return returnString;
+         }
+    }
+    
+     /**
+      * <p>문자열을 지정 구분자로 나눈 뒤 배열값으로 반환. (join과 반대의 기능을 함)</p>
+      *
+      * @param    대상 문자열.
+      * @param    구분자.
+      * @return   문자열 토큰배열.
+      */
+     public final static String[] split(String s, String delimiter) {
+
+         Vector v = new Vector();
+         StringTokenizer st = new StringTokenizer(s, delimiter);
+         while(st.hasMoreTokens())
+             v.addElement(st.nextToken());
+
+         String array[] = new String[v.size()];
+         v.copyInto(array);
+
+         return(array);
+     }
+     
+    /**
+     * 이메일 또는 ElOffic 전자 결재에서 e-HR로 들어 올 경우 분기 URL 구하는 메소드
+     * @param UPMU_TYPE
+     * @param type
+     * @param AINF_SEQN
+     * @return
+     */
+    public static String makeGotoUrlGlobal(String UPMU_TYPE ,int type ,String AINF_SEQN ) {
+        return makeGotoUrlGlobal(Integer.parseInt(UPMU_TYPE) ,type ,AINF_SEQN ,null);
+    } // end makeGotoUrl
+
+    public static String makeGotoUrlGlobal(String UPMU_TYPE ,int type ,String AINF_SEQN  ,String RequestPageName) {
+        return makeGotoUrlGlobal(Integer.parseInt(UPMU_TYPE) ,type ,AINF_SEQN ,RequestPageName);
+    } // end makeGotoUrl
+
+    public static String makeGotoUrlGlobal(int UPMU_TYPE ,int type ,String AINF_SEQN ) {
+        return makeGotoUrlGlobal(UPMU_TYPE ,type ,AINF_SEQN ,null);
+    } // end makeGotoUrl
+
+    /**
+     * 이메일 또는 ElOffic 전자 결재에서 e-HR로 들어 올 경우 분기 URL 구하는 메소드
+     * @param UPMU_TYPE : 업무 타입
+     * @param type : 접근 형태
+     * @param AINF_SEQN : 문서 번호
+     * @param RequestPageName : 리턴 페이지
+     * @return
+     */
+    public static String makeGotoUrlGlobal(int UPMU_TYPE ,int type ,String AINF_SEQN ,String RequestPageName) {
+    	
+        StringBuffer detailPage = new StringBuffer(256);
+        String  targetPage = "";
+
+        Logger.debug.println("#####	[WebUtilEurp]	makeGotoUrl	1) UPMU_TYPE	:	[" + UPMU_TYPE + "]");
+        Logger.debug.println("#####	[WebUtilEurp]	makeGotoUrl	2) type			:	[" + type + "]");
+        Logger.debug.println("#####	[WebUtilEurp]	makeGotoUrl	3) AINF_SEQN	:	[" + AINF_SEQN + "]");
+        Logger.debug.println("#####	[WebUtilEurp]	makeGotoUrl	4) RequestPageName	:	[" + RequestPageName + "]");
+        
+        switch (UPMU_TYPE) {
+	        case 1: // 초과근무(OT/특근) 신청
+	            switch (type) {
+	                case DocumentInfo.FINISH_APPROVAL:
+	                    targetPage = "hris.G.G029ApprovalFinishOTSV";
+	                break;
+	                case DocumentInfo.MUST_APPROVAL:
+	                    targetPage = "hris.G.G028ApprovalOTSV";
+	                break;
+	                case DocumentInfo.EDIT_DISABLE:
+	                case DocumentInfo.EDIT_ENABLE:
+	                    targetPage = "hris.D.D01OT.D01OTDetailSV";
+	                break;
+	                case DocumentInfo.CANCEL_DISABLE:
+	                case DocumentInfo.CANCEL_ENABLE:
+	                    targetPage = "hris.G.G028ApprovalIngOTSV";
+	                break;
+	            } // end switch
+	            break;
+            case 2: // 휴가 신청 [Europe]
+            //********************************************
+            case 21:
+            case 22:
+            case 23: 
+            //********************************************
+                switch (type) {
+                    case DocumentInfo.FINISH_APPROVAL:
+                        targetPage = "hris.G.G056ApprovalFinishVacationEurpSV";
+                    break;
+                    case DocumentInfo.MUST_APPROVAL:
+                        targetPage = "hris.G.G055ApprovalVacationEurpSV";
+                    break;
+                    case DocumentInfo.EDIT_DISABLE:
+                    case DocumentInfo.EDIT_ENABLE:
+                        targetPage = "hris.D.D03Vocation.D03VocationDetailEurpSV";
+                    break;
+                    case DocumentInfo.CANCEL_DISABLE:
+                    case DocumentInfo.CANCEL_ENABLE:
+                        targetPage = "hris.G.G055ApprovalIngVacationEurpSV";
+                    break;
+                } // end switch
+                break;
+            case 3: // 급여계좌  신청 [Europe]
+                switch (type) {
+                    case DocumentInfo.FINISH_APPROVAL:
+                        targetPage = "hris.G.G023ApprovalFinishBankEurpSV";
+                    break;
+                    case DocumentInfo.MUST_APPROVAL:
+                        targetPage = "hris.G.G022ApprovalBankEurpSV";
+                    break;
+                    case DocumentInfo.EDIT_DISABLE:
+                    case DocumentInfo.EDIT_ENABLE:
+                        targetPage = "hris.A.A14Bank.A14BankDetailEurpSV";
+                    break;
+                    case DocumentInfo.CANCEL_DISABLE:
+                    case DocumentInfo.CANCEL_ENABLE:
+                        targetPage = "hris.G.G022ApprovalIngBankEurpSV";
+                    break;
+                } // end switch
+                break;
+            case 4: // 자격면허 등록 [Europe]
+                switch (type) {
+                    case DocumentInfo.FINISH_APPROVAL:
+                        targetPage = "hris.G.G025ApprovalFinishLicenceEurpSV";
+                    break;
+                    case DocumentInfo.MUST_APPROVAL:
+                        targetPage = "hris.G.G024ApprovalLicenceEurpSV";
+                    break;
+                    case DocumentInfo.EDIT_DISABLE:
+                    case DocumentInfo.EDIT_ENABLE:
+                        targetPage = "hris.A.A17Licence.A17LicenceDetailEurpSV";
+                    break;
+                    case DocumentInfo.CANCEL_DISABLE:
+                    case DocumentInfo.CANCEL_ENABLE:
+                        targetPage = "hris.G.G024ApprovalIngLicenceEurpSV";
+                    break;
+                } // end switch
+                break;
+            case 5: // 제증명 신청
+                switch (type) {
+                    case DocumentInfo.FINISH_APPROVAL:
+                        targetPage = "hris.G.G027ApprovalFinishCertiSV";
+                    break;
+                    case DocumentInfo.MUST_APPROVAL:
+                        targetPage = "hris.G.G026ApprovalCertiSV";
+                    break;
+                    case DocumentInfo.EDIT_DISABLE:
+                    case DocumentInfo.EDIT_ENABLE:
+                        targetPage = "hris.A.A15Certi.A15CertiDetailSV";
+                    break;
+                } // end switch
+                break;
+            case 6:	// 경조금 신청
+                switch (type) {
+                    case DocumentInfo.FINISH_APPROVAL:
+                        targetPage = "hris.G.G005ApprovalFinishCongraSV";
+                    break;
+                    case DocumentInfo.MUST_APPROVAL:
+                        targetPage = "hris.G.G004ApprovalCongraSV";
+                    break;
+                    case DocumentInfo.EDIT_DISABLE:
+                    case DocumentInfo.EDIT_ENABLE:
+                        targetPage = "hris.E.E19Congra.E19CongraDetailSV";
+                    break;
+                    case DocumentInfo.CANCEL_DISABLE:
+                    case DocumentInfo.CANCEL_ENABLE:
+                        targetPage = "hris.G.G004ApprovalIngCongraSV";
+                    break;
+                } // end switch
+                break;
+            case 7:	// 직반 신청
+            case 8:
+                switch (type) {
+                
+                    case DocumentInfo.EDIT_DISABLE:
+                    case DocumentInfo.EDIT_ENABLE:
+                        targetPage = "hris.D.D19Duty.D19DutyDetailSV";
+                    break;
+	                case DocumentInfo.FINISH_APPROVAL:
+	                    targetPage = "hris.G.G068ApprovalFinishDutySV";
+	                break;
+                    case DocumentInfo.MUST_APPROVAL:
+                        targetPage = "hris.G.G067ApprovalDutySV";
+                    break;
+                    case DocumentInfo.CANCEL_DISABLE:
+                    case DocumentInfo.CANCEL_ENABLE:
+                        targetPage = "hris.G.G067ApprovalIngDutySV";
+                    break;
+              
+                } // end switch
+                break;
+              case 11: // 의료비 신청
+              switch (type) {
+                  case DocumentInfo.FINISH_APPROVAL:
+                      targetPage = "hris.G.G008ApprovalFinishHospitalSV";
+                  break;
+                  case DocumentInfo.MUST_APPROVAL:
+                      targetPage = "hris.G.G006ApprovalHospitalSV";
+                  break;
+                  case DocumentInfo.EDIT_DISABLE:
+                  case DocumentInfo.EDIT_ENABLE:
+                      targetPage = "hris.E.E17Hospital.E17HospitalDetailSV";
+                  break;
+                  case DocumentInfo.CANCEL_DISABLE:
+                  case DocumentInfo.CANCEL_ENABLE:
+                      targetPage = "hris.G.G007ApprovalIngHospitalSV";
+                  break;
+              } // end switch
+              break;
+            case 13: // 어학지원비 신청
+                switch (type) {
+	                case DocumentInfo.FINISH_APPROVAL:
+	                    targetPage = "hris.G.G066ApprovalFinishLanguageSV";
+	                break;
+	                case DocumentInfo.MUST_APPROVAL:
+	                    targetPage = "hris.G.G066ApprovalLanguageSV";
+	                break;
+	                case DocumentInfo.EDIT_DISABLE:
+	                case DocumentInfo.EDIT_ENABLE:
+	                    targetPage = "hris.E.E23Language.E23LanguageDetailSV";
+	                break;
+	                case DocumentInfo.CANCEL_DISABLE:
+	                case DocumentInfo.CANCEL_ENABLE:
+	                    targetPage = "";
+	                break;
+	            } // end switch
+	            break;
+            case 14: // Address [Europe - Germany]
+                switch (type) {
+                    case DocumentInfo.FINISH_APPROVAL:
+                        targetPage = "hris.G.G070ApprovalFinishAddressDeSV";
+                    break;
+                    case DocumentInfo.MUST_APPROVAL:
+                        targetPage = "hris.G.G069ApprovalAddressDeSV";
+                    break;
+                    case DocumentInfo.EDIT_DISABLE:
+                    case DocumentInfo.EDIT_ENABLE:
+                        targetPage = "hris.A.A13Address.A13AddressDetailDeSV";
+                    break;
+                    case DocumentInfo.CANCEL_DISABLE:
+                    case DocumentInfo.CANCEL_ENABLE:
+                        targetPage = "hris.G.G069ApprovalIngAddressDeSV";
+                    break;
+                } // end switch
+                break;
+            case 15: // Time Sheet [USA - LGCPI(G400)]
+                switch (type) {
+                    case DocumentInfo.FINISH_APPROVAL:
+                        targetPage = "hris.G.G072ApprovalFinishTimeSheetUsaSV";
+                    break;
+                    case DocumentInfo.MUST_APPROVAL:
+                        targetPage = "hris.G.G072ApprovalTimeSheetUsaSV";
+                    break;
+                    case DocumentInfo.EDIT_DISABLE:
+                    case DocumentInfo.EDIT_ENABLE:
+                        targetPage = "hris.D.D07TimeSheet.D07TimeSheetDetailUsaSV";
+                    break;
+                    case DocumentInfo.CANCEL_DISABLE:
+                    case DocumentInfo.CANCEL_ENABLE:
+                        targetPage = "hris.G.G072ApprovalIngTimeSheetUsaSV";
+                    break;
+                } // end switch
+                break;
+            case 16: // Contract Extension [USA]
+                switch (type) {
+                    case DocumentInfo.FINISH_APPROVAL:
+                        targetPage = "hris.G.G071ApprovalFinishContractExtensionUsaSV";
+                    break;
+                    case DocumentInfo.MUST_APPROVAL:
+                        targetPage = "hris.G.G071ApprovalContractExtensionUsaSV";
+                    break;
+                    case DocumentInfo.EDIT_DISABLE:
+                    case DocumentInfo.EDIT_ENABLE:
+                        targetPage = "hris.D.D09ContractExtension.D09ContractExtensionDetailUsaSV";
+                    break;
+                    case DocumentInfo.CANCEL_DISABLE:
+                    case DocumentInfo.CANCEL_ENABLE:
+                        targetPage = "hris.G.G071ApprovalIngContractExtensionUsaSV";
+                    break;
+                } // end switch
+                break;
+
+        } // end switch
+
+        if (targetPage == null || targetPage.equals("")) {
+            detailPage = new StringBuffer(256);
+        } else {
+            detailPage.append(WebUtilEurp.ServletURL);
+            detailPage.append(targetPage);
+            detailPage.append("?AINF_SEQN=");
+            detailPage.append(AINF_SEQN);
+            detailPage.append("&RequestPageName=");
+
+            // 작업 후 또는 이전(목록보기) 페이지 설정
+            if (RequestPageName == null || RequestPageName.equals("")) {
+                detailPage.append(WebUtilEurp.ServletURL);
+                switch (type) {
+                    case DocumentInfo.MUST_APPROVAL:
+                        detailPage.append("hris.G.G001ApprovalDocListSV");
+                    break;
+                    case DocumentInfo.FINISH_APPROVAL:
+                        detailPage.append("hris.G.G003ApprovalFinishDocListSV");
+                    break;
+                    default:
+                        detailPage.append("hris.G.G002ApprovalIngDocListSV");
+                    break;
+                } // end switch
+            } else {
+                detailPage.append(RequestPageName.replace('&','|'));
+            } // end if
+        } // end if
+        return detailPage.toString();
+    }
+    
+}

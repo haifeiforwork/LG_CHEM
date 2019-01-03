@@ -1,0 +1,847 @@
+<%/******************************************************************************/
+/*                                                                              */
+/*   System Name  : MSS                                                         */
+/*   1Depth Name  : MY HR 정보                                                  */
+/*   2Depth Name  : 건강보험 피부양자 신청                                      */
+/*   Program Name : 건강보험 피부양자 취득/상실 수정                            */
+/*   Program ID   : E01MedicareChange.jsp                                       */
+/*   Description  : 건강보험 피부양자 자격(취득/상실) 수정 하는 화면            */
+/*   Note         :                                                             */
+/*   Creation     : 2002-01-03  김도신                                          */
+/*   Update       : 2005-02-28  윤정현                                          */
+/*                  2006-11-13  @v1.0 lsa 관계추가                              */
+/*                                                                              */
+/********************************************************************************/%>
+
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ include file="/web/common/commonProcess.jsp" %>
+
+<%@ page import="java.util.Vector" %>
+<%@ page import="hris.E.E01Medicare.*" %>
+<%@ page import="hris.E.E01Medicare.rfc.*" %>
+<%@ page import="hris.A.rfc.*" %>
+<%@ page import="hris.A.*" %>
+
+<%
+    WebUserData  user              = (WebUserData)session.getAttribute("user");
+
+    /* 가족리스트, 취득사유, 상실사유, 장애인 종별부호를 vector로 받는다*/
+    Vector  e01TargetNameData_vt       = (Vector)request.getAttribute("e01TargetNameData_vt");
+    Vector  e01HealthGuarAccqData_vt   = (Vector)request.getAttribute("e01HealthGuarAccqData_vt");
+    Vector  e01HealthGuarLossData_vt   = (Vector)request.getAttribute("e01HealthGuarLossData_vt");
+    Vector  e01HealthGuarHintchData_vt = (Vector)request.getAttribute("e01HealthGuarHintchData_vt");
+
+    /*--------------- 2002.06.05. 여러건을 한번에 신청하도록 수정 ---------------*/
+    /* 현재 레코드를 vector로 받는다*/
+    String                 jobid                     = (String)request.getAttribute("jobid");
+
+//  모두 삭제될 경우를 대비하여 신청일자, 결재번호를 미리 저장해두었다가 .jsp페이지로 넘겨준다.
+    String                 begda                     = (String)request.getAttribute("begda");
+    String                 ainf_seqn                 = (String)request.getAttribute("ainf_seqn");
+//  모두 삭제될 경우를 대비하여 신청일자, 결재번호를 미리 저장해두었다가 .jsp페이지로 넘겨준다.
+
+    Vector                 e01HealthGuaranteeData_vt = new Vector();
+//    E01HealthGuaranteeData data                      = new E01HealthGuaranteeData();
+
+//    if( jobid.equals("add") ) {
+        e01HealthGuaranteeData_vt      = (Vector)request.getAttribute("e01HealthGuaranteeData_vt");
+//        if( e01HealthGuaranteeData_vt.size() > 0 ) {
+//            data = (E01HealthGuaranteeData)e01HealthGuaranteeData_vt.get(0);
+//        } else {
+//            DataUtil.fixNull(data);
+//            Logger.debug.println("", data);
+//        }
+//    }
+
+    /*--------------- 2002.06.05. 여러건을 한번에 신청하도록 수정 ---------------*/
+
+    /* 신청화면에 들어온 경로를 체크한다 */
+    String ThisJspName = (String)request.getAttribute("ThisJspName");
+
+    /* 결제정보를 vector로 받는다*/
+    Vector  AppLineData_vt             = (Vector)request.getAttribute("AppLineData_vt");
+
+    E01HealthGuaranteeData  e01HealthGuaranteeData = (E01HealthGuaranteeData)request.getAttribute("e01HealthGuaranteeData");
+    String RequestPageName = (String)request.getAttribute("RequestPageName");
+
+    //@v1.0 가족사항detail data get
+    A04FamilyDetailRFC   rfcF   = new A04FamilyDetailRFC();
+    Vector family_vt = new Vector();
+    family_vt = rfcF.getFamilyDetail( e01HealthGuaranteeData.PERNR );
+%>
+<html>
+<head>
+<title>ESS</title>
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr.css" type="text/css">
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr_style.css" type="text/css">
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr_wsg.css" type="text/css">
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ui_library_approval.css" type="text/css">
+
+<script language="javascript" src="<%= WebUtil.ImageURL %>js/snsscript.js"></script>
+<script language="JavaScript">
+<!--
+// 달력 사용
+function fn_openCal(obj){
+  if( document.form1.gubun.value == 1 ) {                  // 자격취득
+    field_name = "ACCQ_DATE";
+  } else if( document.form1.gubun.value == 2 ) {           // 자격상실
+    field_name = "LOSS_DATE";
+  } else {
+    alert("신청구분을 확인하세요.");
+    return;
+  }
+
+  if( obj == field_name || obj == "HITCH_DATE" ) {
+    var lastDate;
+    lastDate = eval("document.form1." + obj + ".value");
+    small_window=window.open("<%=WebUtil.JspURL%>common/calendar.jsp?formname=form1&fieldname="+obj+"&curDate="+lastDate+"&iflag=0","essCalendar","toolbar=0,location=0,directories=0,status=0,menubar=0,resizable=0,width=300,height=300");
+    small_window.focus();
+  } else {
+    alert("신청구분을 확인하세요.");
+  }
+}
+
+function change_type(obj) {
+  var p_idx = obj.selectedIndex;
+
+  if( p_idx == 0 ) {
+    document.form1.ACCQ_DATE.value = ""
+    document.form1.LOSS_DATE.value = ""
+    document.form1.ACCQ_TYPE.value = ""
+    document.form1.LOSS_TYPE.value = ""
+
+    document.form1.ACCQ_DATE.readOnly = 1;
+    document.form1.LOSS_DATE.readOnly = 1;
+    document.form1.ACCQ_TYPE.disabled = 1;
+    document.form1.LOSS_TYPE.disabled = 1;
+
+    document.form1.gubun.value = "0";
+  } else if( p_idx == 1 ) {           // 자격취득
+    document.form1.LOSS_DATE.value = ""
+    document.form1.LOSS_TYPE.value = ""
+
+    document.form1.ACCQ_DATE.readOnly = 0;
+    document.form1.LOSS_DATE.readOnly = 1;
+    document.form1.ACCQ_TYPE.disabled = 0;
+    document.form1.LOSS_TYPE.disabled = 1;
+
+    document.form1.gubun.value = "1";
+  } else if( p_idx == 2 ) {           // 자격상실
+    document.form1.ACCQ_DATE.value = ""
+    document.form1.ACCQ_TYPE.value = ""
+
+    document.form1.ACCQ_DATE.readOnly = 1;
+    document.form1.LOSS_DATE.readOnly = 0;
+    document.form1.ACCQ_TYPE.disabled = 1;
+    document.form1.LOSS_TYPE.disabled = 0;
+
+    document.form1.gubun.value = "2";
+  }
+}
+
+function change_name(obj) {
+  var p_idx = obj.selectedIndex - 1;
+
+  if( p_idx >= 0 ) {
+      eval("document.form1.SUBTY.value = document.form1.SUBTY_name" + p_idx + ".value");
+      eval("document.form1.OBJPS.value = document.form1.OBJPS_name" + p_idx + ".value");
+  } else {
+      document.form1.SUBTY.value = "";
+      document.form1.OBJPS.value = "";
+  }
+    change_subtyname(obj.value, eval("document.form1.SUBTY_name" + p_idx + ".value") );//어머니, 처 동명이인 발생
+}
+//@v1.0 관계추가
+function change_subtyname(val, val2) {
+    document.form1.SUBTY_INAME.value = "";
+    for ( r=0; r< <%=family_vt.size()%>; r++) {
+        if (val==eval("document.form1.SUBTY_INM"+r+".value") && val2==eval("document.form1.SUBTY_INDEX"+r+".value") ){
+             eval("document.form1.SUBTY_INAME.value = document.form1.SUBTY_IATEXT" + r + ".value");
+        }
+    }
+
+}
+
+function change_hitch(obj) {
+  var p_idx = obj.selectedIndex;
+
+  if( p_idx == 0 ) {
+    document.form1.HITCH_TYPE.value  = "";
+		document.form1.HITCH_TEXT.value  = "";
+		document.form1.HITCH_GRADE.value = "";
+		document.form1.HITCH_DATE.value  = "";
+  }
+}
+
+function do_change(){
+	if( <%= e01HealthGuaranteeData_vt.size() %> < 1 ) {
+	  alert("신청할 데이터가 저장되지 않았습니다.");
+	  return;
+	} else {
+    if( check_empNo() ){            // 결재자 체크
+      return;
+    }
+	}
+
+	// BEGDA값 setting..
+//  document.form1.BEGDA.value          = document.form1.BEGDA.value;
+
+  document.form1.jobid.value = "change";
+  document.form1.AINF_SEQN.value = "<%= ainf_seqn %>";
+
+  document.form1.action = "<%= WebUtil.ServletURL %>hris.E.E01Medicare.E01MedicareChangeSV";
+  document.form1.method = "post";
+  document.form1.submit();
+}
+
+/*--------------- 2002.06.05. 여러건을 한번에 신청하도록 수정 ---------------*/
+// 저장버튼 클릭시.. 추가인지 수정에 대한 저장인지 구분 실행한다.
+function click_save_btn(){
+    val = document.form1.addOrChangeFlag.value ;
+    if( val == 'add' ){
+        doAdd();
+    }else if( val == 'change' ){
+        if( check_data() ) {
+            doChange();
+            document.form1.addOrChangeFlag.value = 'add';
+        } else {
+            document.form1.addOrChangeFlag.value = 'change';
+        }
+    }
+}
+
+// 취소버튼 입력화면을 초기화해준다.
+function click_cancel() {
+  document.form1.addOrChangeFlag.value = 'add';
+
+  document.form1.APPL_TYPE.value      = "";
+	document.form1.SUBTY.value          = "";
+	document.form1.OBJPS.value          = "";
+
+	document.form1.gubun.value          = "0";
+
+  document.form1.ACCQ_DATE.value      = "";
+	document.form1.ACCQ_TYPE.value      = "";
+  document.form1.LOSS_DATE.value      = "";
+	document.form1.LOSS_TYPE.value      = "";
+  document.form1.ACCQ_DATE.readOnly   = 0;
+  document.form1.LOSS_DATE.readOnly   = 0;
+  document.form1.ACCQ_TYPE.disabled   = 0;
+  document.form1.LOSS_TYPE.disabled   = 0;
+
+  document.form1.HITCH_TYPE.value     = "";
+  document.form1.HITCH_TEXT.value     = "";
+	document.form1.HITCH_GRADE.value    = "";
+	document.form1.HITCH_DATE.value     = "";
+	document.form1.APPL_TEXT.value      = "";
+	document.form1.ACCQ_LOSS_TEXT.value = "";
+	document.form1.ENAME.value          = "";
+
+	document.form1.APRT_CODE.value      = "";
+  document.form1.APRT_CODE.checked    = false;
+}
+
+// 추가
+function doAdd() {
+  document.form1.jobid.value = "add";
+	if( check_data() ) {
+		document.form1.RowCount_data.value = "<%= e01HealthGuaranteeData_vt.size()+1 %>";
+
+		document.form1.use_flag<%= e01HealthGuaranteeData_vt.size() %>.value       = "Y";
+		document.form1.APPL_TYPE<%= e01HealthGuaranteeData_vt.size() %>.value      = document.form1.APPL_TYPE.value;
+		document.form1.SUBTY<%= e01HealthGuaranteeData_vt.size() %>.value          = document.form1.SUBTY.value;
+		document.form1.OBJPS<%= e01HealthGuaranteeData_vt.size() %>.value          = document.form1.OBJPS.value;
+		document.form1.ACCQ_LOSS_DATE<%= e01HealthGuaranteeData_vt.size() %>.value = document.form1.ACCQ_LOSS_DATE.value;
+		document.form1.ACCQ_LOSS_TYPE<%= e01HealthGuaranteeData_vt.size() %>.value = document.form1.ACCQ_LOSS_TYPE.value;
+		document.form1.HITCH_TYPE<%= e01HealthGuaranteeData_vt.size() %>.value     = document.form1.HITCH_TYPE.value;
+		document.form1.HITCH_GRADE<%= e01HealthGuaranteeData_vt.size() %>.value    = document.form1.HITCH_GRADE.value;
+		document.form1.HITCH_DATE<%= e01HealthGuaranteeData_vt.size() %>.value     = document.form1.HITCH_DATE.value;
+		document.form1.APPL_TEXT<%= e01HealthGuaranteeData_vt.size() %>.value      = document.form1.APPL_TEXT.value;
+		document.form1.ACCQ_LOSS_TEXT<%= e01HealthGuaranteeData_vt.size() %>.value = document.form1.ACCQ_LOSS_TEXT.value;
+		document.form1.HITCH_TEXT<%= e01HealthGuaranteeData_vt.size() %>.value     = document.form1.HITCH_TEXT.value;
+		document.form1.ENAME<%= e01HealthGuaranteeData_vt.size() %>.value          = document.form1.ENAME.value;
+
+		if( document.form1.APRT_CODE.checked ) {
+		  document.form1.APRT_CODE<%= e01HealthGuaranteeData_vt.size() %>.value    = "X";
+		} else {
+		  document.form1.APRT_CODE<%= e01HealthGuaranteeData_vt.size() %>.value    = "";
+		}
+
+		document.form1.AINF_SEQN.value = "<%= ainf_seqn %>";
+		document.form1.action          = "<%= WebUtil.ServletURL %>hris.E.E01Medicare.E01MedicareChangeSV";
+		document.form1.method          = "post";
+		document.form1.submit();
+	}
+}
+
+// 수정
+function doChange() {
+  document.form1.jobid.value = "add";
+
+  var command = "";
+  var size = "";
+  if( isNaN( document.form1.radiobutton.length ) ){
+    size = 1;
+  } else {
+    size = document.form1.radiobutton.length;
+  }
+  for (var i = 0; i < size ; i++) {
+      if ( size == 1 ){
+          command = 0;
+      } else if ( document.form1.radiobutton[i].checked == true ) {
+          command = i+"";
+      }
+  }
+
+	eval("document.form1.APPL_TYPE"      +command+".value = document.form1.APPL_TYPE.value");
+	eval("document.form1.SUBTY"          +command+".value = document.form1.SUBTY.value");
+	eval("document.form1.OBJPS"          +command+".value = document.form1.OBJPS.value");
+	eval("document.form1.ACCQ_LOSS_DATE" +command+".value = document.form1.ACCQ_LOSS_DATE.value");
+	eval("document.form1.ACCQ_LOSS_TYPE" +command+".value = document.form1.ACCQ_LOSS_TYPE.value");
+  eval("document.form1.HITCH_TYPE"     +command+".value = document.form1.HITCH_TYPE.value");
+  eval("document.form1.HITCH_TEXT"     +command+".value = document.form1.HITCH_TEXT.value");
+	eval("document.form1.HITCH_GRADE"    +command+".value = document.form1.HITCH_GRADE.value");
+	eval("document.form1.HITCH_DATE"     +command+".value = document.form1.HITCH_DATE.value");
+	eval("document.form1.APPL_TEXT"      +command+".value = document.form1.APPL_TEXT.value");
+	eval("document.form1.ACCQ_LOSS_TEXT" +command+".value = document.form1.ACCQ_LOSS_TEXT.value");
+	eval("document.form1.ENAME"          +command+".value = document.form1.ENAME.value");
+
+	if( document.form1.APRT_CODE.checked ) {
+	  eval("document.form1.APRT_CODE"    +command+".value = 'X'");
+	} else {
+	  eval("document.form1.APRT_CODE"    +command+".value = ''");
+	}
+
+	document.form1.AINF_SEQN.value = "<%= ainf_seqn %>";
+	document.form1.action          = "<%= WebUtil.ServletURL %>hris.E.E01Medicare.E01MedicareChangeSV";
+	document.form1.method          = "post";
+	document.form1.submit();
+}
+
+// 수정될 항목들 화면에 뿌리기
+function show_change() {
+    document.form1.addOrChangeFlag.value = 'change';
+
+    var command = "";
+    var size = "";
+    if( isNaN( document.form1.radiobutton.length ) ){
+      size = 1;
+    } else {
+      size = document.form1.radiobutton.length;
+    }
+    for (var i = 0; i < size ; i++) {
+        if ( size == 1 ){
+            command = 0;
+        } else if ( document.form1.radiobutton[i].checked == true ) {
+            command = i+"";
+        }
+    }
+
+    eval("document.form1.APPL_TYPE.value      = document.form1.APPL_TYPE"      +command+".value");
+		eval("document.form1.SUBTY.value          = document.form1.SUBTY"          +command+".value");
+		eval("document.form1.OBJPS.value          = document.form1.OBJPS"          +command+".value");
+
+		if( document.form1.APPL_TYPE.value == "0001" ) {                  // 자격취득
+		  eval("document.form1.ACCQ_DATE.value = document.form1.ACCQ_LOSS_DATE" +command+".value");
+		  eval("document.form1.ACCQ_TYPE.value = document.form1.ACCQ_LOSS_TYPE" +command+".value");
+
+		  document.form1.LOSS_DATE.value = "";
+		  document.form1.LOSS_TYPE.value = "";
+
+      document.form1.ACCQ_DATE.readOnly = 0;
+      document.form1.LOSS_DATE.readOnly = 1;
+      document.form1.ACCQ_TYPE.disabled = 0;
+      document.form1.LOSS_TYPE.disabled = 1;
+
+      document.form1.gubun.value = "1";
+		} else if( document.form1.APPL_TYPE.value == "0002" ) {           // 자격상실
+		  document.form1.ACCQ_DATE.value = "";
+		  document.form1.ACCQ_TYPE.value = "";
+
+		  eval("document.form1.LOSS_DATE.value = document.form1.ACCQ_LOSS_DATE" +command+".value");
+		  eval("document.form1.LOSS_TYPE.value = document.form1.ACCQ_LOSS_TYPE" +command+".value");
+
+      document.form1.ACCQ_DATE.readOnly = 1;
+      document.form1.LOSS_DATE.readOnly = 0;
+      document.form1.ACCQ_TYPE.disabled = 1;
+      document.form1.LOSS_TYPE.disabled = 0;
+
+      document.form1.gubun.value = "2";
+		}
+
+		eval("document.form1.HITCH_TYPE.value     = document.form1.HITCH_TYPE"     +command+".value");
+		if( document.form1.HITCH_TYPE.value == "" ) {
+		  document.form1.HITCH_TYPE.value = "";
+		  document.form1.HITCH_TEXT.value = "";
+		} else {
+		  eval("document.form1.HITCH_TEXT.value   = document.form1.HITCH_TEXT"     +command+".value");
+		}
+		eval("document.form1.HITCH_GRADE.value    = document.form1.HITCH_GRADE"    +command+".value");
+		eval("document.form1.HITCH_DATE.value     = document.form1.HITCH_DATE"     +command+".value");
+		eval("document.form1.APPL_TEXT.value      = document.form1.APPL_TEXT"      +command+".value");
+		eval("document.form1.ACCQ_LOSS_TEXT.value = document.form1.ACCQ_LOSS_TEXT" +command+".value");
+		eval("document.form1.ENAME.value          = document.form1.ENAME"          +command+".value");
+
+                //@v1.0 대상자관계
+                change_subtyname(eval("document.form1.ENAME.value          = document.form1.ENAME"          +command+".value"));
+
+		if( eval("document.form1.APRT_CODE"+command+".value") == "X" ) {
+		  document.form1.APRT_CODE.checked = true;
+		} else {
+		  document.form1.APRT_CODE.checked = false;
+		}
+}
+
+// 삭제
+function doDelete() {
+  var command = "";
+  var size = "";
+  if( isNaN( document.form1.radiobutton.length ) ){
+    size = 1;
+  } else {
+    size = document.form1.radiobutton.length;
+  }
+  for (var i = 0; i < size ; i++) {
+    if ( size == 1 ){
+      command = 0;
+    } else if ( document.form1.radiobutton[i].checked == true ) {
+      command = i+"";
+    }
+  }
+
+  eval("document.form1.use_flag"+command+".value = 'N'");
+
+  document.form1.jobid.value     = "add";
+  document.form1.AINF_SEQN.value = "<%= ainf_seqn %>";
+  document.form1.action          = "<%= WebUtil.ServletURL %>hris.E.E01Medicare.E01MedicareChangeSV";
+  document.form1.method          = "post";
+  document.form1.submit();
+}
+/*--------------- 2002.06.05. 여러건을 한번에 신청하도록 수정 ---------------*/
+
+function check_data(){
+  if( document.form1.APPL_TYPE.selectedIndex == 0 ) {
+    alert("신청구분을 선택하세요.");
+    document.form1.APPL_TYPE.focus();
+    return false;
+  }
+
+//자격취득, 자격상실을 구분해서 신청하도록 체크해준다.
+  if( document.form1.RowCount_data.value == "0" ) {
+    //
+  } else {
+    if( document.form1.APPL_TYPE.value != document.form1.APPL_TYPE0.value ) {
+      alert("자격취득, 자격상실을 구분해서 신청해주세요.\n\n동일한 신청구분만 저장 가능합니다.");
+      document.form1.APPL_TYPE.focus();
+      return false;
+    }
+  }
+//자격취득, 자격상실을 구분해서 신청하도록 체크해준다.
+
+  if( document.form1.ENAME.selectedIndex == 0 ) {
+    alert("대상자 성명을 선택하세요.");
+    document.form1.ENAME.focus();
+    return false;
+  }
+
+  if( document.form1.gubun.value == "1" ) {
+    if( checkNull(document.form1.ACCQ_DATE, "취득일자를") == false ) {
+      document.form1.ACCQ_DATE.focus();
+      return false;
+    }
+
+    if( document.form1.ACCQ_TYPE.selectedIndex == 0 ) {
+      alert("취득사유을 선택하세요.");
+      document.form1.ACCQ_TYPE.focus();
+      return false;
+    }
+  } else if( document.form1.gubun.value == "2" ) {
+    if( checkNull(document.form1.LOSS_DATE, "상실일자를") == false ) {
+      document.form1.LOSS_DATE.focus();
+      return false;
+    }
+
+    if( document.form1.LOSS_TYPE.selectedIndex == 0 ) {
+      alert("상실사유을 선택하세요.");
+      document.form1.LOSS_TYPE.focus();
+      return false;
+    }
+  }
+
+  if( document.form1.HITCH_TYPE.selectedIndex == 0 ) {
+    if( document.form1.HITCH_DATE.value != "" || document.form1.HITCH_GRADE.value != "" ) {
+      alert("장애 종별부호를 선택하세요.");
+      document.form1.HITCH_TYPE.focus();
+      return false;
+    }
+  }
+
+  if( document.form1.gubun.value == "1" ) {            // 취득
+    document.form1.ACCQ_LOSS_DATE.value = removePoint(document.form1.ACCQ_DATE.value);
+    document.form1.ACCQ_LOSS_TYPE.value =             document.form1.ACCQ_TYPE.value;
+
+    document.form1.ACCQ_LOSS_TEXT.value = document.form1.ACCQ_TYPE.options[document.form1.ACCQ_TYPE.selectedIndex].text;
+  } else if( document.form1.gubun.value == "2" ) {     // 상실
+    document.form1.ACCQ_LOSS_DATE.value = removePoint(document.form1.LOSS_DATE.value);
+    document.form1.ACCQ_LOSS_TYPE.value =             document.form1.LOSS_TYPE.value;
+
+    document.form1.ACCQ_LOSS_TEXT.value = document.form1.LOSS_TYPE.options[document.form1.LOSS_TYPE.selectedIndex].text;
+  }
+
+  document.form1.APPL_TEXT.value  = document.form1.APPL_TYPE.options[document.form1.APPL_TYPE.selectedIndex].text;
+
+  // BEGDA값 setting..
+  document.form1.BEGDA.value = removePoint(document.form1.BEGDA.value);
+
+  if( document.form1.HITCH_TYPE.selectedIndex != 0 ) {
+    if( checkNull(document.form1.HITCH_GRADE, "장애 등급을") == false ) {
+      return false;
+    }
+
+    if( checkNull(document.form1.HITCH_DATE, "장애 등록일을") == false ) {
+      return false;
+    }
+
+    document.form1.HITCH_TEXT.value = document.form1.HITCH_TYPE.options[document.form1.HITCH_TYPE.selectedIndex].text;
+    document.form1.HITCH_DATE.value = removePoint(document.form1.HITCH_DATE.value);
+  }
+
+  return true;
+}
+
+/*취소*/
+function do_back() {
+  location.href = "<%=WebUtil.ServletURL%>hris.E.E01Medicare.E01MedicareDetailSV?AINF_SEQN=<%= ainf_seqn %>&ThisJspName=<%= ThisJspName %>";
+}
+//-->
+</script>
+</head>
+
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<form name="form1" method="post">
+  <table width="796" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="16">&nbsp;</td>
+      <td>
+        <table width="780" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td class="title"> <h1>건강보험 피부양자 취득/상실 신청수정</h1></td>
+          </tr>
+          <tr>
+            <td height="10">&nbsp;</td>
+          </tr>
+<%
+    if ("Y".equals(user.e_representative) ) {
+%>
+          <!--   사원검색 보여주는 부분 시작   -->
+          <%@ include file="/web/common/PersonInfo.jsp" %>
+          <!--   사원검색 보여주는 부분  끝    -->
+          <tr>
+            <td height="10">&nbsp;</td>
+          </tr>
+<%
+    }
+%>
+          <tr>
+            <td>
+              <!-- 상단 입력 테이블 시작-->
+
+                  <div class="tableArea">
+                  	<div class="table">
+		                  <table class="tableGeneral tableApproval">
+		                      <tr>
+		                <th>신청일자</th>
+		                <td colspan="2">
+		                  <input type="text" name="BEGDA" value="<%= begda.equals("0000-00-00") ? "" : WebUtil.printDate(begda) %>" readonly size="20">
+		                </td>
+		                <td align="right">
+		                  <a class="inlineBtn" href="javascript:click_save_btn();"><span>저장</span></a>
+		                  <a class="inlineBtn" href="javascript:click_cancel();"><span>취소</span></a>
+		                </td>
+		              </tr>
+		              <tr>
+		                <th><span class="textPink">*</span>신청구분</th>
+		                <td colspan="3">
+		                  <select name="APPL_TYPE" onChange="javascript:change_type(this);">
+		                    <option value="">-------------</option>
+<%= WebUtil.printOption((new E01HealthGuarReqsRFC()).getHealthGuarReqs()) %>
+		                  </select>
+		                </td>
+		              </tr>
+		              <tr>
+		                <th><span class="textPink">*</span>대상자 성명</th>
+		                <td>
+		                  <select name="ENAME" onChange="javascript:change_name(this);">
+		                    <option value="">-------------</option>
+<%
+    for ( int i = 0 ; i < e01TargetNameData_vt.size() ; i++ ) {
+        E01TargetNameData data_name = (E01TargetNameData)e01TargetNameData_vt.get(i) ;
+        String            name      = data_name.LNMHG.trim() + ' ' + data_name.FNMHG.trim();
+%>
+                		    <option value="<%= name %>"><%= name %></option>
+<%
+    }
+%>
+		                  </select>
+		                  <input type="text" name="SUBTY_INAME" size="8" readonly>
+<%  //@v1.0
+    String[]     IATEXTA = new String[family_vt.size()];
+    String[]     INMA = new String[family_vt.size()];
+    String[]     SUBTY = new String[family_vt.size()];
+    for ( int i = 0 ; i < family_vt.size() ; i++ ) {
+        A04FamilyDetailData fdata = (A04FamilyDetailData)family_vt.get(i);
+        String   fname      = fdata.LNMHG.trim() + ' ' + fdata.FNMHG.trim();
+        IATEXTA[i]= fdata.ATEXT;
+        INMA[i]= fname;
+        SUBTY[i] = fdata.SUBTY.trim();
+
+%>
+<input type="hidden" name="SUBTY_INM<%=i%>" value="<%= fname %>" size="14" readonly>
+<input type="hidden" name="SUBTY_IATEXT<%=i%>" value="<%= fdata.ATEXT %>" size="14" readonly>
+<input type="hidden" name="SUBTY_INDEX<%=i%>" value="<%= fdata.SUBTY %>"  size="14" readonly>
+<% } %>
+
+		                </td>
+		                <th class="th02">원격지발급여부</th>
+		                <td><input type="checkbox" name="APRT_CODE" value="" size="14" ></td>
+		              </tr>
+		              <tr>
+		                <th><span class="textPink">*</span>취득일자</th>
+		                <td>
+		                  <input type="text" name="ACCQ_DATE" size="14" readonly>
+		                  <a href="javascript:fn_openCal('ACCQ_DATE')">
+		                    <img src="<%= WebUtil.ImageURL %>sshr/ico_magnify.png" alt="날짜검색"></a>
+		                </td>
+		                <th class="th02"><span class="textPink">*</span>취득사유</th>
+		                <td>
+		                  <select name="ACCQ_TYPE" disabled>
+		                    <option value="">--------------------------------</option>
+<%= WebUtil.printOption((new E01HealthGuarAccqRFC()).getHealthGuarAccq()) %>
+		                  </select>
+		                </td>
+		              </tr>
+		              <tr>
+		                <th><span class="textPink">*</span>상실일자</th>
+		                <td>
+		                  <input type="text" name="LOSS_DATE"  size="14" readonly>
+		                  <a href="javascript:fn_openCal('LOSS_DATE')">
+		                    <img src="<%= WebUtil.ImageURL %>sshr/ico_magnify.png" alt="날짜검색"></a>
+		                </td>
+		                <th class="th02"><span class="textPink">*</span>상실사유</th>
+		                <td>
+		                  <select name="LOSS_TYPE" disabled>
+		                    <option value="">--------------------------</option>
+<%= WebUtil.printOption((new E01HealthGuarLossRFC()).getHealthGuarLoss()) %>
+		                  </select>
+		                </td>
+		              </tr>
+		              <tr>
+		                <th>장애인</th>
+		                <td  colspan="3">
+		                	<div class="innerTable">
+			                  <table cellspacing="0" width="600">
+			                    <tr>
+			                      <th class="noBtBorder" width="60">종별부호</th>
+			                      <td class="noBtBorder" width="120">
+			                        <select name="HITCH_TYPE" onChange="javascript:change_hitch(this);">
+			                          <option value="">-------------</option>
+	<%= WebUtil.printOption((new E01HealthGuarHintchRFC()).getHealthGuarHintch()) %>
+			                        </select>
+			                      </td>
+			                      <th class="noBtBorder" width="40">등급</th>
+			                      <td class="noBtBorder" width="60">
+			                        <input type="text" name="HITCH_GRADE" size="5" maxlength="2" onBlur="onlyNumber(this, '등급');">
+			                      </td>
+			                      <th class="noBtBorder" width="50">등록일</th>
+			                      <td class="noBtBorder noRtBorder" width="170">
+			                        <input type="text" name="HITCH_DATE" size="14" onBlur="dateFormat(this);">
+			                        <a href="javascript:fn_openCal('HITCH_DATE')">
+			                          <img src="<%= WebUtil.ImageURL %>sshr/ico_magnify.png" alt="날짜검색">
+			                        </a>
+		                             </td>
+		                            </tr>
+		                          </table>
+		                         </div>
+			                  </td>
+			                </tr>
+		                    </table>
+		                    <div class="commentsMoreThan2">
+<%
+    if( user.companyCode.equals("C100") ) {
+%>
+		                    	<div>제출서류 : 가족관계증명서 또는 주민등록등본(단, 사망의 경우 건강보험증, 사망진단서 또는 가족관계증명서 1부)</div>
+<%
+    }
+%>
+		                    	<div><span class="textPink">*</span>는 필수 입력사항입니다(신청구분(취득/상실)에 따라 필수 입력사항이 변동됩니다).</div>
+		                    </div>
+	                    </div>
+                    </div>
+
+              <!--상단 입력 테이블 끝-->
+            </td>
+          </tr>
+
+<%
+    if( e01HealthGuaranteeData_vt.size() > 0 ) {
+%>
+          <tr>
+            <td>
+            <div class="listArea">
+            	<div class="table">
+		            <table class="listTable">
+		                <tr>
+				          <th width="30">선택</th>
+				          <th width="30">No.</th>
+				          <th width="60">신청구분</th>
+				          <th width="60">대상자<br>성명</th>
+				          <th width="50">관계</th>
+				          <th width="60">취득일자/<br>상실일자</th>
+				          <th width="190">취득사유/상실사유</th>
+				          <th width="60">원격지<br>발급여부</th>
+				          <th width="90">장애인<br>종별부호</th>
+				          <th width="40">장애인<br>등급</th>
+				          <th class="lastCol" width="60">장애인<br>등록일</th>
+				        </tr>
+<%
+        for( int i = 0 ; i < e01HealthGuaranteeData_vt.size() ; i++ ) {
+            E01HealthGuaranteeData data_rep = (E01HealthGuaranteeData)e01HealthGuaranteeData_vt.get(i);
+
+            String tr_class = "";
+
+            if(i%2 == 0){
+                tr_class="oddRow";
+            }else{
+                tr_class="";
+            }
+%>
+				        <tr class="<%=tr_class %>">
+				          <td>
+				            <input type="radio" name="radiobutton" value="" <%= (i==0) ? "checked" : ""%>>
+				          </td>
+				          <td><%= i+1 %></td>
+				          <td><%= data_rep.APPL_TEXT %></td>
+				          <td><%= data_rep.ENAME %></td>
+				          <td>
+<%  //@v1.0
+    for ( int j = 0 ; j < family_vt.size() ; j++ ) {
+    	if (INMA[j].equals(data_rep.ENAME) && SUBTY[j].equals(data_rep.SUBTY)) {
+%>
+                   <%=IATEXTA[j]%>
+<%      }
+    } %>
+				          </td>
+				          <td><%= data_rep.ACCQ_LOSS_DATE.equals("0000-00-00") || data_rep.ACCQ_LOSS_DATE.equals("") ? "" : WebUtil.printDate(data_rep.ACCQ_LOSS_DATE,".") %></td>
+				          <td><%= data_rep.ACCQ_LOSS_TEXT %></td>
+				          <td><%= data_rep.APRT_CODE.equals("X") ? "Y" : "" %></td>
+				          <td><%= data_rep.HITCH_TEXT %></td>
+				          <td><%= data_rep.HITCH_GRADE.equals("00") ? "" : data_rep.HITCH_GRADE %></td>
+				          <td class="lastCol"><%= data_rep.HITCH_DATE.equals("0000-00-00") || data_rep.HITCH_DATE.equals("") ? "" : WebUtil.printDate(data_rep.HITCH_DATE,".") %></td>
+				          <input type="hidden" name="use_flag<%= i %>"       value="Y">
+				            <input type="hidden" name="APPL_TYPE<%= i %>"      value="<%= data_rep.APPL_TYPE      %>">
+				            <input type="hidden" name="SUBTY<%= i %>"          value="<%= data_rep.SUBTY          %>">
+				            <input type="hidden" name="OBJPS<%= i %>"          value="<%= data_rep.OBJPS          %>">
+				            <input type="hidden" name="ACCQ_LOSS_DATE<%= i %>" value="<%= data_rep.ACCQ_LOSS_DATE.equals("0000-00-00") ? "" : WebUtil.printDate(data_rep.ACCQ_LOSS_DATE,".") %>">
+				            <input type="hidden" name="ACCQ_LOSS_TYPE<%= i %>" value="<%= data_rep.ACCQ_LOSS_TYPE %>">
+				            <input type="hidden" name="HITCH_TYPE<%= i %>"     value="<%= data_rep.HITCH_TYPE     %>">
+				            <input type="hidden" name="HITCH_GRADE<%= i %>"    value="<%= data_rep.HITCH_GRADE.equals("00") ? "" : data_rep.HITCH_GRADE %>">
+				            <input type="hidden" name="HITCH_DATE<%= i %>"     value="<%= data_rep.HITCH_DATE.equals("0000-00-00") ? "" : WebUtil.printDate(data_rep.HITCH_DATE,".") %>">
+				            <input type="hidden" name="APPL_TEXT<%= i %>"      value="<%= data_rep.APPL_TEXT      %>">
+				            <input type="hidden" name="ACCQ_LOSS_TEXT<%= i %>" value="<%= data_rep.ACCQ_LOSS_TEXT %>">
+				            <input type="hidden" name="HITCH_TEXT<%= i %>"     value="<%= data_rep.HITCH_TEXT     %>">
+				            <input type="hidden" name="ENAME<%= i %>"          value="<%= data_rep.ENAME          %>">
+				            <input type="hidden" name="APRT_CODE<%= i %>"      value="<%= data_rep.APRT_CODE      %>">
+				        </tr>
+<%
+        }
+%>
+              			</table>
+              		</div>
+				</div>
+              </td>
+          </tr>
+          <tr>
+            <td>
+               	<div class="buttonArea">
+               		<ul class="btn_mdl">
+               			<li><a class="darken" href="javascript:show_change();"><span>수정</span></a></li>
+               			<li><a href="javascript:doDelete();"><span>삭제</span></a></li>
+               		</ul>
+               	</div>
+		    </td>
+		  </tr>
+		  <tr>
+		  	<td height="10"></td>
+		  </tr>
+<%
+    }
+%>
+          <input type="hidden" name="use_flag<%= e01HealthGuaranteeData_vt.size() %>"       value="N">
+          <input type="hidden" name="APPL_TYPE<%= e01HealthGuaranteeData_vt.size() %>"      value="">
+          <input type="hidden" name="SUBTY<%= e01HealthGuaranteeData_vt.size() %>"          value="">
+          <input type="hidden" name="OBJPS<%= e01HealthGuaranteeData_vt.size() %>"          value="">
+          <input type="hidden" name="ACCQ_LOSS_DATE<%= e01HealthGuaranteeData_vt.size() %>" value="">
+          <input type="hidden" name="ACCQ_LOSS_TYPE<%= e01HealthGuaranteeData_vt.size() %>" value="">
+          <input type="hidden" name="HITCH_TYPE<%= e01HealthGuaranteeData_vt.size() %>"     value="">
+          <input type="hidden" name="HITCH_GRADE<%= e01HealthGuaranteeData_vt.size() %>"    value="">
+          <input type="hidden" name="HITCH_DATE<%= e01HealthGuaranteeData_vt.size() %>"     value="">
+          <input type="hidden" name="APPL_TEXT<%= e01HealthGuaranteeData_vt.size() %>"      value="">
+          <input type="hidden" name="ACCQ_LOSS_TEXT<%= e01HealthGuaranteeData_vt.size() %>" value="">
+          <input type="hidden" name="HITCH_TEXT<%= e01HealthGuaranteeData_vt.size() %>"     value="">
+          <input type="hidden" name="ENAME<%= e01HealthGuaranteeData_vt.size() %>"          value="">
+          <input type="hidden" name="APRT_CODE<%= e01HealthGuaranteeData_vt.size() %>"      value="">
+          <tr>
+            <td><h2 class="subtitle">결재정보</h2></td>
+          </tr>
+  <tr>
+    <td>
+      <!-- 결재자 입력 테이블 시작-->
+<%= hris.common.util.AppUtil.getAppChange(AppLineData_vt,e01HealthGuaranteeData.PERNR) %>
+      <!-- 결재자 입력 테이블 시작-->
+    </td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+          <tr>
+            <td>
+               	<div class="buttonArea">
+               		<ul class="btn_crud">
+               			<li><a class="darken" href="javascript:do_change();"><span>저장</span></a></li>
+               			<li><a href="javascript:do_back();"><span>취소</span></a></li>
+               		</ul>
+               	</div>
+		    </td>
+		  </tr>
+</table>
+<!--  HIDDEN  처리해야할 부분 시작-->
+      <input type="hidden" name="jobid"           value="">
+      <input type="hidden" name="gubun"           value="0"> <!--  신청구분 0:default, 1:취득, 2:상실 -->
+      <input type="hidden" name="PERNR"           value="<%= e01HealthGuaranteeData.PERNR%>">
+      <input type="hidden" name="AINF_SEQN"       value="<%= e01HealthGuaranteeData.AINF_SEQN %>">
+      <input type="hidden" name="RequestPageName" value="<%=RequestPageName%>">
+      <input type="hidden" name="SUBTY"           value="">
+      <input type="hidden" name="OBJPS"           value="">
+      <input type="hidden" name="ACCQ_LOSS_DATE"  value="">
+      <input type="hidden" name="ACCQ_LOSS_TYPE"  value="">
+      <input type="hidden" name="ACCQ_LOSS_TEXT"  value="">
+      <input type="hidden" name="APPL_TEXT"       value="">
+      <input type="hidden" name="HITCH_TEXT"      value="">
+      <input type="hidden" name="RowCount_data"   value="<%= e01HealthGuaranteeData_vt.size() %>">
+      <input type="hidden" name="addOrChangeFlag" value="add">
+      <input type="hidden" name="ThisJspName"     value="<%= ThisJspName %>">
+<%
+    for(int i = 0 ; i < e01TargetNameData_vt.size() ; i++){
+        E01TargetNameData data_name = (E01TargetNameData)e01TargetNameData_vt.get(i);
+%>
+      <input type="hidden" name="SUBTY_name<%= i %>" value="<%= data_name.SUBTY  %>">
+      <input type="hidden" name="OBJPS_name<%= i %>" value="<%= data_name.OBJPS  %>">
+<%
+    }
+%>
+<!--  HIDDEN  처리해야할 부분 끝-->
+  </form>
+</table>
+<%@ include file="/web/common/commonEnd.jsp" %>
+

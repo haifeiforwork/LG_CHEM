@@ -1,0 +1,72 @@
+@CHARSET "UTF-8";
+/*Copyright ©2013 LG CNS, All Rights Reserved.*/
+/*본문서의 내용을 변경할 경우에는 반드시 LG화학 WSG 담당자와의 협의를 거쳐 진행하도록 함*/
+
+/* font맑은고딕 */
+body {
+	font-size: 12px;
+	font-family: '맑은고딕', Malgun Gothic, '돋움', dotum, '나눔고딕', Arial, Helvetica, sans-serif;
+	color: #222;
+	background: #fff;
+	overflow: hidden;
+	-webkit-text-size-adjust: none;
+	-webkit-user-select: none;
+	-webkit-appearance: none;
+}
+
+
+
+/* width 조절*/
+.w100 {
+	width:100%; !important;
+	padding: 0px;
+}
+
+.w85 {
+	width:85%; !important;
+	padding: 0px;
+}
+
+.h100 {
+	height:100%; !important;
+	padding: 0px;
+
+}
+
+
+/* 의견팝업 */
+.winPop .contentSize {
+	padding-bottom: 15px;
+    border-bottom: 1px solid #dbdbdb;
+	margin-bottom: 20px;
+}
+.attachFileAreaWinPop {
+	border-top: 2px solid #969696;
+	display:block;
+}
+
+
+
+
+/* tableApproval */
+.tableApproval th {
+	width: 159px;
+	height: 29px;
+	text-align: center;
+	padding-right: 0px;
+	border-right: 1px solid #dddddd;
+	border-bottom: 1px solid #dddddd;
+	background: #f5f5f5;
+}
+.tableApproval li {list-style:none;display:table-cell;padding-top:3px;padding-right:3px; vertical-align:middle;}
+.tableApproval li:first-of-type {padding-left:0}
+.tableApproval li:last-of-type {padding-left:0}
+
+
+/* byte*/
+.t_byte {text-align: right;padding-top:5px;height:8px;font-size:11px;} /*2016.11.21 */
+/*팝업 가로 width */
+.popW380{width: 378px;}/*2016.11.21 */
+
+
+

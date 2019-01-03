@@ -1,0 +1,20 @@
+/* ELOFFICE WORK CENTER < ÀüÀÚ°áÀç */
+
+/* ±âº»*CSS
+ */
+body {font-family:±¼¸²,arial; color:#333333;font-size:9pt;line-height: 15pt; vertical-align : middle; text-decoration: none;}
+table {font-family:±¼¸²,arial; color:#333333;font-size:9pt;line-height: 15pt; vertical-align : middle; text-decoration: none;}
+form {font-family:±¼¸²,arial; color:#333333;font-size:9pt;line-height: 15pt; vertical-align : middle; text-decoration: none;}
+BODY {background:#ffffff;line-height:15pt; scrollbar-face-color:#ffffff; scrollbar-shadow-color:#B3B3B3; scrollbar-highlight-color:#ffffff; 
+scrollbar-3dlight-color:#b3b3b3; scrollbar-darkshadow-color:#ffffff; scrollbar-track-color:#f5f5f5; scrollbar-arrow-color:#8b9ea6;}
+.tron {background:#E9F2DF;}
+.trout {background:white;}
+.viewContent {text-align:center;cursor:hand;border-style:solid; border-color:#DADADA #DADADA #DADADA #DADADA;border-width:0 0 1 0}
+.viewContentL {text-align:left;cursor:hand;border-style:solid; border-color:#DADADA #DADADA #DADADA #DADADA;border-width:0 0 1 0}
+.trskin {font:bold ±¼¸²,arial; font-size:9pt;line-height: 15pt; vertical-align : middle; text-decoration: none; 
+	background:#EEF7F7;border-style:solid; border-color:#74AFC9 #74AFC9 #74AFC9 #74AFC9; border-width:2 0 1 0}
+.tdcnt {font-family:±¼¸²;  color:#ffffff;font-size:12px;vertical-align : middle; }
+A:link {color:#777777;text-decoration:none} 
+A:visited {color:#777777;text-decoration:none} 
+A:active { color:#777777;text-decoration:none} 
+A:hover { color:#3A7CBF;text-decoration:none}

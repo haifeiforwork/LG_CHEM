@@ -1,0 +1,175 @@
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ page import="java.io.*,java.util.*,java.net.*" %>
+<%@ page import="com.oreilly.servlet.MultipartRequest" %>
+<%@ page import="com.oreilly.servlet.multipart.DefaultFileRenamePolicy" %>
+<%@ page import="hris.common.util.PdfUtil" %>
+
+
+<%@ page import="etiming.astdts.apl3161.TSSPdfTSTValidator"%>
+<%@ page import="etiming.astdts.apl3161.CertVerifyConst" %>
+<%@ page import="PDFExport.ezPDFExportFile"%>
+<%@ page import="com.sns.jdf.*"%>
+<%@ page import="sun.misc.BASE64Decoder"%>
+<%
+/*
+설  명 : 플래시로 부터 파일을 임시저장폴더에 저장합니다.
+         플래시에서 폼값을 받을때 utf-8로 받아야 합니다.
+*/
+
+try{
+	String msg = "";
+	String targetYear =  (String)application.getAttribute("targetYear");
+	String empNo =  (String)application.getAttribute("empNo");
+	String browser_id = request.getParameter("browser_id");
+	if(browser_id==null || browser_id.trim().length()==0){
+		return; 
+	}
+	//temp 저장 경로지정(일시저장하는 내용은 년도/사원번호/temp/로 함
+	String savedir = PdfUtil.getURL("temp", targetYear, empNo);
+	makeDir(savedir);	//디렉토리 생성	
+	//파일저장
+	MultipartRequest multi=new MultipartRequest(request, savedir,1024*1024*10, "utf-8", new DefaultFileRenamePolicy());
+	File file = multi.getFile("Filedata");	
+	if(file==null) {	//파일저장에 실패
+		application.setAttribute("msg", "파일첨부에 실패했습니다.");
+		return;
+	}
+	String originFileName = multi.getOriginalFileName("Filedata");	//저장요청한 파일명
+	String saveFileName = multi.getFilesystemName("Filedata");		//실제저장된 파일명
+	String filePath = savedir+saveFileName;
+	//여러개의 파일이 첨부되므로 파일의 속성값을  Object[]에 담아서 ArrayList에 집어넣어준다.
+	//application.setAttribute 하여 pro.jsp에 넘겨줌
+	ArrayList alist = (ArrayList)application.getAttribute(browser_id);
+	if(alist==null){
+		alist = new ArrayList();
+	}
+	
+	//파일에 관련된 속성을 Object[]에 담아서 pro.jsp에 넘겨줌
+	Object[] objarr = new Object[4];
+	objarr[0] = file;
+	objarr[1] = originFileName;//업로드파일명
+	objarr[2] = null;//파일내용은 파일검증이 완료된 후 추출하여 저장함 (158 라인)
+	objarr[3] = saveFileName;//저장파일명
+	
+	alist.add(objarr);	//ArrayList에 집어넣어준다.
+	
+	//--start--문서중앙화링크 파일 첨부 대응//
+	long filesize = file.length();
+	if(filesize==49){ 
+		//--start--문서중앙화파일 첨부 시 파일 저장하지 않고 튕겨냄 추후 원본링크를 원하면 로직 삭제//
+		//if(true){
+		//	application.setAttribute("msg", "["+originFileName+"] 문서중앙화파일입니다. 원본파일을 전송하세요.");
+		//	application.setAttribute(browser_id,alist);
+		//	return;
+		//}
+		//--end--문서중앙화파일 첨부 시 파일 저장하지 않고 튕겨냄 추후 원본링크를 원하면 로직 삭제//
+		
+		//문서중앙화서버에 접속하여 원본파일 가져옴
+		Config conf = new Configuration();
+		StringBuffer edmsf = new StringBuffer(conf.get("com.sns.jdf.edms.filefath"));
+		edmsf.append("file_id=");
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		BASE64Decoder decoder = new BASE64Decoder();
+		String temp = "";
+		while( (temp = br.readLine()) != null ) {
+			edmsf.append(new String(decoder.decodeBuffer(temp)));
+		}
+		edmsf.append("&limit_size=-1");	//파일 용량 제한 "-1"일 경우 제한 없음
+		br.close();
+		
+		URL url = new URL(edmsf.toString());
+		HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+
+		//--start--테스트용(Response Parameters 전체 찍기)//
+		//Set set = conn.getHeaderFields().keySet();
+		//for(int ss=0;ss<set.size();ss++){
+	    //
+		//}
+		//--end--테스트용(Response Parameters 전체 찍기)//
+		
+		//문서중앙화서버에서 결과값 넘겨받음
+		String result = conn.getHeaderField("result");	//success, fail
+		if(!result.equals("success")){	//전송실패시
+			application.setAttribute("msg", "["+originFileName+"] 문서중앙화파일전송에 실패했습니다.");
+			application.setAttribute(browser_id,alist);
+			Logger.debug.println(this, "[문서중앙화파일전송실패]" + conn.getHeaderField("result_message"));	//result=fail일 경우 에러 메시지 출력
+    		return;
+		}
+		
+		//성공하면 temp에 저장된 중앙화파일삭제
+		file.delete(); 
+		
+		//문서중앙화서버에서 전송받은 원본파일저장
+		BufferedInputStream bis = new BufferedInputStream(conn.getInputStream());
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+
+        byte[] bbuf = new byte[1024000];
+        int read=0;
+
+        try {
+             while ((read = bis.read(bbuf)) != -1)   {
+                 bos.write(bbuf, 0, read);
+             }
+             bis.close();
+             bos.close();
+             //파일내용을 문서중앙화파일로 바꿔준다.
+             file = new File(filePath);
+        } catch (Exception e) {
+            //
+            application.setAttribute("msg", "["+originFileName+"]문서중앙화파일전송에 실패했습니다.");
+            application.setAttribute(browser_id,alist);
+    		return;
+        } finally {
+            if (bis != null) {
+                bis.close();
+            }
+            if (bos != null) {
+                bos.close();
+            }
+        }
+	}
+	//--end--문서중앙화링크 파일 첨부 대응//	
+	
+		//Logger.debug.println(this,"strXml:======1" );
+	/* 진본성 검증 초기화 */
+	TSSPdfTSTValidator.init(PdfUtil.cacertsURL, CertVerifyConst.NONE, null );
+	
+		//Logger.debug.println(this,"strXml:======2" );
+	//지정된경로의 PDF 문서에 대해 전자문서 위변조여부 확인 validatorFile(String filePath, String userPwd, String owenerPwd)
+	int result = TSSPdfTSTValidator.validatorFile(filePath, null, null);
+	
+		//Logger.debug.println(this,"strXml:======3" );
+	if(result != PdfUtil.validatorSuc){	//전자문서 위변조되었을때
+		msg = "["+originFileName+"] " + PdfUtil.getFileMsg(result);
+	} else {
+		//PDF에서 XML 추출
+		ezPDFExportFile pdf = new ezPDFExportFile();
+		byte[] buf	= pdf.NTS_GetFileBuf(filePath, null, "XML", false);
+		
+		//추출한 XML 내용 찍기(test용)
+		String strXml = new String( buf, "UTF-8" );
+
+		//XML추출시 에러발생여부
+		int v_ret	= pdf.NTS_GetLastError();
+		
+		if (v_ret != PdfUtil.parseSuc) {	//에러발생하면 메세지 뿌려줌
+			msg = "["+originFileName+"] " + PdfUtil.getParseMsg(v_ret);
+		} else {	//에러발생하지 않았으면 추출한 파일내용을 담아서 넘김
+			objarr[2] = buf;
+		}
+		
+		//Logger.debug.println(this,"strXml:"+strXml);
+	}
+	application.setAttribute(browser_id,alist);
+	application.setAttribute("msg", msg);
+}catch(Exception e){
+	//
+}
+%>
+<%!
+//폴더만들기
+public void makeDir(String savedir) throws Exception{
+	java.io.File dir=new java.io.File(savedir);
+	if(!dir.exists()){	dir.mkdirs();	}
+}
+%>

@@ -1,0 +1,169 @@
+package hris.E.E06Rehouse.db;
+
+import java.util.*;
+import java.sql.*;
+
+import com.sns.jdf.*;
+import com.sns.jdf.db.*;
+import com.sns.jdf.util.*;
+
+import hris.E.E06Rehouse.*;
+
+/**
+ * E05RehouseDB.java
+ *  주택자금 상환신청 및 조회, 삭제 
+ *  DB Table Name : "ZHRA015T"                               
+ *    
+ * @author 이형석 
+ * @version 1.0, 2001/12/20
+ */
+public class E06RehouseDB {
+
+    Connection conn = null;
+    
+    public E06RehouseDB(Connection connection) {
+        conn = connection;
+    }
+
+    /**
+     * 주택자금상환 신청
+     * @param hris.E.E05House.E06RehouseData 주택자금상환관련 데이터
+     * @return int
+     * @exception com.sns.jdf.GeneralException
+     */
+    public int create(E06RehouseData data) throws GeneralException {
+        int result = 0;
+        PreparedStatement pstmt = null;
+        
+        String tableName = null;
+        try{
+            tableName = DBUtil.getOwner() + "ZHRA015T";
+            StringBuffer query = new StringBuffer();
+            query.append(" insert into "+tableName+"( MANDT,                    PERNR,                       ");
+            query.append("                            BEGDA,                    AINF_SEQN,                   ");
+            query.append("                            DLART,                    RPAY_AMNT,                   ");        
+            query.append("                            INTR_AMNT,                TOTL_AMNT,                   ");
+            query.append("                            REPT_DATE,                DARBT,                       ");
+            query.append("                            DATBW,                    ALREADY_AMNT,                ");
+            query.append("                            ZZSECU_FLAG )                                          ");
+            query.append("                    values( ?,     ?,     ?,                                       ");
+            query.append("                            ?,     ?,     ?,                                       ");
+            query.append("                            ?,     ?,     ?,                                       ");
+            query.append("                            ?,     ?,     ?,      ? )                              ");
+            
+            pstmt = conn.prepareStatement(query.toString());
+            
+            data.PERNR = DataUtil.fixEndZero(data.PERNR, 8);
+            data.AINF_SEQN = DataUtil.fixEndZero(data.AINF_SEQN, 10);
+                  
+            pstmt.setString(1,  data.MANDT          );  
+            pstmt.setString(2,  data.PERNR          );  
+            pstmt.setString(3,  data.BEGDA          );  
+            pstmt.setString(4,  data.AINF_SEQN      );  
+            pstmt.setString(5,  data.DLART          );  
+            pstmt.setString(6,  Double.toString(Double.parseDouble(data.E_RPAY_AMNT)/100.0    ));  
+            pstmt.setString(7,  Double.toString(Double.parseDouble(data.E_INTR_AMNT)/100.0    ));  
+            pstmt.setString(8,  Double.toString(Double.parseDouble(data.E_TOTAL_AMNT)/100.0   ));  
+            pstmt.setString(9,  data.E_REPT_DATE    );  
+            pstmt.setString(10, Double.toString(Double.parseDouble(data.E_DARBT)/100.0        ));  
+            pstmt.setString(11, data.E_DATBW        );  
+            pstmt.setString(12, Double.toString(Double.parseDouble(data.E_ALREADY_AMNT)/100.0 ));  
+            pstmt.setString(13, data.E_ZZSECU_FLAG  );  
+           
+            JDFPreparedStatement jdfPstmt = new JDFPreparedStatement(this, query.toString(), pstmt);
+            result = jdfPstmt.executeUpdate();
+           
+        }catch (Exception e){
+            throw new GeneralException(e);
+        }
+        finally {
+            DBUtil.close(pstmt);
+        }
+        return result;
+    }
+
+    /**
+     * 주택자금 상환신청 취소
+     * @param hris.E.E05House.E06RehouseData 주택자금상환관련 데이터
+     * @return int
+     * @exception com.sns.jdf.GeneralException
+     */
+    public int delete(E06RehouseData data) throws GeneralException {
+        int result = 0;
+        Statement stmt = null;
+        String tableName = null;
+        try{
+            tableName = DBUtil.getOwner() + "ZHRA015T";
+            DataUtil.fixNull( data );
+            data.PERNR = DataUtil.fixEndZero(data.PERNR, 8);
+            data.AINF_SEQN = DataUtil.fixEndZero(data.AINF_SEQN, 10);
+
+            StringBuffer query = new StringBuffer();            
+            query.append(" delete from "+tableName+"                                                    ");
+            query.append("  where MANDT     = '" + data.MANDT + "'                                      ");
+            query.append("    and PERNR     = '" + data.PERNR + "'                                      ");
+            query.append("    and BEGDA     = '" + data.BEGDA + "'                                      ");
+            query.append("    and AINF_SEQN = '" + data.AINF_SEQN + "'                                  ");
+
+            stmt = conn.createStatement();
+            JDFStatement jdfStmt = new JDFStatement(this, stmt);
+            result = jdfStmt.executeUpdate(query.toString());
+        }
+        catch (Exception e){
+            throw new GeneralException(e);
+        }
+        finally {
+            DBUtil.close(stmt);
+        }
+        return result;
+    }
+
+    /**
+     * 주택자금 상환신청 조회
+     * @param hris.E.E05House.E06RehouseData 주택자금상환관련 데이터
+     * @exception com.sns.jdf.GeneralException
+     */
+    public void getDetail(E06RehouseData data) throws GeneralException {
+        Statement stmt = null;
+        ResultSet rs   = null;
+        String tableName = null;
+        try{
+            tableName = DBUtil.getOwner() + "ZHRA015T";
+            DataUtil.fixNull( data );
+            data.PERNR = DataUtil.fixEndZero(data.PERNR, 8);
+            data.AINF_SEQN = DataUtil.fixEndZero(data.AINF_SEQN, 10);
+            
+            StringBuffer query = new StringBuffer();
+            query.append("select DLART, INTR_AMNT, TOTL_AMNT, RPAY_AMNT, REPT_DATE, "); 
+            query.append(" DARBT, DATBW, ALREADY_AMNT, ZZSECU_FLAG                  "); 
+            query.append("  from "+tableName+"                                      ");
+            query.append(" where MANDT     =  " + data.MANDT + "                    ");
+            query.append("   and PERNR     =  " + data.PERNR + "                    ");
+            query.append("   and BEGDA     = '" + data.BEGDA + "'                   ");
+            query.append("   and AINF_SEQN = '" + data.AINF_SEQN + "'               ");
+           
+            stmt = conn.createStatement();
+            JDFStatement jdfStmt = new JDFStatement(this, stmt);
+            rs = jdfStmt.executeQuery(query.toString());
+
+            if( rs.next() ){
+                Logger.debug.println(this, rs.getString("DLART"));
+                
+                data.DLART             = rs.getString("DLART");    
+                data.E_INTR_AMNT       = Double.toString(Double.parseDouble(rs.getString("INTR_AMNT")) * 100.0    );
+                data.E_TOTAL_AMNT      = Double.toString(Double.parseDouble(rs.getString("TOTL_AMNT")) * 100.0    );
+                data.E_RPAY_AMNT       = Double.toString(Double.parseDouble(rs.getString("RPAY_AMNT")) * 100.0    );
+                data.E_REPT_DATE       = rs.getString("REPT_DATE");
+                data.E_DARBT           = Double.toString(Double.parseDouble(rs.getString("DARBT")) * 100.0        );    
+                data.E_DATBW           = rs.getString("DATBW");    
+                data.E_ALREADY_AMNT    = Double.toString(Double.parseDouble(rs.getString("ALREADY_AMNT")) * 100.0 );
+                data.E_ZZSECU_FLAG     = rs.getString("ZZSECU_FLAG"); 
+            }
+        } catch( Exception e ){
+            throw new GeneralException(e);
+        } finally {
+            DBUtil.close(rs, stmt);
+        }
+    }
+}
+

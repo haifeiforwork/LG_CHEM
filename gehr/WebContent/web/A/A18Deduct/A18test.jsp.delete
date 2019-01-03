@@ -1,0 +1,32 @@
+<%@ page import="java.io.*" %>
+<%@ page import="java.util.*" %>
+<%@ page import="hris.A.A18Deduct.rfc.*" %>
+<%@ page import="hris.A.A18Deduct.rfc.A18DeductPrintGunroSodukBinaryRFC" %>
+ 
+<%
+// Get Parameter from Request
+//String sPerNR      = (String) request.getParameter("sPerNR");
+//String sTargetYear = (String) request.getParameter("sTargetYear");
+//String sAinfSeqn   = (String) request.getParameter("sAinfSeqn");
+
+// Call RFC
+A18DeductPrintGunroSodukBinaryRFC  rfc = new A18DeductPrintGunroSodukBinaryRFC();
+Vector result = new Vector();
+result = rfc.getData("00031390","0000009558");
+ out.println("dd:" );
+//
+//BufferedOutputStream outs = new BufferedOutputStream(response.getOutputStream());
+//response.setHeader("Content-Type", "application/pdf");
+//response.setHeader("Content-Transfer-Encoding", "binary");
+//response.setHeader("Pragma","no-cache");
+//response.setDateHeader("Expires",0);
+//
+//for(int i = 0; i < result.size(); i++) {
+//	 Hashtable data = new Hashtable();
+//	 byte[] buffer = new byte[255];
+//	 data = (Hashtable) result.get(i);
+//	 buffer = (byte[]) data.get("LINE");
+//	 outs.write(buffer);
+//}
+//outs.close();
+%>

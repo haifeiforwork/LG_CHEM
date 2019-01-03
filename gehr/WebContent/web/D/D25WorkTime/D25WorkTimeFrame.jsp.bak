@@ -1,0 +1,44 @@
+<%--
+/******************************************************************************/
+/*   System Name  : ESS
+/*   1Depth Name  : My HR
+/*   2Depth Name  : 휴가/근태
+/*   Program Name : 근무시간 입력
+/*   Program ID   : D25WorkTimeFrame.jsp
+/*   Description  : 근무시간 입력 frame
+/*   Note         : 
+/*   Creation     : 2018-06-29 [WorkTime52] 유정우
+/*                             System open 사전 반영으로 인해 임시로 화면을 막기 위해 별도의 page를 생성함
+/*                             System open시 D25WorkTimeFrame.jsp.bak 파일로 원복해야함
+/*   Update       : 
+/******************************************************************************/
+--%><%@ page contentType="text/html; charset=utf-8" %><%
+
+request.setAttribute("bodyWidth", "background-color:#fbfbfb");
+
+String referer = org.apache.commons.lang.StringUtils.defaultString(request.getHeader("referer"));
+Logger.debug.println(referer);
+
+request.setAttribute("isFromGPortal", referer.indexOf("gehr.lgchem.com") == -1);
+
+%><%@ include file="/web/D/D25WorkTime/D25WorkTimeCommonPreprocess.jsp" %><!DOCTYPE html>
+<%-- html 시작 선언 및 head 선언 --%>
+<jsp:include page="/include/header.jsp">
+    <jsp:param name="noCache" value="?${timestamp}" />
+    <jsp:param name="css" value="bootstrap-3.3.2.min.css" />
+    <jsp:param name="script" value="primitive-ext-string.js" />
+</jsp:include>
+<%-- body 시작 선언 및 body title --%>
+<jsp:include page="/include/body-header.jsp" />
+<div style="margin:100px auto 30px; height:100%; font-size:15px; text-align:center; line-height:35px">
+근무시간 단축 관련 시스템 구축·점검으로 인해<br />
+<u style="font-weight:bold">6월 29일(금) 20시부터 7월 1일(일) 24시까지</u><br />
+사무직 근무 시간 입력 사용이 제한됩니다.
+</div>
+<div class="buttonArea align_center"${isFromGPortal ? '' : ' style="display:none"'}>
+    <ul class="btn_crud">
+        <li><a href="javascript:void(0)" onclick="self.close()"><span><spring:message code="BUTTON.COMMON.CLOSE" /></span></a></li><%-- 닫기 --%>
+    </ul>
+</div>
+<jsp:include page="/include/body-footer.jsp" /><!-- body footer 부분 -->
+<jsp:include page="/include/footer.jsp"/>      <!-- html footer 부분 -->

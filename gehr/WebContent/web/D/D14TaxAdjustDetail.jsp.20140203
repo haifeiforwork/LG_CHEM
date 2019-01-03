@@ -1,0 +1,737 @@
+<%/******************************************************************************/
+/*                                                                              */
+/*   System Name  : MSS                                                         */
+/*   1Depth Name  : MY HR 정보                                                  */
+/*   2Depth Name  : 연말정산                                                    */
+/*   Program Name : 연말정산                                                    */
+/*   Program ID   : D14TaxAdjustDetail.jsp                                      */
+/*   Description  : 연말정산내역조회 조회                                       */
+/*   Note         : 없음                                                        */
+/*   Creation     :                                                             */
+/*   Update       : 2005-02-01  윤정현                                          */
+/*                  2005-11-24  @v1.1 lsa C2005111701000000551 및 버튼 분리작업 */
+/*                  2013-02-06  @v2  특별공제 > _특별공제_주택저당차입금이자공제액 /Y79   금액에 추가 */ 
+/*                  2014-01-15  C20140106_63914 /YSP 한부모가족 /YAA 특별공제 종합한도 초과액 추가  */ 
+/*                                                                              */
+/********************************************************************************/%>
+
+<%@ page contentType="text/html; charset=euc-kr" %>
+<%@ include file="/web/common/commonProcess.jsp" %>
+
+<%@ page import="java.util.Vector" %>
+<%@ page import="hris.D.*" %>
+<%@ page import="hris.D.rfc.*" %>
+<%@ page import="hris.common.*" %>
+<%@ page import="hris.D.D11TaxAdjust.*" %>
+<%@ page import="hris.D.D11TaxAdjust.rfc.*" %>
+
+<%
+    WebUserData user  = (WebUserData)session.getValue("user");
+
+    //D14TaxAdjustData data       = (D14TaxAdjustData)request.getAttribute("d14TaxAdjustData") ;
+    
+    
+    //C20140106_63914 구조변경되어 수정
+    Vector D14TaxAdjustData_vt = ( Vector ) request.getAttribute( "d14TaxAdjustData_vt" ) ;
+  
+    String           targetYear = (String)request.getAttribute("targetYear") ;
+
+    D00TaxAdjustPeriodRFC  periodRFC           = new D00TaxAdjustPeriodRFC();
+    D00TaxAdjustPeriodData taxAdjustPeriodData = new D00TaxAdjustPeriodData();
+    taxAdjustPeriodData = (D00TaxAdjustPeriodData)periodRFC.getPeriod(((WebUserData)session.getValue("user")).companyCode,((WebUserData)session.getValue("user")).empNo);
+
+    String currentDate = DataUtil.getCurrentDate();
+    int appl_from = DataUtil.getBetween(currentDate, DataUtil.removeStructur(taxAdjustPeriodData.APPL_FROM,"-"));
+    int appl_toxx = DataUtil.getBetween(currentDate, DataUtil.removeStructur(taxAdjustPeriodData.APPL_TOXX,"-"));
+    int disp_from = DataUtil.getBetween(currentDate, DataUtil.removeStructur(taxAdjustPeriodData.DISP_FROM,"-"));
+    int disp_toxx = DataUtil.getBetween(currentDate, DataUtil.removeStructur(taxAdjustPeriodData.DISP_TOXX,"-"));
+
+    TaxAdjustFlagData taxAdjustFlagData = ((TaxAdjustFlagData)session.getValue("taxAdjust"));
+    String Message ="";  
+    String curYear = "";
+    curYear = Integer.toString(Integer.parseInt( taxAdjustFlagData.targetYear ) - 1);
+    
+    	    D14TaxAdjustDetailRFC  rfc1  = new D14TaxAdjustDetailRFC();
+    //if( disp_from <= 0 && disp_toxx >= 0 ) {
+    //} else {
+    //    if ( targetYear.equals(taxAdjustFlagData.targetYear) ) {
+    //        data = null; 
+    //        data = (D14TaxAdjustData)rfc1.detail( user.empNo, targetYear );
+    //        
+    //       // Vector d14TaxAdjustData_vt = rfc.detail( user.empNo, targetYear );
+    //        
+    //        
+    //    }
+    //}
+    String Gubn = "Detail";   //@v1.1
+    
+
+
+%>
+
+<html>
+<head>
+<title>ESS</title>
+<link rel="stylesheet" href="<%= WebUtil.ImageURL %>css/ehr.css" type="text/css">
+<script language="javascript" src="<%= WebUtil.ImageURL %>css/ess.js"></script>
+<script language="JavaScript" src="<%= WebUtil.ImageURL %>js/snsscript.js"></script>
+<style>
+<!--
+.xtr01 {  font-family: "돋움", "돋움체"; font-size: 12px; background-color: #FFDECE}
+.xtd01 {  font-family: "굴림", "굴림체"; font-size: 9pt; font-weight: normal; color: #333333; background-color: #FFC0A2; padding-left: 10px}
+.xtd02 {  font-family: "굴림", "굴림체"; font-size: 9pt; color: #333333; padding-left: 5px; background-color: #FFC0A2; line-height: 14pt}
+.xtd03 {  font-family: "굴림", "굴림체"; font-size: 9pt; background-color: #FFC0A2; font-weight: normal; text-align: center; line-height: 14pt}
+-->
+</style>
+<SCRIPT LANGUAGE="JavaScript">
+
+
+// (해외근무자)국내 연말정산 내역조회
+function do_Taxadj() {
+//    if( do_Check(1) ) {
+        document.form1.action = "<%= WebUtil.ServletURL %>hris.D.D14TaxAdjustDetail_k_SV";
+        document.form1.method = "post";
+        document.form1.target = "menuContentIframe";
+        document.form1.submit();
+//    }
+}
+
+function showList() {
+    var up = document.form1;
+    var up1 = eval(up.year.options[up.year.options.selectedIndex].value);
+    document.form1.action = "<%= WebUtil.ServletURL %>hris.D.D14TaxAdjustDetailSV?targetYear="+up1;
+    document.form1.method = "post" ;
+    document.form1.target = "menuContentIframe" ;
+    document.form1.submit() ;
+}
+//-->
+</SCRIPT>
+</head>
+
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<form name="form1" method="post">
+  <table width="791" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="11">&nbsp;</td>
+      <td>
+        <table width="780" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td width="780">
+              <table width="780" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td height="5" colspan="2"></td>
+                </tr>
+                <tr>
+                  <td class="title02"><img src="<%= WebUtil.ImageURL %>ehr/title01.gif">연말정산 내역 조회</td>
+                  <td align="right"></td>
+                </tr>
+              </table></td>
+          </tr>
+          <tr>
+            <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="titleLine"><img src="<%= WebUtil.ImageURL %>ehr/space.gif"></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td height="10">&nbsp;</td>
+          </tr>
+    <tr>
+      <td class="font01">연도 :
+        <select name="year">
+<%
+    String selectYear = taxAdjustFlagData.targetYear;
+    if( disp_from <= 0 && disp_toxx >= 0 ) {
+    } else {
+        selectYear = Integer.toString(Integer.parseInt( taxAdjustFlagData.targetYear ) - 1);
+        if ( targetYear.equals(taxAdjustFlagData.targetYear) ) {
+            targetYear = Integer.toString(Integer.parseInt( targetYear ) - 1);
+        }
+    }
+
+    for( int i = Integer.parseInt( selectYear )  ; i <= Integer.parseInt( selectYear ) ; i++ ) {    
+  //  for( int i = Integer.parseInt( selectYear )-3 ; i <= Integer.parseInt( selectYear ) ; i++ ) {  
+%>
+         <option value="<%= i %>" <%= i == Integer.parseInt(targetYear) ? "selected" : "" %>><%= i %></option>
+<%
+    }
+%>
+        </select>
+        <a href="javascript:showList();"><img src="<%= WebUtil.ImageURL %>btn_serch02.gif" border="0" align="absmiddle"></a>
+      </td>
+    </tr>
+    <%@ include file="../D/D11TaxAdjust/D11TaxAdjustButton.jsp"  %>  
+
+    <tr>
+      <td>
+        <!--개인정보 테이블 시작-->
+        <table width="780" border="0" cellspacing="0" cellpadding="0" height="22">
+<%
+
+    
+    //if(user.e_oversea.equals("X")||user.e_oversea.equals("L")) {
+    if(user.e_oversea.equals("X999")||user.e_oversea.equals("L999")) {
+    //국내 연말정산 내역조회 해외근무자에게 제공하는것을 중단함
+%>
+          <tr>
+            <td width="63"></td>
+            <td width="72"> </td>
+            <td width="72"> </td>
+            <td width="109"></td>
+            <td width="109"></td>
+            <td width="109"></td>
+            <td width="102"></td>
+            <td width="144">
+            <a href="javascript:do_Taxadj();" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Taxadj','','<%= WebUtil.ImageURL %>k_on.gif',1)"><img name="Taxadj" border="0" src="<%= WebUtil.ImageURL %>k_off.gif" alt="국내소득연말정산조회"></a>
+            </td>
+          </tr>
+<%
+    } else {
+%>
+          <tr>
+            <td width="63"></td>
+            <td width="72"> </td>
+            <td width="72"> </td>
+            <td width="109"></td>
+            <td width="109"></td>
+            <td width="109"></td>
+            <td width="102"></td>
+            <td width="144">
+          </tr>
+<%
+    }
+%>
+        </table>
+        <!--개인정보 테이블 끝-->
+      </td>
+    </tr>
+    <tr>
+      <td>
+      
+<!-----------------T A B L E -- S T A R T-------------------------------------------------------------------------------->
+<%
+
+    Message    = (String)rfc1.GetMessage(user.empNo, targetYear );
+    String title="";
+    out.println("D14TaxAdjustData_vt:"+D14TaxAdjustData_vt.toString());
+     if( D14TaxAdjustData_vt.size() > 0 ) { 
+      	for ( int i = 0 ; i < D14TaxAdjustData_vt.size() ; i++ ) {
+      	      D14TaxAdjustData data = ( D14TaxAdjustData ) D14TaxAdjustData_vt.get( i ) ; 
+      	      
+	    if (data.isUsableData.equals("NO")&& Message.equals("")){
+	        Message = "해당연도에 연말정산 내역 데이타가 없습니다.";
+	    } 
+      	    
+%>
+
+        
+<%
+     if(!Message.equals("")||data.isUsableData.equals("NO")){
+    //if(data.isUsableData.equals("NO") ||  ( targetYear.equals("2007") && ( Long.parseLong("20080111") > Long.parseLong(DataUtil.getCurrentDate())  ) )  ){
+%>
+        <table width="780" border="0" cellspacing="1" cellpadding="2" bordercolor="#999999" class="table01">
+          <tr>
+            <td class="td03" align="center"><br><%=Message%><br>&nbsp;</td>
+          </tr>
+        </table>
+
+<%
+        break;
+
+
+    } else {           
+
+	if ( data.Count <1  ){
+                    continue;
+        }
+    
+    	if (i==0) {
+    	    title = "국내";
+        }else if (i==1) {  
+    	    title = "해외근무기간(1~6월)"; //S 해외근무기간(1~6월)
+        }else if (i==2) { 
+    	    title = "해외근무기간(7~12월)";  //T 해외근무기간(7~12월)
+        }else if (i==3) { 
+    	    title = "국내근무기간";  //L 국내근무기간 
+    	}  
+%>
+<%     	if (i!=0) {
+%>
+	<br>
+
+<%      }    	
+%>
+
+        <table width="780" border="0" cellspacing="1" cellpadding="2">
+          <tr>
+            <td class="font01" style="padding-bottom:2px"><img src="/web/images/ehr/icon_o.gif"> <%=title%></td>
+          </tr>
+        </table> 
+
+        <!--연말정산 내역 테이블 시작-->
+        <table width="780" border="0" cellspacing="1" cellpadding="2" bordercolor="#999999" class="table01">
+          <tr>
+            <td class="xtd01" rowspan="4">전근무지</td>
+            <td class="td01" colspan="3">급여총액</td>
+<%      for ( int j = 0 ; j < D14TaxAdjustData_vt.size() ; j++ ) {
+      	      D14TaxAdjustData data1 = ( D14TaxAdjustData ) D14TaxAdjustData_vt.get( j ) ; 
+%> 
+            <td class="tr01" align="right">
+<%=(data._전근무지_급여총액    ==0) ? ""    : (WebUtil.printNumFormat(data1._전근무지_급여총액,0)+" 원")%>&nbsp; 
+            </td>
+<%	}	%> 
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">상여총액</td>
+            <td class="tr01" align="right">
+<%=(data._전근무지_상여총액               ==0)?""    :(WebUtil.printNumFormat(data._전근무지_상여총액,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">인정상여</td>
+            <td class="tr01" align="right">
+<%=(data._전근무지_인정상여               ==0)?""    :(WebUtil.printNumFormat(data._전근무지_인정상여,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">비과세소득</td>
+            <td class="tr01" align="right">
+<% double bgs = data._전근무지_비과세해외소득 + data._전근무지_비과세초과근무 + data._전근무지_기타비과세대상; %>
+<%=(bgs    ==0)?""                       :(WebUtil.printNumFormat(bgs                     ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="xtd01" rowspan="4">현근무지</td>
+            <td class="td01" colspan="3">급여총액</td>
+            <td class="tr01" align="right">
+<%=(data._급여총액               ==0)?""             :(WebUtil.printNumFormat(data._급여총액               ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">상여총액</td>
+            <td class="tr01" align="right"> 
+<%=(data._상여총액               ==0)?""             :(WebUtil.printNumFormat(data._상여총액               ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">인정상여</td>
+            <td class="tr01" align="right">
+<%=(data._인정상여               ==0)?""             :(WebUtil.printNumFormat(data._인정상여               ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">비과세소득</td>
+            <td class="tr01" align="right">
+<% double bgs2 = (data._비과세소득_국외근로 + data._비과세소득_야간근로수당 + data._비과세소득_기타비과세) - (data._전근무지_비과세해외소득 + data._전근무지_비과세초과근무 + data._전근무지_기타비과세대상); %>
+<%=(bgs2    ==0)?""                       :(WebUtil.printNumFormat(bgs2                     ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="xtd01" colspan="4">총급여</td>
+            <td class="xtr01" align="right">
+<%=(data._총급여                 ==0)?""             :(WebUtil.printNumFormat(data._총급여                 ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="4">근로소득공제</td>
+            <td class="tr01" align="right">
+<%=(data._근로소득공제           ==0)?""              :(WebUtil.printNumFormat(data._근로소득공제           ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="xtd01" colspan="4">과세대상근로소득금액</td>
+            <td class="xtr01" align="right">
+<%=(data._과세대상근로소득금액   ==0)?""               :(WebUtil.printNumFormat(data._과세대상근로소득금액   ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" rowspan="3">기본공제</td>
+            <td class="td01" colspan="3">본인</td>
+            <td class="tr01" align="right">
+<%=(data._기본공제_본인          ==0)?""               :(WebUtil.printNumFormat(data._기본공제_본인          ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">배우자</td>
+            <td class="tr01" align="right">
+<%=(data._기본공제_배우자        ==0)?""               :(WebUtil.printNumFormat(data._기본공제_배우자        ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">부양가족</td>
+            <td class="tr01" align="right">
+<%=(data._기본공제_부양가족      ==0)?""    :(WebUtil.printNumFormat(data._기본공제_부양가족      ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" rowspan="6">추가공제</td>
+            <!--
+            <td class="td01" colspan="3">경로우대(65~69세)</td>
+            <td class="tr01" align="right">
+<%=(data._추가공제_경로우대      ==0)?""    :(WebUtil.printNumFormat(data._추가공제_경로우대      ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>-->
+            <td class="td01" colspan="3">경로우대(70세이상)</td>
+            <td class="tr01" align="right">
+<%=(data._추가공제_경로우대70      ==0)?""    :(WebUtil.printNumFormat(data._추가공제_경로우대70      ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">장애인</td>
+            <td class="tr01" align="right">
+<%=(data._추가공제_장애인        ==0)?""    :(WebUtil.printNumFormat(data._추가공제_장애인        ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">부녀자</td>
+            <td class="tr01" align="right">
+<%=(data._추가공제_부녀자        ==0)?""    :(WebUtil.printNumFormat(data._추가공제_부녀자        ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">자녀양육비</td>
+            <td class="tr01" align="right">
+<%=(data._추가공제_자녀양육비    ==0)?""    :(WebUtil.printNumFormat(data._추가공제_자녀양육비    ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">출산·입양</td>
+            <td class="tr01" align="right">
+<%=(data._추가공제_출산입양    ==0)?""    :(WebUtil.printNumFormat(data._추가공제_출산입양    ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>   
+          <!--CSR ID:C20140106_63914  한부모가족 /YSP -->
+          <tr>
+            <td class="td01" colspan="3">한부모가족</td>
+            <td class="tr01" align="right">
+<%=(data._추가공제_한부모가족    ==0)?""    :(WebUtil.printNumFormat(data._추가공제_한부모가족    ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>                
+          <tr>
+            <td class="td01" colspan="4">다자녀 추가공제</td>
+            <td class="tr01" align="right">
+<%=(data._소수공제자추가공제     ==0)?""    :(WebUtil.printNumFormat(data._소수공제자추가공제     ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+
+          <tr>
+            <td class="td01" rowspan="3">연금보험료공제</td>
+            <td class="td01" colspan="3">국민연금 보험료공제</td>
+            <td class="tr01" align="right">
+<%=(data._연금보험료공제_국민         ==0)?""    :(WebUtil.printNumFormat(data._연금보험료공제_국민         ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr> 
+            <td class="td01" colspan="3">기타연금 보험료공제</td>
+            <td class="tr01" align="right">
+<%=(data._연금보험료공제_기타         ==0)?""    :(WebUtil.printNumFormat(data._연금보험료공제_기타         ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr> 
+            <td class="td01" colspan="3">퇴직연금소득공제</td>
+            <td class="tr01" align="right">
+<%=(data._연금보험료공제_퇴직         ==0)?""    :(WebUtil.printNumFormat(data._연금보험료공제_퇴직         ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>       
+
+          <tr>
+            <td class="td01" rowspan="7">특별공제</td>
+            <td class="td01" colspan="3">보험료(건강보험,고용보험,보장성보험,장애인전용)</td>
+            <td class="tr01" align="right">
+<%=(data._특별공제_보험료        ==0)?""    :(WebUtil.printNumFormat(data._특별공제_보험료        ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">의료비</td>
+            <td class="tr01" align="right">
+<%=(data._특별공제_의료비        ==0)?""    :(WebUtil.printNumFormat(data._특별공제_의료비        ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">교육비</td>
+            <td class="tr01" align="right">
+<%=(data._특별공제_교육비        ==0)?""    :(WebUtil.printNumFormat(data._특별공제_교육비        ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">주택자금(주택임차원리금상환액·월세액·저당차입이자상환액)</td>
+            <td class="tr01" align="right">
+<%  //C20130206_68828
+    double Y54_Y68_Y5L_Y79 = (data._특별공제_주택자금이자상환액 + data._특별공제_월세액+data._특별공제_주택임차차입금원리금상환액+ data._특별공제_주택저당차입금이자공제액 )  ; %>
+<%=(Y54_Y68_Y5L_Y79      ==0)?""    :(WebUtil.printNumFormat(Y54_Y68_Y5L_Y79 ,0)+" 원")%>&nbsp;
+            </td>
+          </tr> 
+               
+          <tr>
+            <td class="td01" colspan="3">기부금</td>
+            <td class="tr01" align="right">
+<%=(data._특별공제_기부금        ==0)?""    :(WebUtil.printNumFormat(data._특별공제_기부금        ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+ 
+          <tr>
+            <td class="xtd01" colspan="3">계</td>
+            <td class="xtr01" align="right">
+<%=(data._특별공제계             ==0)?""   :(WebUtil.printNumFormat(data._특별공제계             ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">표준공제</td>
+            <td class="tr01" align="right">
+<%= data._특별공제계             >1000000 ? ""   :"1,000,000 원" %>&nbsp;
+            </td>
+          </tr>      
+          <tr>
+            <td class="td01" colspan="4">차감소득금액</td>
+            <td class="tr01" align="right">
+<%=(data._차감소득금액             ==0)?""   :(WebUtil.printNumFormat(data._차감소득금액             ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>                   
+<%
+// 그밖의소득공제계 합산
+    double _그밖의소득공제계 = data._개인연금저축소득공제 + data._연금저축소득공제 
+                             + data._소기업등소득공제 + data._특별공제_주택마련저축소득공제
+                             + data._투자조합출자등소득공제 + data._신용카드공제
+                             + data._우리사주조합소득공제 + data._세액감면_장기주식형저축소득공제;
+%>
+          <tr>
+            <td class="td01" rowspan="9">그밖의 소득공제</td>
+          
+            <td class="td01" colspan="3">개인연금 저축공제</td>
+            <td class="tr01" align="right">
+<%=(data._개인연금저축소득공제 == 0)?"":(WebUtil.printNumFormat(data._개인연금저축소득공제,0)+" 원")%>&nbsp;
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">연금저축 소득공제</td>
+            <td class="tr01" align="right">
+<%=(data._연금저축소득공제 == 0)?"":(WebUtil.printNumFormat(data._연금저축소득공제,0)+" 원")%>&nbsp;
+          </tr>  
+          <tr>
+            <td class="td01" colspan="3">소기업.소상공인 공제부금 소득공제</td>
+            <td class="tr01" align="right">
+<%=(data._소기업등소득공제 == 0)?"":(WebUtil.printNumFormat(data._소기업등소득공제,0)+" 원")%>&nbsp;
+          </tr>              
+          <tr>
+            <td class="td01" colspan="3">주택마련저축소득공제(청약저축,주택청약종합저축,장기주택마련저축)</td>
+            <td class="tr01" align="right">
+<%=(data._특별공제_주택마련저축소득공제 == 0)?"":(WebUtil.printNumFormat(data._특별공제_주택마련저축소득공제,0)+" 원")%>&nbsp;
+          </tr>              
+
+          
+          <tr>
+            <td class="td01" colspan="3">투자조합 출자소득공제</td>
+            <td class="tr01" align="right">
+<%=(data._투자조합출자등소득공제 ==0)?""    :(WebUtil.printNumFormat(data._투자조합출자등소득공제 ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>          
+          <tr>
+            <td class="td01" colspan="3">신용카드 등 소득공제</td>
+            <td class="tr01" align="right">
+<%=(data._신용카드공제           ==0)?""    :(WebUtil.printNumFormat(data._신용카드공제           ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">우리사주조합 소득공제</td>
+            <td class="tr01" align="right">
+<%=(data._우리사주조합소득공제           ==0)?""    :(WebUtil.printNumFormat(data._우리사주조합소득공제           ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>    
+          <tr>
+            <td class="td01" colspan="3">장기주식형저축소득공제</td>
+            <td class="tr01" align="right">
+<%=(data._세액감면_장기주식형저축소득공제           ==0)?""    :(WebUtil.printNumFormat(data._세액감면_장기주식형저축소득공제           ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>    
+          <tr>
+            <td class="xtd01" colspan="3">그밖의 소득공제 계</td>
+            <td class="xtr01" align="right">
+<%=(_그밖의소득공제계           ==0)?""    :(WebUtil.printNumFormat(_그밖의소득공제계           ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>        
+          <!--CSR ID:C20140106_63914  특별공제 종합한도 초과액  -->
+          <tr>
+            <td class="xtd01" colspan="4">특별공제 종합한도 초과액</td>
+            <td class="xtr01" align="right">
+<%=(data._종합소득과세표준       ==0)?""    :(WebUtil.printNumFormat(data._특별공제_종합한도_초과액       ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+
+          <tr>
+            <td class="xtd01" colspan="4">종합소득 과세표준</td>
+            <td class="xtr01" align="right">
+<%=(data._종합소득과세표준       ==0)?""    :(WebUtil.printNumFormat(data._종합소득과세표준       ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="xtd01" colspan="4">산출세액</td>
+            <td class="xtr01" align="right">
+<%=(data._산출세액               ==0)?""    :(WebUtil.printNumFormat(data._산출세액               ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+<%
+//  _감면세액계 = data._세액감면_소득세법정산 + data._세액감면_조세특례제한법
+    double _감면세액계 = data._세액감면_소득세법정산 + data._세액감면_조세특례제한법 ;
+%>
+          <tr>
+            <td class="td01" rowspan="3">세액감면</td>
+            <td class="td01" colspan="3">소득세법</td>
+            <td class="tr01" align="right">
+<%=(data._세액감면_소득세법정산  ==0)?""    :(WebUtil.printNumFormat(data._세액감면_소득세법정산   ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">조세특례제한법</td>
+            <td class="tr01" align="right">
+<%=(data._세액감면_조세특례제한법==0)?""    :(WebUtil.printNumFormat(data._세액감면_조세특례제한법 ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="xtd01" colspan="3">감면세액계</td>
+            <td class="xtr01" align="right">
+<%=(_감면세액계                 ==0)?""     :(WebUtil.printNumFormat(_감면세액계                   ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" rowspan="7">세액공제</td>
+            <td class="td01" colspan="3">근로소득</td>
+            <td class="tr01" align="right">
+<%=(data._세액공제_근로소득      ==0)?""    :(WebUtil.printNumFormat(data._세액공제_근로소득      ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">납세조합공제</td>
+            <td class="tr01" align="right">
+<%=(data._납세조합공제    ==0)?""    :(WebUtil.printNumFormat(data._납세조합공제    ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">주택차입금</td>
+            <td class="tr01" align="right">
+<%=(data._세액공제_주택차입금    ==0)?""    :(WebUtil.printNumFormat(data._세액공제_주택차입금    ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <!--<tr>
+            <td class="td01" colspan="3">장기증권저축</td>
+            <td class="tr01" align="right">
+<%=(data._장기증권저축==0)?""    :(WebUtil.printNumFormat(data._장기증권저축,0)+" 원")%>&nbsp;
+            </td>
+          </tr>-->
+          <tr>
+            <td class="td01" colspan="3">정치기부금</td>
+            <td class="tr01" align="right">
+<%=(data._정치기부금==0)?""    :(WebUtil.printNumFormat(data._정치기부금,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td01" colspan="3">외국납부</td>
+            <td class="tr01" align="right">
+<%=(data._세액공제_외국납부      ==0)?""    :(WebUtil.printNumFormat(data._세액공제_외국납부      ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="xtd01" colspan="3">세액공제계</td>
+            <td class="xtr01" align="right">
+<%=(data._세액공제합계           ==0)?""    :(WebUtil.printNumFormat(data._세액공제합계           ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="td03">갑근세</td>
+            <td class="td03">주민세</td>
+            <td class="td03">농특세</td>
+            <td class="xtd03">계</td>
+          </tr>
+          <tr>
+            <td class="xtd01">결정세액</td>
+            <td class="xtr01" align="right">
+<%=(data._결정세액_갑근세        ==0)?""    :(WebUtil.printNumFormat(  data._결정세액_갑근세,0)+" 원")%>&nbsp;
+            </td>                 
+            <td class="xtr01" align="right">                 
+<%=(data._결정세액_주민세        ==0)?""    :(WebUtil.printNumFormat(  data._결정세액_주민세,0)+" 원")%>&nbsp;
+            </td>                 
+            <td class="xtr01" align="right">                 
+<%=(data._결정세액_농특세        ==0)?""    :(WebUtil.printNumFormat(  data._결정세액_농특세,0)+" 원")%>&nbsp;
+            </td>                 
+            <td class="xtr01" align="right">                 
+<%=(data._결정세액합계           ==0)?""    :(WebUtil.printNumFormat( data._결정세액합계 ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+<%
+ 
+    double _전근무지기납부세액합계 = data._전근무지_납부소득세 + data._전근무지_납부주민세 +  data._전근무지_납부특별세;
+%>
+
+          <tr>
+            <td class="xtd01">기납부세액(전)</td>
+            <td class="tr01" align="right">
+<%=(data._전근무지_납부소득세      ==0)?""    :(WebUtil.printNumFormat(data._전근무지_납부소득세      ,0)+" 원")%>&nbsp;
+            </td>
+            <td class="tr01" align="right">
+<%=(data._전근무지_납부주민세      ==0)?""    :(WebUtil.printNumFormat(data._전근무지_납부주민세      ,0)+" 원")%>&nbsp;
+            </td>
+            <td class="tr01" align="right">&nbsp;
+<%=(data._전근무지_납부특별세      ==0)?""    :(WebUtil.printNumFormat(data._전근무지_납부특별세      ,0)+" 원")%>            
+            </td>
+            <td class="xtr01" align="right">
+<%=( _전근무지기납부세액합계         ==0)?""    :(WebUtil.printNumFormat( _전근무지기납부세액합계  ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+<%
+    double _기납부세액_갑근세1 = data._기납부세액_갑근세 - data._전근무지_납부소득세 ;
+    double _기납부세액_주민세1 = data._기납부세액_주민세 - data._전근무지_납부주민세 ;
+    double _기납부세액_농특세1 = data._기납부세액_농특세 - data._전근무지_납부특별세 ;
+    double _기납부세액합계1 = data._기납부세액합계 - _전근무지기납부세액합계 ;
+%>                    
+          <tr>
+            <td class="xtd01">기납부세액(현)</td>
+            <td class="tr01" align="right">
+<%=(_기납부세액_갑근세1      ==0)?""    :(WebUtil.printNumFormat(_기납부세액_갑근세1      ,0)+" 원")%>&nbsp;
+            </td>
+            <td class="tr01" align="right">
+<%=(_기납부세액_주민세1      ==0)?""    :(WebUtil.printNumFormat(_기납부세액_주민세1      ,0)+" 원")%>&nbsp;
+            </td>
+            <td class="tr01" align="right">
+<%=(_기납부세액_농특세1      ==0)?""    :(WebUtil.printNumFormat(_기납부세액_농특세1      ,0)+" 원")%>&nbsp;
+            </td>
+            <td class="xtr01" align="right">
+<%=(_기납부세액합계1         ==0)?""    :(WebUtil.printNumFormat(_기납부세액합계1         ,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td class="xtd01">차감징수세액</td><!-- 원단위 절사 -->
+            <td class="xtr01" align="right">
+<%=(data._차감징수세액_갑근세    ==0)?""    :(WebUtil.printNumFormat( data._차감징수세액_갑근세,0)+" 원")%>&nbsp;
+            </td>
+            <td class="xtr01" align="right">
+<%=(data._차감징수세액_주민세    ==0)?""    :(WebUtil.printNumFormat( data._차감징수세액_주민세,0)+" 원")%>&nbsp;
+            </td>
+            <td class="xtr01" align="right">
+<%=(data._차감징수세액_농특세    ==0)?""    :(WebUtil.printNumFormat( data._차감징수세액_농특세,0)+" 원")%>&nbsp;
+            </td>
+            <td class="xtr01" align="right">
+<%=(data._차감징수세액합계       ==0)?""    :(WebUtil.printNumFormat( data._차감징수세액합계,0)+" 원")%>&nbsp;
+            </td>
+          </tr>
+        </table>
+        
+        
+    <!--연말정산 내역 테이블 끝-->
+<%
+    }
+%>
+
+<!-------------T A B L E -- E N D--------------------------------------------------------------------------------------------->
+<%
+	}  // end for
+    } // end if
+%>
+      </td>
+    </tr>
+    <tr><td>&nbsp;</td></tr>
+  </table>
+  <input type="hidden" name="selectYear"       value="">
+</form>
+<%@ include file="/web/common/commonEnd.jsp" %>

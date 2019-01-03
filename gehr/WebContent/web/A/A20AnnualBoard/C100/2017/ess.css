@@ -1,0 +1,69 @@
+.table01 {  font-family: "바탕", "바탕체"; font-size: 9pt; background-color: #CCCCCC; padding-top: 5px; padding-right: 10px; padding-bottom: 5px; padding-left: 10px}
+
+.table02 {  font-family: "바탕", "바탕체"; font-size: 9pt; background-color: #CCCCCC}
+
+.tr01 {  font-family: "바탕", "바탕체"; font-size: 12px; background-color: #FFFFFF}
+
+.td01 {  font-family: "바탕", "바탕체"; font-size: 9pt; font-weight: normal; color: #333333; background-color: #EBEBEB; padding-left: 10px}
+
+.td02 {  font-family: "바탕", "바탕체"; font-size: 9pt; color: #333333; padding-left: 5px; background-color: #FFFFFF; line-height: 14pt}
+
+.td03 {  font-family: "바탕", "바탕체"; font-size: 9pt; background-color: #EBEBEB; font-weight: normal; text-align: center; line-height: 14pt}
+
+.td04 {  font-family: "바탕", "바탕체"; font-size: 11pt; background-color: #FFFFFF; text-align: center}
+
+.input01 {  font-family: "바탕", "바탕체"; font-size: 9pt; border: 1 solid #B9C7F1}
+
+.input02 {  font-family: "바탕", "바탕체"; font-size: 9pt; border: 1 solid #FFFFFF}
+
+.input03 {  font-family: "바탕", "바탕체"; font-size: 9pt; border: 1 solid #CCCCCC}
+
+.input04 {  font-family: "바탕", "바탕체"; font-size: 9pt; border: 1 solid #CCCCCC; background-color: #F9F9F9}
+
+.title01 {  font-family: "바탕", "바탕체"; font-size: 14pt; font-weight: bolder; color: #000000; padding-left: 32px; background-image: url(../title_bg.gif); background-repeat: no-repeat; height: 26px; width: 350px}
+
+.font01 {  font-family: "바탕", "바탕체"; font-size: 9pt; color: #000000; font-weight: bold}
+
+.style01 {  font-family: "바탕", "바탕체"; font-size: 11pt; line-height: 16px; color: #333333}
+
+
+a:link {  color: #666666; text-decoration: none}
+
+a:visited {  color: #666666; text-decoration: none}
+
+a:hover {  color: #666666; text-decoration: underline}
+
+.buttonArea {position:relative; display:block; text-align:right; margin-bottom:10px;}
+.underList {margin-top:-30px;}
+/*.btn_crud {margin:6px 0; padding-bottom:5px;}*/
+.btn_crud {margin:0px 0; padding-bottom:0px;}
+.btn_crud li {display:inline; vertical-align:middle;}
+.btn_crud img {vertical-align:middle; margin:0 3px;}
+.buttonArea .inlineComment {position:absolute; left:0;}
+
+.btn_crud a, .btn_crud a span {
+	display: inline-block;
+	position: relative;
+	margin-right: 4px;
+
+	background: url(/web/images/btn_crud_normal.gif) no-repeat left top;
+	*display: inline;
+	*zoom: 1;
+	*margin-right: 0px;
+	cursor:hand;
+}
+.btn_crud a span {
+	color: #222;
+
+	left: 8px;
+	line-height: 26px;
+	padding: 0 15px 0 8px;
+	background-position: right top;
+	*margin-right: 8px;
+}
+.btn_crud a span:hover {color: #c8294b;}
+.btn_crud a.darken, .btn_crud a.darken span {background: url(/web/images/btn_crud_darken.gif) no-repeat left top;	color: #EBEBEB;}
+.btn_crud a.darken span {background-position: right top;}
+.btn_crud a.darken span:hover {color: #ffffff;}
+.btn_crud a.dimmed, .btn_crud a.dimmed span {background: url(/web/images/btn_crud_dimmed.gif) no-repeat left top;	color: #b4b4b4; cursor: default;}
+.btn_crud a.dimmed span {background-position: right top;}

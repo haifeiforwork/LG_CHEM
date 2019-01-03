@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<xs:schema
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:mm="http://temp.openuri.org/com/lgchem/ep/cbs/p13n/mymenubatch/MyMenu.xsd"
+	targetNamespace="http://temp.openuri.org/com/lgchem/ep/cbs/p13n/mymenubatch/MyMenu.xsd"
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified">
+  <xs:element name="MyMenuResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="MenuGroupInfo" type="mm:MenuGroupInfo" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+	  <xs:attribute name="SystemCode" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="MenuGroupInfo">
+    <xs:sequence>
+      <xs:element name="MenuGroupInfo" type="mm:MenuGroupInfo" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="MenuInfo" type="mm:MenuInfo" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="Title" type="xs:string" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="MenuInfo">
+    <xs:sequence>
+      <xs:element name="UserInfo" type="mm:UserInfo" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="RoleInfo" type="mm:RoleInfo" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+	<xs:attribute name="Title" type="xs:string" use="required"/>
+	<xs:attribute name="Url" type="xs:string" use="required"/>
+	<xs:attribute name="Desc" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="UserInfo">
+    <xs:sequence>
+      <xs:element name="UserSabn" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RoleInfo">
+    <xs:sequence>
+      <xs:element name="DeptCode" type="xs:string"/>
+      <xs:element name="JobCode" type="xs:string"/>
+      <xs:element name="DutyCode" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

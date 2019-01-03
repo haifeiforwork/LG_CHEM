@@ -1,0 +1,138 @@
+package hris.A;
+
+import com.sns.jdf.EntityData;
+
+/**
+ * A01SelfDetailMRLicenseData.java
+ * MR인증시험 결과 데이타
+ *   [관련 RFC] : ZGHR_RFC_MR_CERTI_LIST
+ *   create : [CSR ID:3350062] MR인증내역 조회화면 반영 
+ * 
+ * @author 이지은
+ * @version 1.0, 2017/04/08
+ */
+public class A01SelfDetailMRLicenseData extends EntityData {
+
+    public String 	PERNR	;//	NUMC	8	사원 번호
+    public String 	ENAME	;//이름
+    public String 	BEGDA	;//	DATS	8	시작일
+    public String 	ORGEH	;//	조직코드
+    public String 	ORGTX	;//	조직명
+    public String 	TITEL		;//	직위
+    public String 	LANG_TYPE	;//과목
+    public String 	STEXT	;//	오브젝트 이름
+    public String 	MRT_LEVEL	;//	Test Level
+    public String 	MRT_SCORE	;//	Test Score
+    public String 	MRT_ENDDA	;//	인증 만료 일
+    public String 	LAST_FLAG	;//	인정점수
+    public String  	TOTL_SCOR;//Total Num(3)
+    public String  	ZTOTL_SCOR;//Total Char(3)
+    public String  	SORT;//Sort 순서
+    public String	E_RETURN;
+    public String	E_MESSAGE;
+    
+	public String getPERNR() {
+		return PERNR;
+	}
+	public void setPERNR(String pERNR) {
+		PERNR = pERNR;
+	}
+	public String getENAME() {
+		return ENAME;
+	}
+	public void setENAME(String eNAME) {
+		ENAME = eNAME;
+	}
+	public String getBEGDA() {
+		return BEGDA;
+	}
+	public void setBEGDA(String bEGDA) {
+		BEGDA = bEGDA;
+	}
+	public String getORGEH() {
+		return ORGEH;
+	}
+	public void setORGEH(String oRGEH) {
+		ORGEH = oRGEH;
+	}
+	public String getORGTX() {
+		return ORGTX;
+	}
+	public void setORGTX(String oRGTX) {
+		ORGTX = oRGTX;
+	}
+	public String getTITEL() {
+		return TITEL;
+	}
+	public void setTITEL(String tITEL) {
+		TITEL = tITEL;
+	}
+	public String getLANG_TYPE() {
+		return LANG_TYPE;
+	}
+	public void setLANG_TYPE(String lANG_TYPE) {
+		LANG_TYPE = lANG_TYPE;
+	}
+	public String getSTEXT() {
+		return STEXT;
+	}
+	public void setSTEXT(String sTEXT) {
+		STEXT = sTEXT;
+	}
+	public String getMRT_LEVEL() {
+		return MRT_LEVEL;
+	}
+	public void setMRT_LEVEL(String mRT_LEVEL) {
+		MRT_LEVEL = mRT_LEVEL;
+	}
+	public String getMRT_SCORE() {
+		return MRT_SCORE;
+	}
+	public void setMRT_SCORE(String mRT_SCORE) {
+		MRT_SCORE = mRT_SCORE;
+	}
+	public String getMRT_ENDDA() {
+		return MRT_ENDDA;
+	}
+	public void setMRT_ENDDA(String mRT_ENDDA) {
+		MRT_ENDDA = mRT_ENDDA;
+	}
+	public String getLAST_FLAG() {
+		return LAST_FLAG;
+	}
+	public void setLAST_FLAG(String lAST_FLAG) {
+		LAST_FLAG = lAST_FLAG;
+	}
+	public String getTOTL_SCOR() {
+		return TOTL_SCOR;
+	}
+	public void setTOTL_SCOR(String tOTL_SCOR) {
+		TOTL_SCOR = tOTL_SCOR;
+	}
+	public String getZTOTL_SCOR() {
+		return ZTOTL_SCOR;
+	}
+	public void setZTOTL_SCOR(String zTOTL_SCOR) {
+		ZTOTL_SCOR = zTOTL_SCOR;
+	}
+	public String getSORT() {
+		return SORT;
+	}
+	public void setSORT(String sORT) {
+		SORT = sORT;
+	}
+	public String getE_RETURN() {
+		return E_RETURN;
+	}
+	public void setE_RETURN(String e_RETURN) {
+		E_RETURN = e_RETURN;
+	}
+	public String getE_MESSAGE() {
+		return E_MESSAGE;
+	}
+	public void setE_MESSAGE(String e_MESSAGE) {
+		E_MESSAGE = e_MESSAGE;
+	}
+
+  
+}

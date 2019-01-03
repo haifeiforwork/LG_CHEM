@@ -1,0 +1,1290 @@
+@charset "utf-8";
+@import "ehr_board.css";
+@import "ehr_button.css";
+/* HTML5 display-role reset for older browsers */
+article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section {display: block;}
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video {
+	margin: 0;padding: 0;border: 0;font-size: 100%;font: inherit;vertical-align: baseline;}
+ol,ul {list-style: none;}
+img{	margin: 0;padding: 0;border: 0;font-size: 100%;font: inherit;vertical-align: middle;}
+.clear {clear:both;}
+
+body {
+	line-height: 1;
+	font-family: "Malgun Gothic", "Simsun", 'dotum';
+}
+input {
+	vertical-align:middle;
+}
+input.text {
+	border:solid 1px #B9B9B9;
+	color:#6a6a6a;
+}
+.b {font-weight:bold;}
+.strTxt {color:#eb3462; }
+.bottomMent {
+	padding:0px 0 20px 0;
+	color:#999;
+}
+
+#mainBody {
+	background:url(../main/topArea_bg.jpg) repeat-x;
+}
+.mainWrapper {
+	background:url(../main/topArea_right.jpg) no-repeat 610px 0px;
+	min-width:910px;
+}
+.topArea {
+	position:relative;
+	width:100%;
+	min-width:910px;
+	max-width:970px;
+	height:290px;
+	font-family: "Malgun Gothic", "Simsun", 'dotum';
+	background:url(../main/topArea_left.jpg) no-repeat top left;
+}
+#prsnInfo {
+	width:550px;
+	height:81px;
+	position:absolute;
+	top:51px;
+	left:50px;
+}
+.picArea {
+	width:97px;
+	height:81px;
+	overflow:hidden;
+	position:relative;
+}
+
+.picArea .frame{
+	width:97px;
+	height:81px;
+	background:url(../main/pic_frame.png) no-repeat top right;
+	position:absolute;
+	z-index:10;
+	top:0;
+	left:0;
+}
+.picArea img {
+	width:61px;
+	position:absolute;
+	z-index:7;
+	top:9px;
+	left:11px;
+}
+.prsnTxt {
+	position:absolute;
+	z-index:11;
+	top:30px;
+	left:97px;
+	font-size:11px;
+	vertical-align:middle;
+	line-height:11px;
+}
+.prsnTxt .name{
+	font:11px "Malgun Gothic", "Simsun" normal;
+	padding:3px 5px 3px 5px;
+	display:inline-block;
+	background:#ef4674;
+	color:#fff;
+	margin:0 5px 0  2px;
+	letter-spacing:-1px;
+	vertical-align:middle;
+}
+.prsnTxt .date{
+	font:11px "Malgun Gothic", "Simsun" normal;
+	padding:3px 5px 3px 5px;
+	display:inline-block;
+	background:#909090;
+	color:#fff;
+	vertical-align:middle;
+}
+
+#myData {
+	position:absolute;
+	top:155px;
+	left:50px;
+	z-index:100;
+}
+#mainVisual {width:315px;position:absolute;top:0;right:0;}
+.grTxt {position:absolute;z-index:100;width:315px;height:290px;background: url(../main/rollimg/grTxt.png) no-repeat ;}
+#mainVisual span {width:315px;height:290px;display:block;margin:0;padding:0;overflow:hidden;}
+#mainVisual ul {width:315px;height:290px;}
+#information h2 {
+	float:left;
+	line-height:31px;
+	font-size:12px;
+	font-weight:bold;
+	color:#666;
+	padding-right:40px;
+	margin:25px 0 0 65px;
+}
+#information ul {
+}
+#information {
+	clear:both;
+	width:100%;
+	height:80px;
+	background:#ddd url(../main/information_bg.gif) repeat-x ;
+}
+#information li {
+	float:left;
+	font-size:12px;
+	color:#666;
+	line-height:31px;
+	padding-left:40px;
+	padding-right:50px;
+	margin:25px 0 0 0;
+}
+#information li a {
+	color:#666;
+	text-decoration:none;
+}
+#information li a:hover, #information li a:active{
+	color:#333;
+	text-decoration:underline;
+}
+#information li.hrSystem {
+	background: url(../main/info_01.gif) no-repeat ;
+}
+#information li.hrQna {
+	background: url(../main/info_02.gif) no-repeat ;
+}
+#information li.hrFaq {
+	background: url(../main/info_03.gif) no-repeat ;
+}
+#information li.hrManager {
+	background: url(../main/info_04.gif) no-repeat ;
+}
+#information li.hrHrRule {
+	background: url(../main/info_05.gif) no-repeat ;
+}
+
+hr {
+	height:1px;
+	margin:0;
+	padding:0;
+	clear:both;
+	color:#fff;
+	border:1px #fff;
+}
+#pageFooter {
+	clear:both;
+	font:normal 11px verdana;
+	color:#b7b7b7;
+	margin:50px 50px 20px 50px;
+	border-top:solid 1px #d9d9d9;
+	padding:10px  0 0 0 ;
+}
+#pageFooter article {
+	padding:30px 0 25px 0;
+	color:#9e9e9e;
+}
+.bx-wrapper {
+	position: relative;
+	margin: 0 auto;
+	padding: 0;
+	*zoom: 1;
+}
+.bx-wrapper img {
+	max-width: 100%;
+	display: block;
+}
+.bx-wrapper .bx-viewport {}
+.bx-wrapper .bx-pager {
+	position: absolute;
+	left:29px;
+	top:70px;
+}
+.bx-wrapper .bx-loading {
+	min-height: 50px;
+	background: url(../main/rollimg/bx_loader.gif) center center no-repeat;
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 2000;
+}
+.bx-wrapper .bx-pager {
+	text-align: center;
+	padding:10px 0 0 42px;
+}
+.bx-wrapper .bx-pager .bx-pager-item {
+	display: inline-block;
+	*zoom: 1;
+	*display: inline;
+}
+.bx-wrapper .bx-pager.bx-default-pager a {
+	background: #666;
+	text-indent: -9999px;
+	display: block;
+	width: 10px;
+	height: 10px;
+	margin: 0 2px;
+	outline: 0;
+	background:url(../main/rollimg/rolling_dot.png) no-repeat;
+}
+.bx-wrapper .bx-pager.bx-default-pager a:hover,
+.bx-wrapper .bx-pager.bx-default-pager a.active {
+	background:url(../main/rollimg/rolling_dot_on.png) no-repeat;
+}
+
+
+
+.vacaPrsn, .vacaPart, .monthlyOverTime {
+	float:left;
+	width:205px;
+	height:105px;
+	position:relative;
+}
+.vacaPrsn .icon, .vacaPart .icon, .monthlyOverTime .icon {
+	position:absolute;
+	top:0;
+	left:0;
+}
+.vacaPrsn h3, .vacaPart h3, .monthlyOverTime h3 {
+	padding:0 0 8px 120px;
+	line-height:17px;
+}
+.vacaPrsn ul, .vacaPart ul, .monthlyOverTime ul {
+	padding:0 0 0 120px;
+}
+.vacaPrsn li, .vacaPart li, .monthlyOverTime li {
+	padding:0 0 5px 0;
+}
+.vacaPrsn, .vacaPart, .monthlyOverTime {
+	font-size:12px;
+	color:#8c8c8c;
+}
+.vacaPrsn h3, .vacaPart h3, .monthlyOverTime h3 {
+	font-size:12px;
+	font-weight:bold;
+	color:#757575;
+}
+.vacaPrsn h3 .data, .vacaPart h3 .data, .monthlyOverTime h3 .data {
+	font-weight:normal;
+}
+.vacaPrsn h3 .data .num, .vacaPart h3 .data .num, .monthlyOverTime h3 .data .num {
+	font-weight:bold;
+	color:#ed4573;
+}
+.monthlyOverTime h3 {
+	letter-spacing:-1px;
+}
+.vacaPrsn .num, .vacaPart .num, .monthlyOverTime .num {
+	font-weight:bold;
+}
+.vacaPrsn .numStr, .vacaPart .numStr, .monthlyOverTime .numStr {
+	font-weight:bold;
+	color:#e5287d;
+}
+.bottomArea {
+	max-width:965px;
+	margin-right:30px;
+}
+#quickMenu_p, #quickMenu_m, #siteLinks {
+	float:left;
+	padding-top:37px;
+}
+#quickMenu_p, #quickMenu_m {
+	padding-top:39px;
+}
+#quickMenu_p.optShow {
+	padding-left:385px;
+	padding-bottom:30px;
+	min-height:100px;
+	background:url(../main/quick_space.jpg) no-repeat 35px 15px;
+}
+#quickMenu_p {
+	padding-right:30px;
+	padding-left:80px;
+}
+#quickMenu_m {
+	padding-right:30px;
+	padding-left:90px;
+}
+#siteLinks {
+	float:right;
+	padding-right:20px;
+}
+#quickMenu_p h2, #quickMenu_m h2, #siteLinks h2 {
+	font:bold 12px "Malgun Gothic", "Simsun";
+	color:#393939;
+	vertical-align:middle;
+	line-height:12px;
+}
+
+.divP {
+	background:url(../main/div_p_ico.gif) no-repeat;
+	font-size:11px;
+	line-height:11px;
+	color:#fff;
+	padding:3px 9px 3px 9px;
+	vertical-align:middle;
+}
+.divP, .divM {
+	background:url(../main/div_p_ico.gif) no-repeat;
+	font-size:11px;
+	line-height:11px;
+	vertical-align:middle;
+	font-family: "Malgun Gothic", "Simsun";
+	vertical-align:middle;
+	color:#fff;
+	padding:1px 9px 4px 9px;
+}
+#quickMenu_p h2 img, #quickMenu_m h2 img{
+	vertical-align:middle;
+}
+.divM {
+	background:url(../main/div_m_ico.gif) no-repeat;
+	letter-spacing:-1px;
+}
+#quickMenu_p ul, #quickMenu_m ul {
+	padding:15px 0 0 0;
+}
+#quickMenu_p li, #quickMenu_m li {
+	font-size:12px;
+	color:#686868;
+	padding:0 0 6px 0;
+}
+#quickMenu_p li a, #quickMenu_m li a {
+	color:#686868;
+	text-decoration:none;
+}
+#quickMenu_p li a:hover, #quickMenu_m li a:hover,
+#quickMenu_p li a:active, #quickMenu_m li a:active {
+	color:#333;
+	text-decoration:underline;
+}
+
+
+
+
+#siteLinks ul  {
+	padding:15px 0 0 0;
+}
+#siteLinks li  {
+	float:left;
+	color:#8c8c8c;
+	font-size:11px;
+	padding:0;
+	text-align:center;
+}
+#siteLinks li a {
+	color:#8c8c8c;
+	text-decoration:none;
+	display:block;
+	padding:60px 25px  0 25px;
+	text-align:center;
+}
+#siteLinks li a:hover, #siteLinks li a:active{
+	color:#333;
+	text-decoration:underline;
+}
+#siteLinks li.trInstitute a {padding-left:35px;padding-right:25px;margin-right:5px;}
+#siteLinks li.selWelfare a, #siteLinks li.wWcenter a {
+	background: url(../main/link_div.gif) no-repeat ;
+}
+.trInstitute {background:url(../main/tr_institute_img.gif) no-repeat 17px 0;line-height:14px;}
+#siteLinks li.trInstitute a {padding-top:49px;padding-right:30px;}
+.trInstitute {line-height:14px;}
+.trInstitute {background:url(../main/tr_institute_img.gif) no-repeat 20px 0;}
+.selWelfare {background: url(../main/sel_welfare_img.gif) no-repeat 24px 0;}
+.wWcenter {background:url(../main/workingw_center_img.gif) no-repeat 15px 0;}
+
+#siteLinks .sceneM li.wWcenter {display:none;}
+#siteLinks .sceneM li.trInstitute {padding-left:0px;padding-right:15px;}
+#siteLinks .sceneM li.selWelfare a {padding-left:37px;padding-right:37px;margin-right:25px;}
+.sceneM .trInstitute {background: url(../main/tr_institute_img.gif) no-repeat 23px 0;}
+.sceneM .selWelfare {background: url(../main/sel_welfare_img.gif) no-repeat 37px 0;}
+
+
+
+
+
+
+
+#leftBody {
+	background:#fff;
+}
+#leftBody h2 {
+	background:url(../leftMenu/lmenu_top.jpg) no-repeat;
+	overflow:hidden;
+	height:60px;
+	padding:0;
+	margin:0;
+}
+#leftBody h2 a {
+	display:block;
+	height:55px;
+}
+#leftBody h2 span {
+	text-indent:-1000px;
+	display:block;
+}
+
+#leftBody a {
+    font-size: 13px;
+    line-height: 18px;
+    text-decoration: none;
+	font-family:"Malgun Gothic", "Simsun" ;
+}
+
+.lMenu_1st {
+	font-weight:bold;
+	font-size:12px;
+	color:#c8294b;
+	padding-left:18px;
+	line-height:32px;
+	height:32px;
+}
+
+.LMENU_2ND {
+	font-weight:bold;
+	font-size:12px;
+	color:#484848;
+	height:27px;
+	padding-left:18px;
+	line-height:27px;
+	background:#d9d9d9 url(../leftMenu/lm_2nd_bg.gif) no-repeat 0px 0px;
+	display:block;
+}
+.LMENU_2ND:hover, .LMENU_2ND:active{
+	color:#c8294b;
+}
+.lMenu_3rd {
+	font-weight:bold;
+	font-size:12px;
+
+	color:#6a6a6a;
+	padding-left:31px;
+	line-height:22px;
+	height:22px;
+	display:block;
+	border-top: 1px solid #b1b1b1;
+	background:#c5c5c5 url(../leftMenu/lm_ico_3rd1.gif) no-repeat 22px 9px;
+
+}
+.lMenu_3rd:hover, .lMenu_3rd:active{
+	color:#fff;
+	background: #c7284a;
+}
+
+.lMenu_4th {
+	font-weight:normal;
+	font-size:12px;
+	line-height:14px;
+	color:#6a6a6a;
+	display:block;
+	padding:2px 0 6px 35px;
+}
+.lMenu_4th_on {
+	color:#c8294b;
+}
+.lMenu_3rd_on {
+	color:#c8294b;
+}
+.lMenu_4th:hover, .lMenu_4th:active{
+	color:#c8294b;
+}
+.lMenu_etc {
+	background:#30333c;
+	padding:0 0 2px 14px;
+	font-size:12px;
+}
+.lMenu_etc a {
+	color:#a6a7ab;
+	font-size:12px;
+	text-decoration:none;
+}
+.lMenu_etc a:hover, .lMenu_etc a:active{
+	color:#b4bed9;
+	text-decoration:underline;
+}
+.lmSitemap {
+	padding:0 0 40px 43px ;
+	background:url(../leftMenu/lm_sitemap_ico.gif) no-repeat 19px 1px;
+}
+.lmSitemap a {
+	color:#838383;
+	font-size:11px;
+	text-decoration:none;
+}
+
+
+.lMenu_logout {
+	background:#30333c;
+	padding:10px 0 15px 14px;
+}
+.lMenu_logout a {
+	color:#a6a7ab;
+	font-size:12px;
+	text-decoration:none;
+}
+.lMenu_logout a:hover, .lMenu_logout a:active{
+	color:#b4bed9;
+	text-decoration:underline;
+}
+
+
+
+.lMenu_etcStr {
+	background:#30333c;
+	padding:20px 0 2px 14px;
+}
+.lMenu_etcStr a {
+	color:#a6a7ab;
+	font-weight:bold;
+	font-size:12px;
+	text-decoration:none;
+}
+.lMenu_etcStr a:hover, .lMenu_etcStr a:active{
+	color:#b4bed9;
+	text-decoration:underline;
+}
+.noticeWrapper .bodyWrapper {
+	padding:0 25px 0px 25px;
+	margin:0 0 0px 0;
+	min-height:456px;
+}
+.noticeWrapper .header {
+	height:40px;
+	margin-bottom:30px;
+	background:#c50452 url(../main/notice_img.jpg) no-repeat;
+}
+.noticeWrapper h2 {
+	display:none;
+	padding:10px 0 0 30px;
+	color:#fff;
+	font-weight:bold;
+	font-size:17px;
+	padding-bottom:30px;
+}
+.toTop a {
+	color:#666;
+	font-size:12px;
+	display:block;
+	width:50px;
+	padding:4px 0 4px 0;
+	text-decoration:none;
+	background:url(../main/top_ico.gif) no-repeat top right;
+	float:right;
+}
+.toTop a:hover, .toTop a:active{
+	color:#333;
+	text-decoration:underline;
+}
+.nBottom {
+	margin:20px 0 0 0;
+	padding:10px 20px 15px 20px;;
+	text-align:right;
+	background:#f0f0f0;
+}
+.nBottom a {
+	color:#666;
+	font-size:12px;
+	text-decoration:none;
+	font-weight:bold;
+	background: url(../main/close_ico.gif) no-repeat top right;
+	padding:0 17px 3px 0;
+	line-height:12px;
+}
+.nBottom a:hover, .bottom a:active{
+	color:#333;
+	text-decoration:underline;
+}
+.nBottom .closeToday {color:#696969;font-size:11px;display:block;float:left;}
+
+
+
+.subWrapper {
+	/*width:780px;*/
+	margin:20px 0 30px 15px;
+}
+
+.subFrameWrapper {
+	width:780px;
+	margin:0px 0 30px 15px;
+}
+
+.subHead {
+	background:url('../ehr/title_underbar.gif') repeat-x  left bottom;
+	padding:0 0 7px 0;
+	margin-bottom:12px;
+}
+.subWrapper h2 {
+	color: #333;
+	font-size:12px;
+	font-weight: bold;
+	word-spacing: -1;
+	padding:2px 0 14px 30px;
+}
+.contentBody h3 {
+	color: #555;
+	font-weight: bold;
+	word-spacing: -1;
+	background:url(../ehr/icon_o.gif) no-repeat 3px 4px;
+	padding:0 0 15px 14px;
+}
+.contentBody h4 {
+	color: #555;
+	font-weight: bold;
+	word-spacing: -1px;
+	background:url(../ehr_common/bull_h4.gif) no-repeat 3px 4px;
+	padding:0 0 12px 14px;
+}
+.contentBody {
+	font-size:12px;
+	color:#666;
+	text-align:justify;
+}
+.tMent {
+	padding:0px 0 20px 0;
+	line-height:17px;
+	color:#999;
+	font-size:12px;
+}
+strong {	font-weight:bold;}
+.strCol01 {	color:#eb3462;}
+a.strCol01 {	color:#eb3462;}
+.underLine {text-decoration:underline;}
+.popupWrapper {
+	margin:20px 20px 30px 20px;
+}
+.popupWrapper h2 {
+	color: #333;
+	font-size:15px;
+	font-weight: bold;
+	word-spacing: -1;
+	background:url(../ehr/title01.gif) no-repeat 0px 0px;
+	padding:2px 0 14px 30px;
+}
+.popupBottom  {
+	text-align:center;
+	padding:20px 20px 10px 0;
+}
+
+/* eap intro */
+p.ment {
+	margin-bottom:15px;
+	/* padding-left:7px;
+	background:url(../ehr_common/bull_dot.gif) no-repeat 0px 6px; */
+}
+p.ment1 {
+	margin-bottom:17px;
+	padding-left:16px;
+	line-height:19px;
+	background:url(../ehr_common/bull_dot_red.gif) no-repeat 4px 9px;
+}
+.eapMainBody {
+	padding-left:0px;
+	margin:0;
+	background:url(../ehr_common/eap_main_bg.jpg) repeat-x;
+}
+.eapMain {height:1000px;background:url(../ehr_common/eap_main_top_bg.jpg) no-repeat 0 217px;}
+.eapMain .contentBody {
+	width:780px;
+}
+.subWrapper.eapMain, .subWrapper.eapSub {
+	width:100%;
+	margin:0;
+}
+
+/*.eapMain {background:url(../ehr_common/eap_intro_bg.jpg) repeat-x;} */
+.eapMain .contentBody {
+	width:780px;
+	position:relative;
+	height:1050px;
+}
+/*
+.eapContentWrapper {
+	position:relative;
+	width:890px;
+}*/
+.eapMainTitle {
+	position:absolute;
+	top:35px;
+	left:220px;
+	width:520px;
+	height:110px;
+	/*  background:url(../ehr_common/eap_intro_title.png) no-repeat; */
+}
+.eapMainVisual {
+	position:absolute;
+	top:160px;
+	left:85px;
+	width:760px;
+	height:430px;
+	/* background:url(../ehr_common/eap_intro_visual.png) no-repeat; */
+}
+.eapMainBar {
+	position:absolute;
+	top:526px;
+	left:214px;
+	width:525px;
+	height:45px;
+	/* background:url(../ehr_common/eap_intro_bar.png) no-repeat; */
+}
+
+.eapMainTxt {
+	position:absolute;
+	top:685px;
+	left:95px;
+	width:220px;
+	height:180px;
+	/* background:url(../ehr_common/eap_intro_service_txt.png) no-repeat;*/
+}
+.eapMainService {
+	position:absolute;
+	top:640px;
+	left:360px;
+	width:465px;
+	height:360px;
+	/* background:url(../ehr_common/eap_intro_service_img.png) no-repeat;*/
+}
+
+/* eap sub */
+.eapSubBody {
+	padding-left:0px;
+	margin:0;
+	background:url(../ehr_common/eap_sub_bg.jpg) repeat-x;
+}
+.eapSub {background:url(../ehr_common/eap_sub_top_bg.jpg) no-repeat;}
+.eapSub .contentBody {
+	margin:40px 0 30px 30px;
+	width:780px;
+}
+.eapSub h3 {
+	padding:0 0 0 0;
+	margin:0 0 15px 0;
+	background:
+}
+.eapTop {
+	text-align:right;
+	background:url(../ehr_common/eap_top_bg.gif) repeat-x;
+	margin-bottom:30px;
+}
+.eapSub .btnCenter {margin-bottom:20px;text-align:center;}
+.eapSub .btnRight {margin-bottom:20px;text-align:right;}
+
+
+.psyTop, .healthTop {
+	height:260px;
+	/* background:url(../ehr_common/eap_sub_top.jpg) no-repeat 251px 50px; */
+}
+.healthTop {
+	/* background:url(../ehr_common/eap_health_top.jpg) no-repeat 251px 50px; */
+}
+.psyTop img, .healthTop img {margin:50px 0 0  251px; }
+.psyTopMent, .healthTopMent {
+	height:90px;
+	/* background:url(../ehr_common/eap_psy_ment.jpg) no-repeat 230px 0px; */
+}
+.psyTopMent img {margin:0 0 0 230px;}
+.healthTopMent {
+	/* background:url(../ehr_common/eap_health_ment.jpg) no-repeat 213px 0px; */
+}
+.healthTopMent img {margin:0 0 0 213px;}
+.financeTop {	height:260px;
+	/* background:url(../ehr_common/eap_finance_top.jpg) no-repeat 231px 50px; */
+}
+.taxTop {height:260px;
+	/* background:url(../ehr_common/eap_tax_top.jpg) no-repeat 231px 50px; */
+}
+.lawTop {height:260px;
+	/* background:url(../ehr_common/eap_law_top.jpg) no-repeat 231px 50px; */
+}
+.financeTop img, .taxTop img, .lawTop img {
+	margin:50px 0 0 231px;
+}
+.financeTopMent, .taxTopMent, .lawTopMent {
+	width:780px;
+	position:relative;
+	height:89px;
+	/* background:url(../ehr_common/eap_finance_ment.jpg) no-repeat 210px 0px; */
+}
+.financeTopMent img, .taxTopMent img, .lawTopMent img {
+	margin:0 0 0 210px;
+}
+.taxTopMent {/* background:url(../ehr_common/eap_tax_ment.jpg) no-repeat 210px 0px; */}
+.lawTopMent {/* background:url(../ehr_common/eap_law_ment.jpg) no-repeat 210px 0px; */}
+.taxLink, .financeLink {margin-left:213px;width:516px;height:39px;background:url(../ehr_common/eap_link_bg.jpg) no-repeat;}
+.taxLink img, .financeLink img  {margin-left:26px;}
+.lawLink {margin-left:213px;width:516px;height:39px;background:url(../ehr_common/eap_law_link_bg.jpg) no-repeat;}
+.lawLink img {margin-left:20px;}
+.psyLink, .healthLink {padding-left:213px;}
+.psySec01, .healthSec01 {
+	padding:10px 0 0 7px;
+}
+.psySec01 .item01, .psySec01 .item02, .psySec01 .item03,
+.healthSec01 .item01, .healthSec01 .item02, .healthSec01 .item03,
+.lawSec01 .item01, .lawSec01 .item02, .lawSec01 .item03 {
+	float:left;
+	width:235px;
+	height:130px;
+	margin-right:19px;
+}
+.psySec01 .item03  {margin-right:0px;}
+.psySec01 .item01 {/* background:url(../ehr_common/eap_psy_sec01_img_01.jpg) no-repeat; */}
+.psySec01 .item02 {/* background:url(../ehr_common/eap_psy_sec01_img_02.jpg) no-repeat; */}
+.psySec01 .item03 {/* background:url(../ehr_common/eap_psy_sec01_img_03.jpg) no-repeat; */}
+
+.healthSec01 .item03 {margin-right:0px;width:250px;}
+.healthSec01 .item01 {/* background:url(../ehr_common/eap_health_sec01_img_01.jpg) no-repeat; */}
+.healthSec01 .item02 {/* background:url(../ehr_common/eap_health_sec01_img_02.jpg) no-repeat; */}
+.healthSec01 .item03 {/* background:url(../ehr_common/eap_health_sec01_img_03.jpg) no-repeat; */}
+
+.lawSec01 .item03 {margin-right:0px;width:250px;}
+.lawSec01 .item01 {/* background:url(../ehr_common/eap_law_sec01_img_01.jpg) no-repeat; */}
+.lawSec01 .item02 {/* background:url(../ehr_common/eap_law_sec01_img_02.jpg) no-repeat; */}
+.lawSec01 .item03 {/* background:url(../ehr_common/eap_law_sec01_img_03.jpg) no-repeat; */}
+
+.taxSec01, .taxSec02 {text-align:center;margin-bottom:20px;}
+
+.psySec02 .item01, .psySec02 .item02, .psySec02 .item03, .psySec02 .item04 {
+	height:80px;
+	margin-bottom:15px;
+}
+.psySec02 .item01 {background:url(../ehr_common/eap_psy_sec02_img_01.jpg) no-repeat;}
+.psySec02 .item02 {background:url(../ehr_common/eap_psy_sec02_img_02.jpg) no-repeat;}
+.psySec02 .item03 {background:url(../ehr_common/eap_psy_sec02_img_03.jpg) no-repeat;}
+.psySec02 .item04 {background:url(../ehr_common/eap_psy_sec02_img_04.jpg) no-repeat;}
+
+.psySec04 {
+	position:relative;
+	width:780px;
+	height:140px;
+	background:url(../ehr_common/eap_psy_sec03_bg.jpg) no-repeat;
+	margin-bottom:30px;
+}
+.psySec04 .btn {
+	position:absolute;
+	top:99px;
+	left:615px;
+}
+.psySec05 {margin-bottom:20px;}
+.psySec05 ul {
+	float:left;
+	margin-right:25px;
+}
+.psySec05 ul.last {
+	margin-right:0;
+}
+.psySec05 li {
+	margin-bottom:5px;
+}
+.psySec05 .pic {
+	margin-bottom:10px;
+}
+.psySec05 .pic img {
+	padding:1px;
+	border:solid 1px #ddd;
+}
+.psySec05 .loc, .psySec05 .name {font-weight:bold;}
+.psySec05 .loc {color:#28a3b5;}
+.psySec05 .email a {color:#000;}
+
+.sec02Content {margin:0;padding:0;text-align:left}
+.sec03Content {margin-bottom:30px}
+.sec03Content img {margin-right:10px;}
+
+
+
+/* tab line */
+.tabLine {
+	background:url('../ehr_common/tab_bg.gif') repeat-x;
+	height:27px;
+	margin-bottom:125px;
+}
+.tabLine a {
+	text-decoration:none;
+}
+.tabLine.narrow .tl,
+.tabLine.narrow .tr,
+.tabLine.narrow .tl_on,
+.tabLine.narrow .tr_on{	width:5px;}
+
+.tabLine .tl, .tabLine .tc, .tabLine .tr , .tabLine .tl_on, .tabLine .tc_on, .tabLine .tr_on{
+	float:left;
+	height:27px;
+}
+.tabLine .tl{
+	width:8px;
+	background:url('../ehr_common/tab_left.gif') no-repeat;
+}
+.tabLine .tr{
+	width:8px;
+	margin-right:3px;
+	background:url('../ehr_common/tab_right.gif') no-repeat top right;
+}
+.tabLine .tc{
+	background:url('../ehr_common/tab_center.gif') repeat-x top center;
+	padding:0 10px 0 10px;
+}
+.tabLine .tc span {
+	display:block;
+	padding-top:5px;
+	color:#767676;
+	font-weight:bold;
+}
+.tabLine .tl_on{
+	width:8px;
+	background:url('../ehr_common/tableft_on.gif') no-repeat;
+}
+.tabLine .tr_on{
+	width:8px;
+	margin-right:3px;
+	background:url('../ehr_common/tabright_on.gif') no-repeat top right;
+}
+.tabLine .tc_on{
+	background:url('../ehr_common/tabcenter_on.gif') repeat-x top center;
+	padding:0 10px 0 10px;
+}
+.tabLine .tc_on span {
+	display:block;
+	padding-top:5px;
+	color:#eb3462;
+	font-weight:bold;
+}
+/* tab line */
+.tabSub {
+	padding:7px 0 10px 15px;
+	border-bottom:solid 1px #cdcdcd;
+	margin-bottom:20px;
+	background:url(../ehr_common/tabsub_bg.gif) repeat-x left bottom;
+}
+.tabSub a {
+	text-decoration:none;
+	color:#666;
+	font-weight:bold;
+	display:inline-block;
+	padding:0 7px 0 7px;
+	line-height:20px;
+}
+.tabSub a.subM_on {
+	background:url(../ehr_common/tabsub_on.gif) no-repeat;
+	color:#fff;
+	padding:0 0 0 12px;
+	margin-right:5px;
+}
+.tabSub a.subM_on span {
+	background: url(../ehr_common/tabsub_on_r.gif) no-repeat top right;
+	padding-right:12px;
+	display:inline-block;
+	line-height:20px;
+}
+.orgStats_unit {text-align:right;margin-bottom:10px;}
+.orgStats_unit span{
+	padding-left:10px;
+	background:url(../ehr_common/dot_gray.gif) no-repeat 0 7px;
+}
+
+
+.reco_bsnm_pic {width:79px;height:97px;border:solid 2px #ddd;padding:1px}
+.dotBull {
+}
+.dotBull li {
+	padding:0 0 5px 10px;
+	line-height:17px;
+	background:url(../ehr_common/dot_gray.gif) no-repeat 0 7px;
+}
+.devHr_graphWrap {
+	position:relative;
+}
+.devHr_graphWrap td {
+	height:46px;
+}
+.devHr_graphWrap .bar01, .devHr_graphWrap .bar02, .devHr_graphWrap .bar03, .devHr_graphWrap .bar04, .devHr_graphWrap .bar05 {
+	position:absolute;
+	top:35px;
+	left:80px;
+	height:36px;
+	text-align:center;
+	vertical-align:middle;
+}
+.devHr_graphWrap .bar01 {top:35px;}
+.devHr_graphWrap .bar02 {top:88px;}
+.devHr_graphWrap .bar03 {top:141px;}
+.devHr_graphWrap .bar04 {top:194px;}
+.devHr_graphWrap .bar05 {top:247px;}
+.devHr_graphWrap .bar01 table, .devHr_graphWrap .bar02 table, .devHr_graphWrap .bar03 table, .devHr_graphWrap .bar04 table, .devHr_graphWrap .bar05 table{
+	border-collapse:collapse;
+	margin:0;
+	padding:0;
+	width:100%;
+	border:0;
+}
+.devHr_graphWrap .bar01 table td, .devHr_graphWrap .bar02 table td, .devHr_graphWrap .bar03 table td, .devHr_graphWrap .bar04 table td, .devHr_graphWrap .bar05 table td {
+	padding:0;
+	margin:0;
+	border:0;
+	width:100%;
+	height:36px;
+	text-align:center;
+	vertical-align:middle;
+	font-size:11px;
+	color:#fff;
+	font-weight:bold;
+}
+.devHr_graphWrap .bar01 table td{	background:#f66d8a;}
+.devHr_graphWrap .bar02 table td{	background:#8f9fc8;}
+.devHr_graphWrap .bar03 table td{	background:#52b6b9;}
+.devHr_graphWrap .bar04 table td{	background:#a2c96c;}
+.devHr_graphWrap .bar05 table td{	background:#53b1d8;}
+
+
+.center {text-align:center;}
+.box01 {
+	background:#fafafa;
+	border:solid 1px #ddd;
+	padding:10px;
+	margin-bottom:15px;
+}
+.box01 img {
+	vertical-align:middle;
+}
+.brdTop {
+	text-align:right;
+	padding:0 0 10px 0;
+}
+#loginBody {
+	margin:0;padding:0;
+	background:url(../ehr_common/login_bg.jpg) repeat-x;
+}
+.loginWrapper {
+	background:url(../ehr_common/login_center_bg.jpg) no-repeat  center 190px;
+	margin:0;padding:0;
+}
+.loginBox {
+	margin:0px auto 0 auto;
+	position:relative;
+	width:409px;
+	height:450px;
+	background:url(../ehr_common/login_box.jpg) no-repeat center bottom;
+}
+.loginForm {
+	position:absolute;
+	left:0;
+	top:95px;
+	z-index:20;
+	width:409px;
+	height:355px;
+	background:url(../ehr_common/login_thumb.gif) no-repeat 52px 50px ;
+}
+.loginForm h2 {
+	position:absolute;
+	display:block;
+	top:50px;
+	left:145px;
+	width:129px;
+	height:37px;
+	margin:0;
+	padding:0;
+	background:url(../ehr_common/login_h1.gif) no-repeat;
+}
+.loginForm h2 span {display:none;}
+.loginForm .ment {
+	position:absolute;
+	display:block;
+	top:100px;
+	left:145px;
+	font-size:12px;
+	line-height:19px;
+	color:#f33c6a;
+}
+.loginForm .ment span {
+	color:#7b7b7b;
+}
+.loginInput {
+	position:absolute;
+	top:165px;
+	left:55px;
+	z-index:20;
+	width:311px;
+	height:100px;
+	background: url(../ehr_common/login_line.gif) no-repeat;
+}
+.loginForm .btn {
+	position:absolute;
+	top:240px;
+	left:55px;
+	z-index:30;
+}
+.loginForm .btn a {
+	display:block;
+	font-size:12px;
+	color:#333;
+	text-decoration:none;
+	padding:7px 0 7px 25px;
+}
+.loginForm .btn a.resetPw {
+	background:url(../ehr_common/login_ico_reset.gif) no-repeat 0 5px;
+}
+.loginForm .btn a.editPw {
+	background:url(../ehr_common/login_ico_edit.gif) no-repeat 0 5px;
+}
+.loginWrapper .visual {
+	position:absolute;
+	z-index:10;
+	top:335px;
+	left:50%;
+	margin-left:-286px;
+	width:573px;
+	height:198px;
+	background:url(../ehr_common/login_vis.png) no-repeat;
+}
+.loginInput label {display:none;}
+.loginInput input {background:url(../ehr_common/login_input_txt.gif) no-repeat 3px 5px;border:none;vertical-align:middle;width:175px;}
+.loginInput img {vertical-align:middle;padding-left:10px}
+.pwInput {width:auto;padding:0 0 0 10px;margin-top:20px;height:36px;background:url(../ehr_common/login_input.gif) no-repeat;}
+.loginFooter {padding:95px 0 0 0;width:409px;margin:0 auto;}
+.loginFooter span {display:block;padding:0 0 0 10px;color:#aeaeae;font-size:11px;}
+
+
+.organBody {
+	background:url(../ehr_common/organ_bg.gif);
+}
+.organTreeWrap {
+	position:relative;
+	width:650px;
+}
+
+.organTreeWrap .innerWrap {
+	background:url(../ehr_common/organ_bg.gif);
+}
+.organTreeWrap .imgBg {
+	width:650px;
+	height:220px;
+	position:absolute;
+	z-index:1;
+	background:url(../ehr_common/org_def.jpg) no-repeat 150px 10px;
+}
+.organ_1, .organ_2 {
+	width:330px;
+	height:225px;
+	background:url(../ehr_common/organ_bg1.jpg) no-repeat;
+	position:relative;
+}
+.organ_1 {
+	margin-left:151px;
+}
+.organ_2 {
+	width:302px;
+	height:210px;
+	margin-right:15px;
+	float:left;
+	background:url(../ehr_common/organ_bg2.jpg) no-repeat;
+}
+.organ_1 .picWrap, .organ_2 .picWrap {
+	position:absolute;
+	top:42px;
+	left:24px;
+	width:87px;
+	height:101px;
+}
+.organ_1 .picWrap .frame, .organ_2 .picWrap .frame {
+	position:absolute;
+	top:0;
+	left:0;
+	z-index:10;
+	width:87px;
+	height:101px;
+	background:url(../ehr_common/organ_cover1.png) no-repeat;
+}
+.organ_1 .picWrap img, .organ_2 .picWrap img {
+	position:absolute;
+	top:0;
+	left:0;
+	z-index:7;
+	width:87px;
+	height:101px;
+}
+.organ_1 .btn, .organ_2 .btn {
+	position:absolute;
+	top:155px;
+	left:26px;
+}
+.organ_1 h4, .organ_2 h4 {
+	position:absolute;
+	top:42px;
+	left:127px;
+	font-size:12px;
+	font-weight:bold;
+	color:#676767;
+	width:152px;
+	height:24px;
+	text-align:center;
+	line-height:24px;
+	background:url(../ehr_common/organ_h4_bg.gif) no-repeat;
+}
+.organ_1 ul, .organ_2 ul{
+	position:absolute;
+	top:77px;
+	left:131px;
+}
+
+
+.organ_1 .picWrap  {top:33px;left:25px;}
+.organ_1 .picWrap .frame {	left:14px;}
+.organ_1 .picWrap img {	left:14px;}
+.organ_1 .btn {top:147px;left:41px;}
+.organ_1 h4 {top:33px;left:141px;}
+.organ_1 ul{top:70px;left:145px;}
+
+
+
+.organ_1 ul li, .organ_2 ul li {
+	font-size:12px;
+	padding:0 0 3px 7px;
+	line-height:16px;
+	background:url(../ehr_common/dot_gray1.gif) no-repeat 0 7px;
+	color:#8f8f8f;
+}
+.organContentWrapper {padding:15px 0 0 70px;width:auto;}
+
+
+
+.recoBsn_div1 {
+	width:230px;float:left;margin-right:2px;
+}
+.recoBsn_div2, .recoBsn_div2_hide {width:265px;float:left;position:relative;}
+
+.recoBsn_div2 .recoBsn_div2{display:block;}
+.recoBsn_div2_hide{width:33px;}
+.recoBsn_div2_hide .recoB_area1 {display:none;}
+.recoBsn_div2_hide .btnHide {display:none;}
+.recoBsn_div2_hide .btnShow {display:block;}
+
+
+
+.recoBsn_div2 .recoB_area1 {display:block;width:220px;margin-left:10px}
+.recoBsn_div2 .btnHide {display:block;}
+.recoBsn_div2 .btnShow {display:none;}
+
+
+.recoBsn_div3, .recoBsn_div3_wide {width:495px;float:right;}
+.recoBsn_div3_wide {width:700px;}
+
+
+
+.recoBsn_btn {
+	position:absolute;top:0px;right:0;height:200px;background:url(../ehr_common/bsnm_btn_undershadow.gif) no-repeat 0 71px;
+}
+.recoB_conditionT {
+	border:solid 2px #ee8aa3;font-weight:bold;text-align:center;padding:8px;margin-bottom:13px;font-size:12px;line-height:11px;
+}
+.recoB_plus {
+	font-size:22px;color:#bbb;font-family:verdana;font-weight:bold;padding-bottom:1px;text-align:center;
+}
+
+
+
+.orgStats_graph {
+	margin-bottom:20px;
+}
+.fl {
+	float:left;
+}
+
